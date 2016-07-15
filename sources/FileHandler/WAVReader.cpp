@@ -123,7 +123,7 @@ static void WAVReadChunks(std::istream& stream, std::streamoff streamSize, WaveB
     stream.read(waveBuffer.buffer.data(), chunkDATA.size);
 }
 
-void WAVReader::ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer) const
+void WAVReader::ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer)
 {
     if (!stream.good())
         throw std::runtime_error("invalid stream source");
@@ -132,7 +132,7 @@ void WAVReader::ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer) const
     std::uint32_t streamSize = 0;
     WAVReadRIFFWAVEHeader(stream, streamSize);
 
-    /* Fill wave buffer by reading chunks 'fmt ' and 'data' */
+    /* Fill wave buffer by reading chunks "fmt " and "data" */
     WAVReadChunks(stream, streamSize, buffer);
 }
 

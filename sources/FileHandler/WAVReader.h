@@ -24,7 +24,7 @@ class WAVReader
 
     public:
 
-        void ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer) const;
+        void ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer);
 
 };
 
