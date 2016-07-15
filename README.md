@@ -21,8 +21,9 @@ Getting Started
 
 int main()
 {
-	// If an audio system is not available, dynamically catch the exception an load another audio system
-	// e.g. when "XAudio2" is not available because the respective DirectX version is missing on a Windows platform.
+	// If an audio system is not available, dynamically catch the
+	// exception an load another audio system, e.g. when "XAudio2"
+	// is not available due to a missing DirectX version on a Windows platform.
 	for (auto module : std::vector<std::string> { "XAudio2", "OpenAL" })
 	{
 		try
