@@ -20,7 +20,7 @@ int main()
             // Load audio system from shared library
             auto audioSystem = Ac::AudioSystem::Load(module);
 
-            std::cout << "Audio System: \"" << audioSystem->GetName() << "\"" << std::endl;
+            std::cout << "Audio System: " << audioSystem->GetName() << "; Version: " << audioSystem->GetVersion() << std::endl;
 
             //to be continued ...
         }

@@ -21,7 +21,7 @@ class XA2AudioSystem : public AudioSystem
 
     public:
 
-
+        std::string GetVersion() const override;
 
 };
 

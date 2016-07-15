@@ -12,6 +12,11 @@ namespace Ac
 {
 
 
+std::string XA2AudioSystem::GetVersion() const
+{
+    return "XAudio2";
+}
+
 
 
 } // /namespace Ac

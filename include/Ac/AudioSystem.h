@@ -54,6 +54,9 @@ class AC_EXPORT AudioSystem
             return name_;
         }
 
+        //! Returns a descriptive version string of this audio system (e.g. "OpenAL 1.1").
+        virtual std::string GetVersion() const = 0;
+
         //virtual std::unique_ptr<Sound> LoadSound();
 
     protected:

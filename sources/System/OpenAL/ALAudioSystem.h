@@ -26,11 +26,15 @@ class ALAudioSystem : public AudioSystem
         ALAudioSystem();
         ~ALAudioSystem();
 
+        std::string GetVersion() const override;
+
     private:
 
         ALCdevice* OpenDevice();
+        ALCcontext* CreateContext();
 
-        ALCdevice* device_ = nullptr;
+        ALCdevice*  device_     = nullptr;
+        ALCcontext* context_    = nullptr;
 
 };
 
