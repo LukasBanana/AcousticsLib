@@ -8,24 +8,26 @@
 #include <Ac/AcLib.h>
 #include <iostream>
 #include <string>
+#include <vector>
 
 
 int main()
 {
-    try
+    for (auto module : std::vector<std::string> { "XAudio2", "OpenAL" })
     {
-        // Create audio system
-        auto audioSystem = Ac::AudioSystem::Load("OpenAL");
-        
-        audioSystem = Ac::AudioSystem::Load("XAudio2");
+        try
+        {
+            // Load audio system from shared library
+            auto audioSystem = Ac::AudioSystem::Load(module);
 
+            std::cout << "Audio System: \"" << audioSystem->GetName() << "\"" << std::endl;
 
-        std::cout << "Audio System: \"" << audioSystem->GetName() << "\"" << std::endl;
-
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << e.what() << std::endl;
+            //to be continued ...
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
     }
 
     #ifdef _WIN32
