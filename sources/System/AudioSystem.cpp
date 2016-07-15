@@ -21,6 +21,30 @@ AudioSystem::~AudioSystem()
 {
 }
 
+static AudioSystem* LoadAudioSystem(Module& module, const std::string& moduleName)
+{
+    /* Load "Ac_AudioSystem_Alloc" procedure */
+    AC_PROC_INTERFACE(void*, PFN_AUDIOSYSTEM_ALLOC, (void));
+
+    auto AudioSystem_Alloc = reinterpret_cast<PFN_AUDIOSYSTEM_ALLOC>(module.LoadProcedure("Ac_AudioSystem_Alloc"));
+    if (!AudioSystem_Alloc)
+        throw std::runtime_error("failed to load \"Ac_AudioSystem_Alloc\" procedure from module \"" + moduleName + "\"");
+
+    return reinterpret_cast<AudioSystem*>(AudioSystem_Alloc());
+}
+
+static std::string LoadAudioSystemName(Module& module)
+{
+    /* Load "Ac_AudioSystem_Name" procedure and store its value in the name field */
+    AC_PROC_INTERFACE(const char*, PFN_AUDIOSYSTEM_NAME, (void));
+
+    auto AudioSystem_Name = reinterpret_cast<PFN_AUDIOSYSTEM_NAME>(module.LoadProcedure("Ac_AudioSystem_Name"));
+    if (AudioSystem_Name)
+        return std::string(AudioSystem_Name());
+
+    return "";
+}
+
 std::shared_ptr<AudioSystem> AudioSystem::Load(const std::string& moduleName)
 {
     /* Check if previous module can be safely released (i.e. the previous audio system has been deleted) */
@@ -29,26 +53,10 @@ std::shared_ptr<AudioSystem> AudioSystem::Load(const std::string& moduleName)
 
     /* Load audio system module */
     auto module = Module::Load("AcLib_" + moduleName);
-
-    /* Load "Ac_AudioSystem_Alloc" procedure */
-    AC_PROC_INTERFACE(void*, PFN_AUDIOSYSTEM_ALLOC, (void));
-
-    auto AudioSystem_Alloc = reinterpret_cast<PFN_AUDIOSYSTEM_ALLOC>(module->LoadProcedure("Ac_AudioSystem_Alloc"));
-    if (!AudioSystem_Alloc)
-        throw std::runtime_error("failed to load \"Ac_AudioSystem_Alloc\" procedure from module \"" + moduleName + "\"");
-
-    auto audioSystemRaw = reinterpret_cast<AudioSystem*>(AudioSystem_Alloc());
-
-    /* Load "Ac_AudioSystem_Name" procedure and store its value in the name field */
-    AC_PROC_INTERFACE(const char*, PFN_AUDIOSYSTEM_NAME, (void));
-
-    auto AudioSystem_Name = reinterpret_cast<PFN_AUDIOSYSTEM_NAME>(module->LoadProcedure("Ac_AudioSystem_Name"));
-    if (AudioSystem_Name)
-        audioSystemRaw->name_ = std::string(AudioSystem_Name());
+    auto audioSystem = std::shared_ptr<AudioSystem>(LoadAudioSystem(*module, moduleName));
+    audioSystem->name_ = LoadAudioSystemName(*module);
 
     /* Store new module globally */
-    auto audioSystem = std::shared_ptr<AudioSystem>(audioSystemRaw);
-
     g_audioSystemModule = std::move(module);
     g_audioSystemRef = audioSystem;
 
