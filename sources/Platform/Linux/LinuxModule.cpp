@@ -1,11 +1,12 @@
 /*
- * Win32Module.cpp
+ * LinuxModule.cpp
  * 
  * This file is part of the "AcousticsLib" project (Copyright (c) 2016 by Lukas Hermanns)
  * See "LICENSE.txt" for license information.
  */
 
 #include "Win32Module.h"
+#include <dlfcn.h>
 
 
 namespace Ac
@@ -17,29 +18,29 @@ std::unique_ptr<Module> Module::Load(std::string moduleName)
     #ifdef _DEBUG
     moduleName += "D";
     #endif
-    return std::unique_ptr<Module>(new Win32Module(moduleName));
+    return std::unique_ptr<Module>(new LinuxModule(moduleName));
 }
 
-Win32Module::Win32Module(std::string moduleName)
+LinuxModule::LinuxModule(std::string moduleName)
 {
-    /* Open Windows dynamic link library (DLL) */
-    moduleName += ".dll";
-    handle_ = LoadLibrary(moduleName.c_str());
+    /* Open Linux shared library (SO) */
+    moduleName += ".so";
+    handle_ = dlopen(moduleName.c_str(), RTLD_LAZY);
 
     /* Check if loading has failed */
     if (!handle_)
-        throw std::runtime_error("failed to load dynamic link library (DLL) \"" + moduleName + "\"");
+        throw std::runtime_error("failed to load shared library (SO) \"" + moduleName + "\"");
 }
 
-Win32Module::~Win32Module()
+LinuxModule::~LinuxModule()
 {
-    FreeLibrary(handle_);
+    dlclose(handle_);
 }
 
-void* Win32Module::LoadProcedure(const std::string& procedureName)
+void* LinuxModule::LoadProcedure(const std::string& procedureName)
 {
     /* Get procedure address from library module and return it as raw-pointer */
-    auto procAddr = GetProcAddress(handle_, procedureName.c_str());
+    auto procAddr = dlsym(handle_, procedureName.c_str());
     return reinterpret_cast<void*>(procAddr);
 }
 
