@@ -1,11 +1,11 @@
 /*
  * LinuxModule.cpp
- * 
+ *
  * This file is part of the "AcousticsLib" project (Copyright (c) 2016 by Lukas Hermanns)
  * See "LICENSE.txt" for license information.
  */
 
-#include "Win32Module.h"
+#include "LinuxModule.h"
 #include <dlfcn.h>
 
 
@@ -24,7 +24,7 @@ std::unique_ptr<Module> Module::Load(std::string moduleName)
 LinuxModule::LinuxModule(std::string moduleName)
 {
     /* Open Linux shared library (SO) */
-    moduleName += ".so";
+    moduleName = "lib" + moduleName + ".so";
     handle_ = dlopen(moduleName.c_str(), RTLD_LAZY);
 
     /* Check if loading has failed */
