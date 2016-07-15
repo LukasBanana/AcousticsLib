@@ -1,6 +1,6 @@
 /*
  * ALAudioSystem.h
- * 
+ *
  * This file is part of the "AcousticsLib" project (Copyright (c) 2016 by Lukas Hermanns)
  * See "LICENSE.txt" for license information.
  */
@@ -10,6 +10,8 @@
 
 
 #include <Ac/AudioSystem.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 
 
 namespace Ac
@@ -21,7 +23,14 @@ class ALAudioSystem : public AudioSystem
 
     public:
 
+        ALAudioSystem();
+        ~ALAudioSystem();
 
+    private:
+
+        ALCdevice* OpenDevice();
+
+        ALCdevice* device_ = nullptr;
 
 };
 
