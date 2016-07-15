@@ -13,7 +13,7 @@ namespace Ac
 {
 
 
-WaveFormat MakeWaveFormatHeaderPCM(
+WaveFormat MakeWaveFormatPCM(
     unsigned short channels, unsigned long sampleRate, unsigned short bitsPerSample)
 {
     WaveFormat waveFormat;
