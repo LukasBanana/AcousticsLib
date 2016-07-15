@@ -22,6 +22,10 @@ ALAudioSystem::ALAudioSystem() :
 
 ALAudioSystem::~ALAudioSystem()
 {
+    /* Clean up all OpenAL resources */
+    alcMakeContextCurrent(nullptr);
+    if (context_)
+        alcDestroyContext(context_);
     if (device_)
         alcCloseDevice(device_);
 }
