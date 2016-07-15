@@ -38,7 +38,7 @@ endif(WIN32)
 
 file(GLOB FilesInclude			${PROJECT_INCLUDE_DIR}/Ac/*.*)
 file(GLOB FilesCore				${PROJECT_SOURCE_DIR}/sources/Core/*.*)
-file(GLOB FilesReader			${PROJECT_SOURCE_DIR}/sources/Reader/*.*)
+file(GLOB FilesFileHandler		${PROJECT_SOURCE_DIR}/sources/FileHandler/*.*)
 file(GLOB FilesSystem			${PROJECT_SOURCE_DIR}/sources/System/*.*)
 file(GLOB FilesSystemOpenAL		${PROJECT_SOURCE_DIR}/sources/System/OpenAL/*.*)
 file(GLOB FilesSystemXAudio2	${PROJECT_SOURCE_DIR}/sources/System/XAudio2/*.*)
@@ -62,7 +62,7 @@ set(FilesTest1 ${PROJECT_SOURCE_DIR}/test/test1.cpp)
 
 source_group("Include" FILES ${FilesInclude})
 source_group("Sources\\Core" FILES ${FilesCore})
-source_group("Sources\\Reader" FILES ${FilesReader})
+source_group("Sources\\FileHandler" FILES ${FilesFileHandler})
 source_group("Sources\\System" FILES ${FilesSystem})
 source_group("Sources\\System\\OpenAL" FILES ${FilesSystemOpenAL})
 source_group("Sources\\System\\XAudio2" FILES ${FilesSystemXAudio2})
@@ -83,7 +83,7 @@ set(
 	FilesAll
 	${FilesInclude}
 	${FilesCore}
-	${FilesReader}
+	${FilesFileHandler}
 	${FilesSystem}
 	${FilesPlatformBase}
 	${FilesPlatform}
