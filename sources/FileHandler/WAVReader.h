@@ -9,7 +9,10 @@
 #define __AC_WAV_READER_H__
 
 
+#include "../Core/WaveBuffer.h"
+
 #include <string>
+#include <istream>
 
 
 namespace Ac
@@ -21,7 +24,7 @@ class WAVReader
 
     public:
 
-
+        void ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer) const;
 
 };
 
