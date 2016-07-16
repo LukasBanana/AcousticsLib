@@ -10,6 +10,7 @@
 #include "ALSound.h"
 
 #include <fstream>
+#include <cstring>
 
 
 namespace Ac
