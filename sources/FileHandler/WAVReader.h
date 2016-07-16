@@ -11,6 +11,7 @@
 
 #include "../Core/WaveBuffer.h"
 
+#include <Ac/Export.h>
 #include <string>
 #include <istream>
 
@@ -19,7 +20,7 @@ namespace Ac
 {
 
 
-class WAVReader
+class AC_EXPORT WAVReader
 {
 
     public:

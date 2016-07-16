@@ -6,6 +6,10 @@
  */
 
 #include "ALAudioSystem.h"
+#include "../../FileHandler/WAVReader.h"
+#include "ALSound.h"
+
+#include <fstream>
 
 
 namespace Ac
@@ -47,7 +51,14 @@ std::string ALAudioSystem::GetVersion() const
 
 std::unique_ptr<Sound> ALAudioSystem::LoadSound(const std::string& filename)
 {
-    return nullptr; //todo...
+    auto bufferObj = CreateBufferObjFromFile(filename);
+    if (bufferObj)
+    {
+        auto sound = std::unique_ptr<ALSound>(new ALSound());
+        sound->AttachBuffer(std::move(bufferObj));
+        return std::move(sound);
+    }
+    return nullptr;
 }
 
 
@@ -71,6 +82,27 @@ ALCcontext* ALAudioSystem::CreateContext()
     if (!alcMakeContextCurrent(context))
         throw std::runtime_error("failed to make OpenAL context current");
     return context;
+}
+
+std::unique_ptr<ALBufferObj> ALAudioSystem::CreateBufferObjFromFile(const std::string& filename)
+{
+    std::ifstream file(filename);
+    if (file.good())
+    {
+        /* Read sound file */
+        WAVReader reader;
+
+        WaveBuffer waveBuffer;
+        reader.ReadWaveBuffer(file, waveBuffer);
+
+        /* Create AL buffer object and fill with wave buffer data */
+        auto bufferObj = std::unique_ptr<ALBufferObj>(new ALBufferObj());
+        bufferObj->BufferData(waveBuffer);
+
+        return bufferObj;
+    }
+
+    return nullptr;
 }
 
 

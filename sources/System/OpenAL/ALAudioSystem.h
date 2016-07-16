@@ -10,6 +10,7 @@
 
 
 #include "OpenAL.h"
+#include "ALBufferObj.h"
 
 #include <Ac/AudioSystem.h>
 
@@ -34,6 +35,8 @@ class ALAudioSystem : public AudioSystem
 
         ALCdevice* OpenDevice();
         ALCcontext* CreateContext();
+
+        std::unique_ptr<ALBufferObj> CreateBufferObjFromFile(const std::string& filename);
 
         ALCdevice*  device_     = nullptr;
         ALCcontext* context_    = nullptr;

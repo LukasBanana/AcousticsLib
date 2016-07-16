@@ -32,14 +32,10 @@ class AC_EXPORT Sound
         {
         }
 
-        /**
-        \brief Starts the sound playback from the beginning.
-        \param[in] repetitions Specifies the number of repetitions.
-        If this is greater than zero, the sound will be played in a loop for the specified amount of time.
-        */
-        virtual void Play(std::size_t repetitions = 0) = 0;
-        //! Pauses or resumes the sound playback at the current position.
-        virtual void Pause(bool paused = true) = 0;
+        //! Starts the sound playback.
+        virtual void Play() = 0;
+        //! Pauses the sound playback at the current position.
+        virtual void Pause() = 0;
         //! Stops the sound playback.
         virtual void Stop() = 0;
 
