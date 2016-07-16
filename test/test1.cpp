@@ -22,6 +22,18 @@ int main()
 
             std::cout << "Audio System: " << audioSystem->GetName() << "; Version: " << audioSystem->GetVersion() << std::endl;
 
+            // Play sound
+            auto sound = audioSystem->LoadSound("shutter.wav");
+
+            if (sound)
+            {
+                sound->Play();
+
+                while (sound->IsPlaying())
+                {
+                }
+            }
+
             //to be continued ...
         }
         catch (const std::exception& e)
