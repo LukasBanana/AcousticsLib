@@ -24,7 +24,7 @@ int main()
             std::cout << "Audio System: " << audioSystem->GetName() << "; Version: " << audioSystem->GetVersion() << std::endl;
 
             // Play sound
-            auto soundFile = "shutter.wav";
+            auto soundFile = "lighter.wav";
             auto sound = audioSystem->LoadSound(soundFile);
 
             if (sound)

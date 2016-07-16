@@ -23,20 +23,21 @@ ALSound::~ALSound()
 void ALSound::Play()
 {
     #if 0
-    alSourcef(sourceObj_.Get(), AL_PITCH, 0.25f);
+    //alSourcef(sourceObj_.Get(), AL_PITCH, 0.25f);
     alSourcef(sourceObj_.Get(), AL_GAIN, 1.0f);
     alSource3f(sourceObj_.Get(), AL_POSITION, 0.0f, 0.0f, 0.0f);
     alSource3f(sourceObj_.Get(), AL_VELOCITY, 0.0f, 0.0f, 0.0f);
-    alSourcei(sourceObj_.Get(), AL_SOURCE_RELATIVE, AL_TRUE);
-    alSourcef(sourceObj_.Get(), AL_ROLLOFF_FACTOR, 0.5f);
+    alSourcei(sourceObj_.Get(), AL_SOURCE_RELATIVE, AL_FALSE);
+    alSourcef(sourceObj_.Get(), AL_ROLLOFF_FACTOR, 0.0f);
 
-    float nullOrientation[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
+    float nullOrientation[] = { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
 
-    alListener3f(AL_POSITION, 0, 0, 1.0f);
-    alListener3f(AL_VELOCITY, 0, 0, 0);
+    alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
+    alListener3f(AL_VELOCITY, 0.0f, 0.0f, 0.0f);
     alListenerfv(AL_ORIENTATION, nullOrientation);
     #endif
 
+    //alSourceRewind(sourceObj_.Get());
     alSourcePlay(sourceObj_.Get());
 }
 
