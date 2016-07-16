@@ -27,7 +27,7 @@ int main()
 
             if (sound)
             {
-                sound->SetFrequencyRatio(0.25f);
+                sound->SetPitch(0.25f);
                 sound->Play();
 
                 while (sound->IsPlaying())

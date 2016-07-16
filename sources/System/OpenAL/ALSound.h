@@ -38,8 +38,8 @@ class ALSound : public Sound
         void SetBalance(float balance) override;
         float GetBalance() const override;
 
-        void SetFrequencyRatio(float ratio) override;
-        float GetFrequencyRatio() const override;
+        void SetPitch(float pitch) override;
+        float GetPitch() const override;
 
         bool IsPlaying() const override;
         bool IsPaused() const override;

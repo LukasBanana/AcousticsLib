@@ -72,16 +72,16 @@ float ALSound::GetBalance() const
     return 0.0f;
 }
 
-void ALSound::SetFrequencyRatio(float ratio)
+void ALSound::SetPitch(float pitch)
 {
-    alSourcef(sourceObj_.Get(), AL_PITCH, ratio);
+    alSourcef(sourceObj_.Get(), AL_PITCH, pitch);
 }
 
-float ALSound::GetFrequencyRatio() const
+float ALSound::GetPitch() const
 {
-    float ratio = 0.0f;
-    alGetSourcef(sourceObj_.Get(), AL_PITCH, &ratio);
-    return ratio;
+    float pitch = 0.0f;
+    alGetSourcef(sourceObj_.Get(), AL_PITCH, &pitch);
+    return pitch;
 }
 
 bool ALSound::IsPlaying() const
