@@ -45,6 +45,11 @@ std::string ALAudioSystem::GetVersion() const
     return s;
 }
 
+std::unique_ptr<Sound> ALAudioSystem::LoadSound(const std::string& filename)
+{
+    return nullptr; //todo...
+}
+
 
 /*
  * ======= Private: =======

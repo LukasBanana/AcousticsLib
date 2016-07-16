@@ -23,6 +23,8 @@ class XA2AudioSystem : public AudioSystem
 
         std::string GetVersion() const override;
 
+        std::unique_ptr<Sound> LoadSound(const std::string& filename) override;
+
 };
 
 

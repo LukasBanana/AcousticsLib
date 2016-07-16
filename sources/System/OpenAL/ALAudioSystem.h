@@ -9,14 +9,9 @@
 #define __AC_AL_AUDIO_SYSTEM_H__
 
 
+#include "OpenAL.h"
+
 #include <Ac/AudioSystem.h>
-#ifdef __APPLE__
-#   include <OpenAL/al.h>
-#   include <OpenAL/alc.h>
-#else
-#   include <AL/al.h>
-#   include <AL/alc.h>
-#endif
 
 
 namespace Ac
@@ -32,6 +27,8 @@ class ALAudioSystem : public AudioSystem
         ~ALAudioSystem();
 
         std::string GetVersion() const override;
+
+        std::unique_ptr<Sound> LoadSound(const std::string& filename) override;
 
     private:
 

@@ -10,6 +10,7 @@
 
 
 #include "Export.h"
+#include "Sound.h"
 
 #include <string>
 #include <memory>
@@ -19,6 +20,7 @@ namespace Ac
 {
 
 
+//! Audio system interface.
 class AC_EXPORT AudioSystem
 {
 
@@ -57,7 +59,8 @@ class AC_EXPORT AudioSystem
         //! Returns a descriptive version string of this audio system (e.g. "OpenAL 1.1").
         virtual std::string GetVersion() const = 0;
 
-        //virtual std::unique_ptr<Sound> LoadSound();
+        //! Loads the specified sound from file.
+        virtual std::unique_ptr<Sound> LoadSound(const std::string& filename) = 0;
 
     protected:
 

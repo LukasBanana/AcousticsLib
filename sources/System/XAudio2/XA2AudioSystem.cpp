@@ -17,6 +17,10 @@ std::string XA2AudioSystem::GetVersion() const
     return "XAudio2";
 }
 
+std::unique_ptr<Sound> XA2AudioSystem::LoadSound(const std::string& filename)
+{
+    return nullptr; // todo...
+}
 
 
 } // /namespace Ac
