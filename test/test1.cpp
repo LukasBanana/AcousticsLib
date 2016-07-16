@@ -9,11 +9,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <thread>
 
 
 int main()
 {
-    for (auto module : std::vector<std::string> { "XAudio2", "OpenAL" })
+    for (auto module : std::vector<std::string> { /*"XAudio2", */"OpenAL" })
     {
         try
         {
@@ -23,7 +24,7 @@ int main()
             std::cout << "Audio System: " << audioSystem->GetName() << "; Version: " << audioSystem->GetVersion() << std::endl;
 
             // Play sound
-            auto soundFile = "lighter.wav";
+            auto soundFile = "shutter.wav";
             auto sound = audioSystem->LoadSound(soundFile);
 
             if (sound)
@@ -33,6 +34,7 @@ int main()
 
                 while (sound->IsPlaying())
                 {
+                    //std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
             }
             else

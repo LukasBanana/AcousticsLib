@@ -33,6 +33,8 @@ class ALAudioSystem : public AudioSystem
 
     private:
 
+        std::vector<std::string> ListDevices() const;
+
         ALCdevice* OpenDevice();
         ALCcontext* CreateContext();
 

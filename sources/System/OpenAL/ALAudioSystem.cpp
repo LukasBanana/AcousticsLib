@@ -66,6 +66,25 @@ std::unique_ptr<Sound> ALAudioSystem::LoadSound(const std::string& filename)
  * ======= Private: =======
  */
 
+std::vector<std::string> ALAudioSystem::ListDevices() const
+{
+    std::vector<std::string> deviceNames;
+
+    auto device = alcGetString(NULL, ALC_DEVICE_SPECIFIER);
+    auto next   = device + 1;
+
+    while (device && *device != '\0' && next && *next != '\0')
+    {
+        deviceNames.push_back(device);
+
+        auto len = strlen(device);
+        device += (len + 1);
+        next += (len + 2);
+    }
+
+    return deviceNames;
+}
+
 ALCdevice* ALAudioSystem::OpenDevice()
 {
     auto device = alcOpenDevice(nullptr);
