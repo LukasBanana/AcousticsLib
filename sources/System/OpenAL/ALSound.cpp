@@ -22,8 +22,8 @@ ALSound::~ALSound()
 
 void ALSound::Play()
 {
-    #if 1
-    alSourcef(sourceObj_.Get(), AL_PITCH, 1.0f);
+    #if 0
+    alSourcef(sourceObj_.Get(), AL_PITCH, 0.25f);
     alSourcef(sourceObj_.Get(), AL_GAIN, 1.0f);
     alSource3f(sourceObj_.Get(), AL_POSITION, 0.0f, 0.0f, 0.0f);
     alSource3f(sourceObj_.Get(), AL_VELOCITY, 0.0f, 0.0f, 0.0f);
