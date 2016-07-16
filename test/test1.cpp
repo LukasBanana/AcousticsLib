@@ -23,7 +23,8 @@ int main()
             std::cout << "Audio System: " << audioSystem->GetName() << "; Version: " << audioSystem->GetVersion() << std::endl;
 
             // Play sound
-            auto sound = audioSystem->LoadSound("lighter.wav");
+            auto soundFile = "lighter.wav";
+            auto sound = audioSystem->LoadSound(soundFile);
 
             if (sound)
             {
@@ -34,6 +35,8 @@ int main()
                 {
                 }
             }
+            else
+                std::cerr << "failed to load sound: \"" << soundFile << '\"' << std::endl;
 
             //to be continued ...
         }
