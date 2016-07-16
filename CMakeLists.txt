@@ -31,7 +31,10 @@ if(WIN32)
 		# Disable some warnings for MSVC compiler
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4250 /wd4251 /wd4290 /wd4103")
 	endif(MSVC)
-endif(WIN32)
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /DAC_DEBUG")
+else()
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DAC_DEBUG")
+endif()
 
 
 # === Global files ===

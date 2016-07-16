@@ -14,7 +14,7 @@ namespace Ac
 
 std::unique_ptr<Module> Module::Load(std::string moduleName)
 {
-    #ifdef _DEBUG
+    #ifdef AC_DEBUG
     moduleName += "D";
     #endif
     return std::unique_ptr<Module>(new Win32Module(moduleName));

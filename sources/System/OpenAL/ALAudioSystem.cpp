@@ -7,8 +7,6 @@
 
 #include "ALAudioSystem.h"
 
-#include <iostream>//!!!
-
 
 namespace Ac
 {
