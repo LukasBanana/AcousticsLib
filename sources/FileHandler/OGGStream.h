@@ -29,12 +29,16 @@ class AC_EXPORT OGGStream : public AudioStream
 
         void Seek(double timePoint) override;
 
+        double TotalTime() const override;
+
     private:
 
         std::istream&   stream_;
 
-        vorbis_info*    info_ = nullptr;
+        vorbis_info*    info_       = nullptr;
         OggVorbis_File  file_;
+
+        double          totalTime_  = 0.0;
 
 };
 

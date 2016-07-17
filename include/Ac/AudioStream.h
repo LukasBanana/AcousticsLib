@@ -43,6 +43,9 @@ class AC_EXPORT AudioStream
         */
         virtual void Seek(double timePoint) = 0;
 
+        //! Returns the total time of the stream (in seconds).
+        virtual double TotalTime() const = 0;
+
 };
 
 

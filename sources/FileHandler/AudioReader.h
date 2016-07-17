@@ -34,7 +34,7 @@ class AC_EXPORT AudioReader
         \param[out] buffer Specifies the output wave buffer.
         \throws std::runtime_exception If something went wrong while reading.
         */
-        virtual void ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer) = 0;
+        virtual void ReadWaveBuffer(std::istream& stream, WaveBuffer& waveBuffer) = 0;
 
 };
 
