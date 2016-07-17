@@ -136,7 +136,7 @@ class AC_EXPORT AudioSystem
 
         /**
         \brief Reads the audio data from the specified stream and stores it in the wave buffer.
-        \param[in,out] stream Specifies the input stream to read from.
+        \param[in,out] stream Specifies the input stream to read from. This stream must be opened in binary mode!
         \param[out] buffer Specifies the output wave buffer.
         \throws std::runtime_exception If something went wrong while reading.
         */
@@ -144,7 +144,7 @@ class AC_EXPORT AudioSystem
 
         /**
         \brief Opens a new audio stream.
-        \param[in,out] stream Specifies the input stream to read from.
+        \param[in,out] stream Specifies the input stream to read from. This stream must be opened in binary mode!
         \return New AudioStream object or null if 'format' is invalid.
         \throws std::runtime_exception If something went wrong while opening the stream.
         */

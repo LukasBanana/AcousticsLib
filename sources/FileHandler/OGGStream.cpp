@@ -55,7 +55,7 @@ static size_t OggRead(void* ptr, size_t size, size_t nmemb, void* datasource)
     auto file = OGG_DATASOURCE(datasource);
     if (file)
     {
-        file->read(reinterpret_cast<char*>(ptr), size*nmemb);
+        file->read(reinterpret_cast<char*>(ptr), static_cast<std::streamsize>(size*nmemb));
         return static_cast<size_t>(file->gcount());
     }
     return 0;
@@ -111,7 +111,7 @@ OGGStream::OGGStream(std::istream& stream) :
     callbacks.tell_func     = OggTell;
 
     /* Open Ogg-Vorbis stream */
-    auto result = ov_open_callbacks(reinterpret_cast<void*>(&stream), &file_, nullptr, 0, callbacks);
+    auto result = ov_open_callbacks(reinterpret_cast<void*>(&stream_), &file_, nullptr, 0, callbacks);
     if (result != 0)
         throw std::runtime_error(OggError(result));
 
