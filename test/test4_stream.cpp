@@ -19,19 +19,24 @@ int main()
 
         // Open OggVorbis stream
         std::ifstream file("gong.ogg");
-        auto stream = audioSystem->OpenAudioStream(Ac::AudioStreamFormats::OGG, file);
-
-        if (stream)
+        if (file.good())
         {
-            std::cout << "Total Stream Time: " << stream->TotalTime() << "s" << std::endl;
+            auto stream = audioSystem->OpenAudioStream(Ac::AudioStreamFormats::OGG, file);
 
-            //while ( ( auto p =  )  )
+            if (stream)
             {
+                std::cout << "Total Stream Time: " << stream->TotalTime() << "s" << std::endl;
 
+                //while ( ( auto p =  )  )
+                {
+
+                }
             }
-        }
         
-        std::cout << "finished" << std::endl;
+            std::cout << "finished" << std::endl;
+        }
+        else
+            std::cerr << "failed to read Ogg Vorbis file" << std::endl;
     }
     catch (const std::exception& e)
     {

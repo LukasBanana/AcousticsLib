@@ -116,9 +116,9 @@ OGGStream::OGGStream(std::istream& stream) :
         throw std::runtime_error(OggError(result));
 
     /* Extract file information */
-    info_ = ov_info(&file_, -1);
+    /*info_ = ov_info(&file_, -1);
     if (!info_)
-        throw std::runtime_error("failed to retrieve information from ogg vorbis stream");
+        throw std::runtime_error("failed to retrieve information from ogg vorbis stream");*/
     
     /* Extract file comments */
     /*auto comment = ov_comment(&file_, -1);
