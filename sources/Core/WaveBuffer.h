@@ -9,6 +9,7 @@
 #define __AC_WAVE_BUFFER_H__
 
 
+#include <Ac/Export.h>
 #include "WaveFormat.h"
 
 #include <vector>
@@ -24,7 +25,7 @@ namespace Ac
 using PCMBuffer = std::vector<char>;
 
 //! Data model structure for an audio wave buffer.
-struct WaveBuffer
+struct AC_EXPORT WaveBuffer
 {
     //! Reverses the raw buffer.
     void Reverse();
