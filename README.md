@@ -16,16 +16,16 @@ Status
 Platform Support
 ----------------
 
-* Windows Vista/ 7/ 8/ 10
-* Mac OS X
-* Linux
+* **Windows Vista/ 7/ 8/ 10**
+* **Mac OS X**
+* **Linux**
 
 
 Audio Engines
 -------------
 
-* OpenAL (in progress)
-* XAudio2 (planed, but not started yet)
+* **OpenAL** *(in progress)*
+* **XAudio2** *(planed, but not started yet)*
 * more coming ...
 
 
