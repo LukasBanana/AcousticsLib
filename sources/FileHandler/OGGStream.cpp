@@ -28,6 +28,10 @@ std::size_t OGGStream::StreamWaveBuffer(WaveBuffer& buffer)
     return 0;
 }
 
+void OGGStream::Seek(double timePoint)
+{
+}
+
 
 } // /namespace Ac
 

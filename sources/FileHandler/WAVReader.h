@@ -9,22 +9,19 @@
 #define __AC_WAV_READER_H__
 
 
-#include <Ac/WaveBuffer.h>
-#include <Ac/Export.h>
-#include <string>
-#include <istream>
+#include <Ac/AudioReader.h>
 
 
 namespace Ac
 {
 
 
-class AC_EXPORT WAVReader
+class AC_EXPORT WAVReader : public AudioReader
 {
 
     public:
 
-        void ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer);
+        void ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer) override;
 
 };
 

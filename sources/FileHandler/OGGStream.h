@@ -9,10 +9,7 @@
 #define __AC_OGG_STREAM_H__
 
 
-#include <Ac/WaveBuffer.h>
-#include <Ac/Export.h>
-#include <string>
-#include <istream>
+#include <Ac/AudioStream.h>
 #include <vorbis/vorbisfile.h>
 
 
@@ -20,7 +17,7 @@ namespace Ac
 {
 
 
-class AC_EXPORT OGGStream
+class AC_EXPORT OGGStream : public AudioStream
 {
 
     public:
@@ -28,7 +25,9 @@ class AC_EXPORT OGGStream
         OGGStream(std::istream& stream);
         ~OGGStream();
 
-        std::size_t StreamWaveBuffer(WaveBuffer& buffer);
+        std::size_t StreamWaveBuffer(WaveBuffer& buffer) override;
+
+        void Seek(double timePoint) override;
 
     private:
 
