@@ -27,7 +27,7 @@ class ALBufferObj
         ALBufferObj();
         ~ALBufferObj();
 
-        void BufferData(ALenum format, const ALvoid* buffer, ALsizei size, ALsizei frequency);
+        void BufferData(ALenum format, const ALvoid* buffer, ALsizei size, ALsizei sampleRate);
         void BufferData(const WaveBuffer& waveBuffer);
 
         //! Returns the handle of this buffer object.
@@ -36,9 +36,17 @@ class ALBufferObj
             return handle_;
         }
 
+        //! Returns the total time (in seconds) of the buffer.
+        inline double GetTotalTime() const
+        {
+            return totalTime_;
+        }
+
     private:
 
-        ALuint handle_ = 0;
+        ALuint handle_      = 0;
+
+        double totalTime_   = 0.0;
 
 };
 

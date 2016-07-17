@@ -50,9 +50,38 @@ ALBufferObj::~ALBufferObj()
         alDeleteBuffers(1, &handle_);
 }
 
-void ALBufferObj::BufferData(ALenum format, const ALvoid* buffer, ALsizei size, ALsizei frequency)
+void ALBufferObj::BufferData(ALenum format, const ALvoid* buffer, ALsizei size, ALsizei sampleRate)
 {
-    alBufferData(handle_, format, buffer, size, frequency);
+    /* Fill buffer data */
+    alBufferData(handle_, format, buffer, size, sampleRate);
+
+    /* Compute total buffer time in seconds */
+    std::size_t channels = 0, bitsPerSample = 0;
+    
+    switch (format)
+    {
+        case AL_FORMAT_MONO8:
+            channels = 1;
+            bitsPerSample = 8;
+            break;
+        case AL_FORMAT_MONO16:
+            channels = 1;
+            bitsPerSample = 16;
+            break;
+        case AL_FORMAT_STEREO8:
+            channels = 2;
+            bitsPerSample = 8;
+            break;
+        case AL_FORMAT_STEREO16:
+            channels = 2;
+            bitsPerSample = 16;
+            break;
+    }
+    
+    auto blockAlign     = (channels * bitsPerSample) / 8;
+    auto bytesPerSecond = sampleRate * blockAlign;
+    
+    totalTime_ = static_cast<double>(size) / bytesPerSecond;
 }
 
 void ALBufferObj::BufferData(const WaveBuffer& waveBuffer)

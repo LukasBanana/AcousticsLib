@@ -59,9 +59,9 @@ class AC_EXPORT Sound
         //! Returns true if the sound is currently being played but is pause mode.
         virtual bool IsPaused() const = 0;
 
-        //! Seels the current playback position in the range [0, 1].
+        //! Seels the current playback position (in seconds) in the range [0, +inf).
         virtual void SetSeek(double position) = 0;
-        //! Returns the current playback position.
+        //! Returns the current playback position (in seconds).
         virtual double GetSeek() const = 0;
 
         //! Returns the total time (in seconds) this sound takes to be played.

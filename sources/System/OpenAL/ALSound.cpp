@@ -97,19 +97,19 @@ bool ALSound::IsPaused() const
 
 void ALSound::SetSeek(double position)
 {
-    //todo...
+    alSourcef(sourceObj_.Get(), AL_SEC_OFFSET, static_cast<float>(position));
 }
 
 double ALSound::GetSeek() const
 {
-    //todo...
-    return 0.0;
+    float position = 0.0f;
+    alGetSourcef(sourceObj_.Get(), AL_SEC_OFFSET, &position);
+    return static_cast<double>(position);
 }
 
 double ALSound::TotalTime() const
 {
-    //todo...
-    return 0.0;
+    return (bufferObj_ ? bufferObj_->GetTotalTime() : 0.0);
 }
 
 void ALSound::AttachBuffer(const std::shared_ptr<ALBufferObj>& bufferObj)

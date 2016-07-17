@@ -23,6 +23,7 @@ int main()
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(25));
             s.SetVolume(s.GetVolume() - 0.01f);
+            std::cout << "Playing: " << s.GetSeek() << " / " << s.TotalTime() << std::endl;
             return s.GetVolume() > 0.05f;
         }
     );
