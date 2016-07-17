@@ -20,7 +20,7 @@ int main()
     auto sound = audioSystem->LoadSound3D("shutter.wav");
     if (sound)
     {
-        Gs::Vector3f pos(10, 0, 3), prevPos, deltaPos;
+        Gs::Vector3f pos(10, 0, 1), prevPos, deltaPos;
         sound->SetPosition(pos);
 
         sound->Play();
@@ -28,7 +28,7 @@ int main()
         while (sound->IsPlaying())
         {
             // Move sound through the scene
-            pos.x -= 0.1f;
+            pos.x -= 0.2f;
             deltaPos = pos - prevPos;
             prevPos = pos;
 
