@@ -31,14 +31,17 @@ class AC_EXPORT OGGStream : public AudioStream
 
         double TotalTime() const override;
 
+        std::vector<std::string> InfoComments() const override;
+
     private:
 
-        std::istream&   stream_;
+        std::istream&               stream_;
 
-        vorbis_info*    info_       = nullptr;
-        OggVorbis_File  file_;
+        vorbis_info*                info_       = nullptr;
+        OggVorbis_File              file_;
 
-        double          totalTime_  = 0.0;
+        double                      totalTime_  = 0.0;
+        std::vector<std::string>    comments_;
 
 };
 

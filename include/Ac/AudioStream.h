@@ -12,6 +12,8 @@
 #include <Ac/WaveBuffer.h>
 #include <Ac/Export.h>
 #include <istream>
+#include <vector>
+#include <string>
 
 
 namespace Ac
@@ -31,7 +33,7 @@ class AC_EXPORT AudioStream
         /**
         \brief Reads the audio data from the active stream and stores it in the wave buffer.
         \param[out] buffer Specifies the output wave buffer.
-        \return Reading position of the current input stream.
+        \return Number of bytes read from the input stream. If this is zero, the end of the stream has been reached.
         \throws std::runtime_exception If something went wrong while reading.
         */
         virtual std::size_t StreamWaveBuffer(WaveBuffer& buffer) = 0;
@@ -45,6 +47,9 @@ class AC_EXPORT AudioStream
 
         //! Returns the total time of the stream (in seconds).
         virtual double TotalTime() const = 0;
+
+        //! Returns an optional list of strings, containing informational commentaries such as "ARTIST=John Doe".
+        virtual std::vector<std::string> InfoComments() const = 0;
 
 };
 

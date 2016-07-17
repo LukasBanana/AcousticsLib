@@ -9,6 +9,8 @@
 
 #include "OGGStream.h"
 
+#include <Ac/WaveFormatTags.h>
+
 
 namespace Ac
 {
@@ -85,9 +87,6 @@ static int OggSeek(void* datasource, ogg_int64_t offset, int whence)
 
 static int OggClose(void* datasource)
 {
-    /*auto file = OGG_DATASOURCE(datasource);
-    file->close();
-    return file->fail() ? 1 : 0;*/
     return 0;
 }
 
@@ -116,17 +115,17 @@ OGGStream::OGGStream(std::istream& stream) :
         throw std::runtime_error(OggError(result));
 
     /* Extract file information */
-    /*info_ = ov_info(&file_, -1);
+    info_ = ov_info(&file_, -1);
     if (!info_)
-        throw std::runtime_error("failed to retrieve information from ogg vorbis stream");*/
+        throw std::runtime_error("failed to retrieve information from ogg vorbis stream");
     
     /* Extract file comments */
-    /*auto comment = ov_comment(&file_, -1);
+    auto comment = ov_comment(&file_, -1);
     if (comment)
     {
         for (int i = 0; i < comment->comments; ++i)
-            comments.push_back(comment->user_comments[i]);
-    }*/
+            comments_.push_back(comment->user_comments[i]);
+    }
 
     /* Extract stream total time (in seconds) */
     totalTime_ = ov_time_total(&file_, -1);
@@ -139,18 +138,29 @@ OGGStream::~OGGStream()
 
 std::size_t OGGStream::StreamWaveBuffer(WaveBuffer& buffer)
 {
+    auto& waveFormat = buffer.format;
     auto& pcmData = buffer.buffer;
-    std::size_t pos = 0;
+
+    /* Setup buffer format */
+    waveFormat.formatTag        = WaveFormatTags::PCM;
+    waveFormat.channels         = static_cast<std::uint16_t>(info_->channels);
+    waveFormat.sampleRate       = static_cast<std::uint32_t>(info_->rate);
+    waveFormat.bitsPerSample    = 16;
+    waveFormat.blockAlign       = (waveFormat.channels * waveFormat.bitsPerSample) / 8;
+    waveFormat.bytesPerSecond   = waveFormat.sampleRate * waveFormat.blockAlign;
+
+    /* Read next data chunk */
+    std::size_t bytes = 0;
     std::size_t size = pcmData.size();
 
     int bitStream = 0;
 
-    while (pos < size)
+    while (bytes < size)
     {
         /* Read next ogg vorbis chunk */
         auto result = ov_read(
             &file_,             // Ogg vorbis stream handle
-            &(pcmData[pos]),    // Byte aligned buffer
+            &(pcmData[bytes]),  // Byte aligned buffer
             size,               // Buffer size
             0,                  // Little endian
             2,                  // 2 byte (16 bit) samples
@@ -159,17 +169,19 @@ std::size_t OGGStream::StreamWaveBuffer(WaveBuffer& buffer)
         );
 
         /* Copy array into output buffer */
-        if (result > 0)
+        if (result == 0)
+            break;
+        else if (result > 0)
         {
             auto chunkSize = static_cast<std::size_t>(result);
-            pos += chunkSize;
+            bytes += chunkSize;
             size -= chunkSize;
         }
         else
-            break;
+            throw std::runtime_error(OggError(result));
     }
 
-    return pos;
+    return bytes;
 }
 
 void OGGStream::Seek(double timePoint)
@@ -182,6 +194,11 @@ void OGGStream::Seek(double timePoint)
 double OGGStream::TotalTime() const
 {
     return totalTime_;
+}
+
+std::vector<std::string> OGGStream::InfoComments() const
+{
+    return comments_;
 }
 
 

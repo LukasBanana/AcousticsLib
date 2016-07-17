@@ -26,10 +26,18 @@ int main()
             if (stream)
             {
                 std::cout << "total stream time: " << stream->TotalTime() << "s" << std::endl;
+                std::cout << "info comments:" << std::endl;
+                for (const auto& s : stream->InfoComments())
+                    std::cout << "  " << s << std::endl;
 
-                //while ( ( auto p =  )  )
+                std::cout << "streaming:" << std::endl;
+
+                Ac::WaveBuffer buffer;
+                buffer.buffer.resize(16*2*10000);
+
+                while (auto bytes = stream->StreamWaveBuffer(buffer))
                 {
-
+                    std::cout << "  " << bytes << " bytes read" << std::endl;
                 }
             }
         
