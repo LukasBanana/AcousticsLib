@@ -81,6 +81,12 @@ std::shared_ptr<AudioSystem> AudioSystem::Load(const std::string& moduleName)
     return audioSystem;
 }
 
+std::shared_ptr<AudioSystem> AudioSystem::Load()
+{
+    auto modules = FindModules();
+    return (modules.empty() ? nullptr : Load(modules.front()));
+}
+
 
 } // /namespace Ac
 

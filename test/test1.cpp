@@ -14,6 +14,17 @@
 
 int main()
 {
+    #if 1
+    
+    auto audioSystem = Ac::AudioSystem::Load();
+    if (auto sound = audioSystem->LoadSound("shutter.wav"))
+    {
+        sound->Play();
+        while (sound->IsPlaying()) { /* wait */ }
+    }
+    
+    #else
+    
     for (auto module : Ac::AudioSystem::FindModules())
     {
         try
@@ -50,6 +61,8 @@ int main()
             std::cerr << e.what() << std::endl;
         }
     }
+    
+    #endif
 
     #ifdef _WIN32
     system("pause");

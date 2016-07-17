@@ -57,6 +57,9 @@ class AC_EXPORT AudioSystem
         */
         static std::shared_ptr<AudioSystem> Load(const std::string& moduleName);
 
+        //! Returns the first available audio system.
+        static std::shared_ptr<AudioSystem> Load();
+
         //! Returns the name of this audio system.
         inline const std::string& GetName() const
         {

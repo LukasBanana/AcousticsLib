@@ -32,6 +32,23 @@ Audio Engines
 Getting Started
 ---------------
 
+Play a sound with less code as possible:
+
+```cpp
+#include <Ac/AcLib.h>
+
+int main()
+{
+	auto audioSystem = Ac::AudioSystem::Load(); // Load default audio system module
+	auto sound = audioSystem->Load("mySound.wav"); // Load sound
+	auto sound->Play(); // Play sound
+	while (sound->IsPlaying()) { /* wait while sound is playing */ }
+	return 0;
+}
+```
+
+Play a sound by choosing a module:
+
 ```cpp
 #include <Ac/AcLib.h>
 #include <iostream>
