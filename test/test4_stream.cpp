@@ -25,7 +25,7 @@ int main()
 
             if (stream)
             {
-                std::cout << "Total Stream Time: " << stream->TotalTime() << "s" << std::endl;
+                std::cout << "total stream time: " << stream->TotalTime() << "s" << std::endl;
 
                 //while ( ( auto p =  )  )
                 {
