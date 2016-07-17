@@ -25,11 +25,13 @@ int main()
         {
             std::cout << "Total Stream Time: " << stream->TotalTime() << "s" << std::endl;
 
-            //for ()
+            //while ( ( auto p =  )  )
             {
 
             }
         }
+        
+        std::cout << "finished" << std::endl;
     }
     catch (const std::exception& e)
     {
