@@ -42,8 +42,12 @@ int main()
 	// Load default audio system module
 	auto audioSystem = Ac::AudioSystem::Load();
 	
-	// Play sound with 100% volume and wait until the end
-	audioSystem->PlaySound("mySound.wav", 1.0f, 0, [](Ac::Sound&) { return true; });
+	// Play sound with 100% volume
+	audioSystem->PlaySound("mySound.wav");
+	
+	// Wait for user input
+	int i = 0;
+	std::cin >> i;
 	
 	return 0;
 }
