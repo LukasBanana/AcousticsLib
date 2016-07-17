@@ -53,26 +53,34 @@ static std::string OggError(int err)
 static size_t OggRead(void* ptr, size_t size, size_t nmemb, void* datasource)
 {
     auto file = OGG_DATASOURCE(datasource);
-    file->read(reinterpret_cast<char*>(ptr), size*nmemb);
-    return static_cast<size_t>(file->gcount());
+    if (file)
+    {
+        file->read(reinterpret_cast<char*>(ptr), size*nmemb);
+        return static_cast<size_t>(file->gcount());
+    }
+    return 0;
 }
 
 static int OggSeek(void* datasource, ogg_int64_t offset, int whence)
 {
     auto file = OGG_DATASOURCE(datasource);
-    switch (whence)
+    if (file)
     {
-        case SEEK_SET:
-            file->seekg(offset, std::ios_base::beg);
-            break;
-        case SEEK_CUR:
-            file->seekg(offset, std::ios_base::cur);
-            break;
-        case SEEK_END:
-            file->seekg(offset, std::ios_base::end);
-            break;
+        switch (whence)
+        {
+            case SEEK_SET:
+                file->seekg(offset, std::ios_base::beg);
+                break;
+            case SEEK_CUR:
+                file->seekg(offset, std::ios_base::cur);
+                break;
+            case SEEK_END:
+                file->seekg(offset, std::ios_base::end);
+                break;
+        }
+        return (file->fail() ? 1 : 0);
     }
-    return file->fail() ? 1 : 0;
+    return 1;
 }
 
 static int OggClose(void* datasource)
@@ -86,7 +94,7 @@ static int OggClose(void* datasource)
 static long OggTell(void* datasource)
 {
     auto file = OGG_DATASOURCE(datasource);
-    return static_cast<long>(file->tellg());
+    return (file ? static_cast<long>(file->tellg()) : 0);
 }
 
 #undef OGG_DATASOURCE
@@ -103,7 +111,7 @@ OGGStream::OGGStream(std::istream& stream) :
     callbacks.tell_func     = OggTell;
 
     /* Open Ogg-Vorbis stream */
-    auto result = ov_open_callbacks(&file_, &file_, nullptr, 0, callbacks);
+    auto result = ov_open_callbacks(reinterpret_cast<void*>(&stream), &file_, nullptr, 0, callbacks);
     if (result != 0)
         throw std::runtime_error(OggError(result));
 

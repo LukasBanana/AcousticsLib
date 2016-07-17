@@ -23,9 +23,12 @@ int main()
 
         if (stream)
         {
+            std::cout << "Total Stream Time: " << stream->TotalTime() << "s" << std::endl;
 
+            //for ()
+            {
 
-
+            }
         }
     }
     catch (const std::exception& e)
