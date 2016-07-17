@@ -25,7 +25,7 @@ Audio Engines
 -------------
 
 * **OpenAL** *(in progress)*
-* **XAudio2** *(planed, but not started yet)*
+* **XAudio2** *(planned, but not started yet)*
 * more coming ...
 
 
