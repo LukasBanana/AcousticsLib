@@ -39,8 +39,11 @@ struct AC_EXPORT WaveBuffer
     //! Returns the number of samples (independently of the number of channels).
     std::size_t NumSamples() const;
 
-    //! Returns the total time (in seconds) which is required to play the entire wave buffer.
+    //! Returns the total time (in seconds) which is required to play this entire wave buffer.
     double TotalTime() const;
+
+    //! Returns the total time (in seconds) which is required to play an entire wave buffer with the specified configuration.
+    static double TotalTime(std::size_t bufferSize, std::size_t sampleRate, std::size_t channels, std::size_t bitsPerSample);
 
     WaveFormat  format; //!< Wave buffer format.
     PCMBuffer   buffer; //!< Wave PCM (Pulse Modulation Code) buffer.

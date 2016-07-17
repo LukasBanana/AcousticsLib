@@ -6,6 +6,7 @@
  */
 
 #include "ALBufferObj.h"
+#include "../../Core/WaveBuffer.h"
 
 
 namespace Ac
@@ -61,27 +62,24 @@ void ALBufferObj::BufferData(ALenum format, const ALvoid* buffer, ALsizei size, 
     switch (format)
     {
         case AL_FORMAT_MONO8:
-            channels = 1;
-            bitsPerSample = 8;
+            channels        = 1;
+            bitsPerSample   = 8;
             break;
         case AL_FORMAT_MONO16:
-            channels = 1;
-            bitsPerSample = 16;
+            channels        = 1;
+            bitsPerSample   = 16;
             break;
         case AL_FORMAT_STEREO8:
-            channels = 2;
-            bitsPerSample = 8;
+            channels        = 2;
+            bitsPerSample   = 8;
             break;
         case AL_FORMAT_STEREO16:
-            channels = 2;
-            bitsPerSample = 16;
+            channels        = 2;
+            bitsPerSample   = 16;
             break;
     }
     
-    auto blockAlign     = (channels * bitsPerSample) / 8;
-    auto bytesPerSecond = sampleRate * blockAlign;
-    
-    totalTime_ = static_cast<double>(size) / bytesPerSecond;
+    totalTime_ = WaveBuffer::TotalTime(size, sampleRate, channels, bitsPerSample);
 }
 
 void ALBufferObj::BufferData(const WaveBuffer& waveBuffer)

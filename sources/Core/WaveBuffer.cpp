@@ -150,6 +150,13 @@ double WaveBuffer::TotalTime() const
     return 0.0;
 }
 
+double WaveBuffer::TotalTime(std::size_t bufferSize, std::size_t sampleRate, std::size_t channels, std::size_t bitsPerSample)
+{
+    auto blockAlign     = (channels * bitsPerSample) / 8;
+    auto bytesPerSecond = sampleRate * blockAlign;
+    return (bytesPerSecond> 0 ? static_cast<double>(bufferSize) / bytesPerSecond : 0.0);
+}
+
 
 } // /namespace Ac
 
