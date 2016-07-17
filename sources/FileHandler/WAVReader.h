@@ -9,7 +9,7 @@
 #define __AC_WAV_READER_H__
 
 
-#include <Ac/AudioReader.h>
+#include "AudioReader.h"
 
 
 namespace Ac

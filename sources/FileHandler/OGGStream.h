@@ -31,7 +31,10 @@ class AC_EXPORT OGGStream : public AudioStream
 
     private:
 
-        std::istream& stream_;
+        std::istream&   stream_;
+
+        vorbis_info*    info_ = nullptr;
+        OggVorbis_File  file_;
 
 };
 

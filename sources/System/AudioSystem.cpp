@@ -5,14 +5,19 @@
  * See "LICENSE.txt" for license information.
  */
 
-#include <Ac/AudioSystem.h>
 #include "../Platform/Module.h"
+#include "../FileHandler/WAVReader.h"
+#include "../FileHandler/OGGStream.h"
+
+#include <Ac/AudioSystem.h>
 #include <array>
 
 
 namespace Ac
 {
 
+
+/* ----- Audio system ----- */
 
 static std::weak_ptr<AudioSystem>   g_audioSystemRef;
 static std::unique_ptr<Module>      g_audioSystemModule;
@@ -87,6 +92,8 @@ std::shared_ptr<AudioSystem> AudioSystem::Load()
     return (modules.empty() ? nullptr : Load(modules.front()));
 }
 
+/* ----- Sounds ----- */
+
 void AudioSystem::PlaySound(const std::string& filename, float volume, std::size_t repetitions, const std::function<bool(Sound&)> waitCallback)
 {
     /* Load and play sounds */
@@ -109,6 +116,30 @@ void AudioSystem::PlaySound(const std::string& filename, float volume, std::size
     }
     else
         immediateSounds_.push_back(std::move(sound));
+}
+
+/* ----- Audio data access ------ */
+
+void AudioSystem::ReadAudioBuffer(const AudioFormats format, std::istream& inputStream, WaveBuffer& waveBuffer)
+{
+    switch (format)
+    {
+        case AudioFormats::WAV:
+            WAVReader reader;
+            reader.ReadWaveBuffer(inputStream, waveBuffer);
+            break;
+    }
+}
+
+std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(const AudioStreamFormats format, std::istream& stream)
+{
+    switch (format)
+    {
+        case AudioStreamFormats::OGG:
+            return std::unique_ptr<AudioStream>(new OGGStream(stream));
+            break;
+    }
+    return nullptr;
 }
 
 

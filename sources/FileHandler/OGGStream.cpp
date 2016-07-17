@@ -30,6 +30,8 @@ std::size_t OGGStream::StreamWaveBuffer(WaveBuffer& buffer)
 
 void OGGStream::Seek(double timePoint)
 {
+    //auto result = ov_time_seek(&file_, timePoint);
+
 }
 
 

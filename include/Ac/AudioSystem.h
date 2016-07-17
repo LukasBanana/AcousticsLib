@@ -12,6 +12,8 @@
 #include "Export.h"
 #include "Sound.h"
 #include "Sound3D.h"
+#include "AudioStream.h"
+#include "AudioFormats.h"
 
 #include <Gauss/Vector3.h>
 #include <string>
@@ -129,6 +131,24 @@ class AC_EXPORT AudioSystem
         
         //! Returns the listener world position.
         virtual ListenerOrientation GetListenerOrientation() const = 0;
+
+        /* ----- Audio data access ------ */
+
+        /**
+        \brief Reads the audio data from the specified stream and stores it in the wave buffer.
+        \param[in,out] stream Specifies the input stream to read from.
+        \param[out] buffer Specifies the output wave buffer.
+        \throws std::runtime_exception If something went wrong while reading.
+        */
+        void ReadAudioBuffer(const AudioFormats format, std::istream& inputStream, WaveBuffer& waveBuffer);
+
+        /**
+        \brief Opens a new audio stream.
+        \param[in,out] stream Specifies the input stream to read from.
+        \return New AudioStream object or null if 'format' is invalid.
+        \throws std::runtime_exception If something went wrong while opening the stream.
+        */
+        std::unique_ptr<AudioStream> OpenAudioStream(const AudioStreamFormats format, std::istream& stream);
 
     protected:
 
