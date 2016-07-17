@@ -9,8 +9,7 @@
 #define __AC_WAV_READER_H__
 
 
-#include "../Core/WaveBuffer.h"
-
+#include <Ac/WaveBuffer.h>
 #include <Ac/Export.h>
 #include <string>
 #include <istream>

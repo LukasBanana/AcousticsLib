@@ -15,22 +15,29 @@ set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
 # === Preprocessor definitions ===
 
-macro(add_define IDENT)
+macro(ADD_DEFINE IDENT)
 	if(MSVC)
-		add_definitions(/D${IDENT})
-	else(MSVC)
-		add_definitions(-D${IDENT})
-	endif(MSVC)
+		add_definitions("/D${IDENT}")
+	else()
+		add_definitions("-D${IDENT}")
+	endif()
+endmacro()
+
+macro(ADD_TEST_PROJECT TEST_NAME TEST_FILES)
+	add_executable(${TEST_NAME} ${TEST_FILES})
+	target_link_libraries(${TEST_NAME} AcLib)
+	set_target_properties(${TEST_NAME} PROPERTIES LINKER_LANGUAGE CXX DEBUG_POSTFIX "D")
+	target_compile_features(${TEST_NAME} PRIVATE cxx_range_for)
 endmacro()
 
 if(WIN32)
-	add_define(_CRT_SECURE_NO_WARNINGS)
-	add_define(_SCL_SECURE_NO_WARNINGS)
-	add_define(NOMINMAX)
+	ADD_DEFINE(_CRT_SECURE_NO_WARNINGS)
+	ADD_DEFINE(_SCL_SECURE_NO_WARNINGS)
+	ADD_DEFINE(NOMINMAX)
 	if(MSVC)
 		# Disable some warnings for MSVC compiler
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4250 /wd4251 /wd4290 /wd4103")
-	endif(MSVC)
+	endif()
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /DAC_DEBUG")
 else()
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DAC_DEBUG")
@@ -94,6 +101,7 @@ set(
 	${FilesPlatform}
 )
 
+# Main Project
 add_library(AcLib SHARED ${FilesAll})
 set_target_properties(AcLib PROPERTIES LINKER_LANGUAGE CXX DEBUG_POSTFIX "D")
 target_compile_features(AcLib PRIVATE cxx_range_for)
@@ -102,6 +110,18 @@ if(UNIX)
 	target_link_libraries(AcLib dl)
 endif()
 
+# Library: OggVorbis
+include(cmake/FindOggVorbis.cmake)
+if(OggVorbis_FOUND)
+	message("Found OggVorbis")
+	include_directories(${OGG_INCLUDE_DIR} ${VORBIS_INCLUDE_DIR})
+	target_link_libraries(AcLib ${Ogg_LIBRARIES} ${Vorbis_LIBRARIES} ${VorbisFile_LIBRARIES})
+	ADD_DEFINE(AC_PLUGIN_OGGVORBIS)
+else()
+	message("Missing OggVorbis -> OGG stream will be excluded from project")
+endif()
+
+# Library: OpenAL
 find_package(OpenAL)
 if(OPENAL_FOUND)
 	message("Found OpenAL -> AcLib_OpenAL project included")
@@ -112,6 +132,7 @@ if(OPENAL_FOUND)
 	target_compile_features(AcLib_OpenAL PRIVATE cxx_range_for)
 endif()
 
+# Library: XAudio2
 if(WIN32)
 	message("Found XAudio2 -> AcLib_XAudio2 project included")
 	add_library(AcLib_XAudio2 SHARED ${FilesSystemXAudio2})
@@ -120,13 +141,7 @@ if(WIN32)
 	target_compile_features(AcLib_XAudio2 PRIVATE cxx_range_for)
 endif()
 
-macro(ADD_TEST_PROJECT TEST_NAME TEST_FILES)
-	add_executable(${TEST_NAME} ${TEST_FILES})
-	target_link_libraries(${TEST_NAME} AcLib)
-	set_target_properties(${TEST_NAME} PROPERTIES LINKER_LANGUAGE CXX DEBUG_POSTFIX "D")
-	target_compile_features(${TEST_NAME} PRIVATE cxx_range_for)
-endmacro()
-
+# Test Projects
 ADD_TEST_PROJECT(test1 ${FilesTest1})
 ADD_TEST_PROJECT(test2 ${FilesTest2})
 ADD_TEST_PROJECT(test3 ${FilesTest3})

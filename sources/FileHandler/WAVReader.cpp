@@ -14,7 +14,7 @@ namespace Ac
 {
 
 
-#include "../Core/PackPush.h"
+#include <Ac/PackPush.h>
 
 struct RIFFWAVEChunk
 {
@@ -23,7 +23,7 @@ struct RIFFWAVEChunk
 }
 PACK_STRUCT;
 
-#include "../Core/PackPop.h"
+#include <Ac/PackPop.h>
 
 
 #define UINT32_FROM_STRING(s) (*reinterpret_cast<const std::uint32_t*>(s))

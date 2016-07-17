@@ -10,8 +10,8 @@
 
 
 #include "OpenAL.h"
-#include "../../Core/WaveBuffer.h"
 
+#include <Ac/WaveBuffer.h>
 #include <Ac/AudioSystem.h>
 
 

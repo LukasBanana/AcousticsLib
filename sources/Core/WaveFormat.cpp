@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#include "WaveFormat.h"
-#include "WaveFormatTags.h"
+#include <Ac/WaveFormat.h>
+#include <Ac/WaveFormatTags.h>
 
 
 namespace Ac

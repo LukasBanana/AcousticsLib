@@ -9,6 +9,8 @@
 #define __AC_WAVE_FORMAT_H__
 
 
+#include "Export.h"
+
 #include <cstdint>
 
 
@@ -44,7 +46,7 @@ the respective values depending on the input parameters.
 \see WaveFormat
 \see WaveFormatTags::PCM
 */
-WaveFormat MakeWaveFormatPCM(unsigned short channels, unsigned long sampleRate, unsigned short bitsPerSample);
+AC_EXPORT WaveFormat MakeWaveFormatPCM(unsigned short channels, unsigned long sampleRate, unsigned short bitsPerSample);
 
 
 } // /namespace Ac

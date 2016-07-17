@@ -9,7 +9,7 @@
 #define __AC_WAVE_BUFFER_H__
 
 
-#include <Ac/Export.h>
+#include "Export.h"
 #include "WaveFormat.h"
 
 #include <vector>

@@ -6,7 +6,8 @@
  */
 
 #include "ALBufferObj.h"
-#include "../../Core/WaveBuffer.h"
+
+#include <Ac/WaveBuffer.h>
 
 
 namespace Ac
