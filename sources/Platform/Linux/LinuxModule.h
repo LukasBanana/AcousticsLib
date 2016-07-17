@@ -21,7 +21,7 @@ class LinuxModule : public Module
 
     public:
 
-        LinuxModule(std::string moduleName);
+        LinuxModule(const std::string& moduleFilename);
         ~LinuxModule();
 
         LinuxModule(const LinuxModule&) = delete;

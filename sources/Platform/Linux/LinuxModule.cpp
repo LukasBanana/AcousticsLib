@@ -13,23 +13,40 @@ namespace Ac
 {
 
 
-std::unique_ptr<Module> Module::Load(std::string moduleName)
+std::string Module::GetModuleFilename(std::string moduleName)
 {
+    /* Extend module name to Linux shared library name (SO) */
     #ifdef AC_DEBUG
     moduleName += "D";
     #endif
-    return std::unique_ptr<Module>(new LinuxModule(moduleName));
+    return "libAcLib_" + moduleName + ".so";
 }
 
-LinuxModule::LinuxModule(std::string moduleName)
+bool Module::IsAvailable(const std::string& moduleFilename)
 {
-    /* Open Linux shared library (SO) */
-    moduleName = "lib" + moduleName + ".so";
-    handle_ = dlopen(moduleName.c_str(), RTLD_LAZY);
+    /* Check if Linux shared library can be loaded properly */
+    auto handle = dlopen(moduleFilename.c_str(), RTLD_LAZY);
+    if (handle)
+    {
+        dlclose(handle);
+        return true;
+    }
+    return false;
+}
+
+std::unique_ptr<Module> Module::Load(const std::string& moduleFilename)
+{
+    return std::unique_ptr<Module>(new LinuxModule(moduleFilename));
+}
+
+LinuxModule::LinuxModule(const std::string& moduleFilename)
+{
+    /* Open Linux shared library */
+    handle_ = dlopen(moduleFilename.c_str(), RTLD_LAZY);
 
     /* Check if loading has failed */
     if (!handle_)
-        throw std::runtime_error("failed to load shared library (SO) \"" + moduleName + "\"");
+        throw std::runtime_error("failed to load shared library (SO) \"" + moduleFilename + "\"");
 }
 
 LinuxModule::~LinuxModule()

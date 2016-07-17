@@ -23,7 +23,7 @@ class Win32Module : public Module
 
     public:
 
-        Win32Module(std::string moduleName);
+        Win32Module(const std::string& moduleFileanme);
         ~Win32Module();
 
         Win32Module(const Win32Module&) = delete;

@@ -14,6 +14,7 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 
 
 namespace Ac
@@ -30,6 +31,12 @@ class AC_EXPORT AudioSystem
         AudioSystem& operator = (const AudioSystem&) = delete;
 
         virtual ~AudioSystem();
+    
+        /**
+        \brief Returns the list of all available audio system modules for the current platform
+        (e.g. on Windows this might be { "OpenAL", "XAudio2" }, but on MacOS it might be only { "OpenAL" }).
+        */
+        static std::vector<std::string> FindModules();
 
         /**
         \brief Loads a new audio system from the specified module.

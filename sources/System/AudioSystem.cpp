@@ -6,8 +6,8 @@
  */
 
 #include <Ac/AudioSystem.h>
-//#include "CoreAudioSystem.h"
 #include "../Platform/Module.h"
+#include <array>
 
 
 namespace Ac
@@ -21,14 +21,30 @@ AudioSystem::~AudioSystem()
 {
 }
 
-static AudioSystem* LoadAudioSystem(Module& module, const std::string& moduleName)
+std::vector<std::string> AudioSystem::FindModules()
+{
+    /* Iterate over all known modules and return those that are availale on the current platform */
+    const std::array<std::string, 2> knownModules {{ "OpenAL", "XAudio2" }};
+    
+    std::vector<std::string> modules;
+    
+    for (const auto& m : knownModules)
+    {
+        if (Module::IsAvailable(Module::GetModuleFilename(m)))
+            modules.push_back(m);
+    }
+    
+    return modules;
+}
+    
+static AudioSystem* LoadAudioSystem(Module& module, const std::string& moduleFilename)
 {
     /* Load "Ac_AudioSystem_Alloc" procedure */
     AC_PROC_INTERFACE(void*, PFN_AUDIOSYSTEM_ALLOC, (void));
 
     auto AudioSystem_Alloc = reinterpret_cast<PFN_AUDIOSYSTEM_ALLOC>(module.LoadProcedure("Ac_AudioSystem_Alloc"));
     if (!AudioSystem_Alloc)
-        throw std::runtime_error("failed to load \"Ac_AudioSystem_Alloc\" procedure from module \"" + moduleName + "\"");
+        throw std::runtime_error("failed to load \"Ac_AudioSystem_Alloc\" procedure from module \"" + moduleFilename + "\"");
 
     return reinterpret_cast<AudioSystem*>(AudioSystem_Alloc());
 }
@@ -52,8 +68,9 @@ std::shared_ptr<AudioSystem> AudioSystem::Load(const std::string& moduleName)
         throw std::runtime_error("failed to load audio system (only a single instance can be loaded at a time)");
 
     /* Load audio system module */
-    auto module = Module::Load("AcLib_" + moduleName);
-    auto audioSystem = std::shared_ptr<AudioSystem>(LoadAudioSystem(*module, moduleName));
+    auto moduleFilename = Module::GetModuleFilename(moduleName);
+    auto module = Module::Load(moduleFilename);
+    auto audioSystem = std::shared_ptr<AudioSystem>(LoadAudioSystem(*module, moduleFilename));
     audioSystem->name_ = LoadAudioSystemName(*module);
 
     /* Store new module globally */

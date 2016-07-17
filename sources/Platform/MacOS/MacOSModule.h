@@ -21,7 +21,7 @@ class MacOSModule : public Module
 
     public:
 
-        MacOSModule(std::string moduleName);
+        MacOSModule(const std::string& moduleFilename);
         MacOSModule();
 
         MacOSModule(const MacOSModule&) = delete;

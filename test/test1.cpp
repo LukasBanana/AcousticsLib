@@ -14,7 +14,7 @@
 
 int main()
 {
-    for (auto module : std::vector<std::string> { /*"XAudio2", */"OpenAL" })
+    for (auto module : Ac::AudioSystem::FindModules())
     {
         try
         {
@@ -41,6 +41,9 @@ int main()
                 std::cerr << "failed to load sound: \"" << soundFile << '\"' << std::endl;
 
             //to be continued ...
+            
+            // Break out from loop, we only need one single audio system
+            break;
         }
         catch (const std::exception& e)
         {

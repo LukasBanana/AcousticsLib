@@ -13,23 +13,40 @@ namespace Ac
 {
 
 
-std::unique_ptr<Module> Module::Load(std::string moduleName)
+std::string Module::GetModuleFilename(std::string moduleName)
 {
+    /* Extend module name to MacOS dynamic library name (DYLIB) */
     #ifdef AC_DEBUG
     moduleName += "D";
     #endif
-    return std::unique_ptr<Module>(new MacOSModule(moduleName));
+    return "libAcLib_" + moduleName + ".dylib";
 }
 
-MacOSModule::MacOSModule(std::string moduleName)
+bool Module::IsAvailable(const std::string& moduleFilename)
 {
-    /* Open MacOS dynamic library (DYLIB) */
-    moduleName = "lib" + moduleName + ".dylib";
-    handle_ = dlopen(moduleName.c_str(), RTLD_LAZY);
+    /* Check if MacOS dynamic library can be loaded properly */
+    auto handle = dlopen(moduleFilename.c_str(), RTLD_LAZY);
+    if (handle)
+    {
+        dlclose(handle);
+        return true;
+    }
+    return false;
+}
+
+std::unique_ptr<Module> Module::Load(const std::string& moduleFilename)
+{
+    return std::unique_ptr<Module>(new MacOSModule(moduleFilename));
+}
+
+MacOSModule::MacOSModule(const std::string& moduleFilename)
+{
+    /* Open MacOS dynamic library */
+    handle_ = dlopen(moduleFilename.c_str(), RTLD_LAZY);
 
     /* Check if loading has failed */
     if (!handle_)
-        throw std::runtime_error("failed to load dynamic library (DYLIB) \"" + moduleName + "\"");
+        throw std::runtime_error("failed to load dynamic library (DYLIB) \"" + moduleFilename + "\"");
 }
 
 MacOSModule::MacOSModule()

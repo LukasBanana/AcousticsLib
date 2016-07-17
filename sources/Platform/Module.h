@@ -39,8 +39,16 @@ class Module
         {
         }
 
-        static std::unique_ptr<Module> Load(std::string moduleName);
+        //! Converts the module name into a specific filename (e.g. "OpenAL" to "AcLib_OpenAL.dll" on Windows).
+        static std::string GetModuleFilename(std::string moduleName);
 
+        //! Returns true if the specified module is available.
+        static bool IsAvailable(const std::string& moduleFilename);
+
+        //! Returns the specified module or null if it is not available.
+        static std::unique_ptr<Module> Load(const std::string& moduleFilename);
+
+        //! Returns a raw pointer to the specified procedure loaded from this module.
         virtual void* LoadProcedure(const std::string& procedureName) = 0;
 
 };

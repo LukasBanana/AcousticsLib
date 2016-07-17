@@ -12,23 +12,40 @@ namespace Ac
 {
 
 
-std::unique_ptr<Module> Module::Load(std::string moduleName)
+std::string Module::GetModuleFilename(std::string moduleName)
 {
+    /* Extend module name to Win32 dynamic link library name (DLL) */
     #ifdef AC_DEBUG
     moduleName += "D";
     #endif
-    return std::unique_ptr<Module>(new Win32Module(moduleName));
+    return "AcLib_" + moduleName + ".dll";
 }
 
-Win32Module::Win32Module(std::string moduleName)
+bool Module::IsAvailable(const std::string& moduleFilename)
 {
-    /* Open Windows dynamic link library (DLL) */
-    moduleName += ".dll";
-    handle_ = LoadLibrary(moduleName.c_str());
+    /* Check if Win32 dynamic link library can be loaded properly */
+    auto handle = LoadLibrary(moduleFilename.c_str());
+    if (handle)
+    {
+        FreeLibrary(handle);
+        return true;
+    }
+    return false;
+}
+
+std::unique_ptr<Module> Module::Load(const std::string& moduleFilename)
+{
+    return std::unique_ptr<Module>(new Win32Module(moduleFilename));
+}
+
+Win32Module::Win32Module(const std::string& moduleFilename)
+{
+    /* Open Win32 dynamic link library (DLL) */
+    handle_ = LoadLibrary(moduleFilename.c_str());
 
     /* Check if loading has failed */
     if (!handle_)
-        throw std::runtime_error("failed to load dynamic link library (DLL) \"" + moduleName + "\"");
+        throw std::runtime_error("failed to load dynamic link library (DLL) \"" + moduleFilename + "\"");
 }
 
 Win32Module::~Win32Module()
