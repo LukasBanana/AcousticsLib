@@ -8,6 +8,7 @@
 #include "ALAudioSystem.h"
 #include "../../FileHandler/WAVReader.h"
 #include "ALSound.h"
+#include "ALSound3D.h"
 
 #include <fstream>
 #include <cstring>
@@ -16,6 +17,8 @@
 namespace Ac
 {
 
+
+/* ----- Audio system ----- */
 
 ALAudioSystem::ALAudioSystem() :
     device_ ( OpenDevice()    ),
@@ -50,6 +53,8 @@ std::string ALAudioSystem::GetVersion() const
     return s;
 }
 
+/* ----- Sounds ----- */
+
 std::unique_ptr<Sound> ALAudioSystem::LoadSound(const std::string& filename)
 {
     auto bufferObj = CreateBufferObjFromFile(filename, false);
@@ -60,6 +65,72 @@ std::unique_ptr<Sound> ALAudioSystem::LoadSound(const std::string& filename)
         return std::move(sound);
     }
     return nullptr;
+}
+
+std::unique_ptr<Sound3D> ALAudioSystem::LoadSound3D(const std::string& filename)
+{
+    auto bufferObj = CreateBufferObjFromFile(filename, true);
+    if (bufferObj)
+    {
+        auto sound = std::unique_ptr<ALSound3D>(new ALSound3D());
+        sound->AttachBuffer(std::move(bufferObj));
+        return std::move(sound);
+    }
+    return nullptr;
+}
+
+/* ----- Listener ----- */
+
+void ALAudioSystem::SetListenerPosition(const Gs::Vector3f& position)
+{
+    alListenerfv(AL_POSITION, position.Ptr());
+}
+
+Gs::Vector3f ALAudioSystem::GetListenerPosition() const
+{
+    Gs::Vector3f position;
+    alGetListenerfv(AL_POSITION, position.Ptr());
+    return position;
+}
+
+void ALAudioSystem::SetListenerVelocity(const Gs::Vector3f& velocity)
+{
+    alListenerfv(AL_POSITION, velocity.Ptr());
+}
+
+Gs::Vector3f ALAudioSystem::GetListenerVelocity() const
+{
+    Gs::Vector3f velocity;
+    alGetListenerfv(AL_VELOCITY, velocity.Ptr());
+    return velocity;
+}
+
+void ALAudioSystem::SetListenerOrientation(const ListenerOrientation& orientation)
+{
+    const ALfloat vec[6] =
+    {
+        orientation.atVector.x, orientation.atVector.y, -orientation.atVector.z,
+        orientation.upVector.x, orientation.upVector.y, -orientation.upVector.z
+    };
+    alListenerfv(AL_ORIENTATION, vec);
+}
+
+ListenerOrientation ALAudioSystem::GetListenerOrientation() const
+{
+    ALfloat vec[6] = { 0 };
+    alGetListenerfv(AL_ORIENTATION, vec);
+
+    ListenerOrientation orientation;
+
+    orientation.atVector.x =  vec[0];
+    orientation.atVector.y =  vec[1];
+    orientation.atVector.z = -vec[2];
+
+    orientation.upVector.x =  vec[3];
+    orientation.upVector.y =  vec[4];
+    orientation.upVector.z = -vec[5];
+
+    return orientation;
 }
 
 

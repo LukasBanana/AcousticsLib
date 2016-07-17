@@ -11,7 +11,9 @@
 
 #include "Export.h"
 #include "Sound.h"
+#include "Sound3D.h"
 
+#include <Gauss/Vector3.h>
 #include <string>
 #include <memory>
 #include <vector>
@@ -23,11 +25,24 @@ namespace Ac
 {
 
 
-//! Audio system interface.
+//! Structure for the 3D listener orientation with at- and up- vectors.
+struct AC_EXPORT ListenerOrientation
+{
+    Gs::Vector3f atVector;
+    Gs::Vector3f upVector;
+};
+
+/**
+\brief Audio system interface.
+\remarsk All coordinates or 3D sounds are meant to be in a left-handed coordinates system,
+i.e. positive Z values point into your monitor, and negative Z values point out of your monitor.
+*/
 class AC_EXPORT AudioSystem
 {
 
     public:
+
+        /* ----- Audio system ----- */
 
         AudioSystem(const AudioSystem&) = delete;
         AudioSystem& operator = (const AudioSystem&) = delete;
@@ -68,11 +83,16 @@ class AC_EXPORT AudioSystem
             return name_;
         }
 
+        /* ----- Sounds ----- */
+
         //! Returns a descriptive version string of this audio system (e.g. "OpenAL 1.1").
         virtual std::string GetVersion() const = 0;
 
         //! Loads the specified sound from file.
         virtual std::unique_ptr<Sound> LoadSound(const std::string& filename) = 0;
+
+        //! Loads the specified sound from file and returns it as a 3D sound.
+        virtual std::unique_ptr<Sound3D> LoadSound3D(const std::string& filename) = 0;
 
         /**
         \brief Play specified sound file.
@@ -89,6 +109,26 @@ class AC_EXPORT AudioSystem
             std::size_t repetitions = 0,
             const std::function<bool(Sound&)> waitCallback = nullptr
         );
+
+        /* ----- Listener ----- */
+
+        //! Sets the listener world position. By default (0, 0, 0).
+        virtual void SetListenerPosition(const Gs::Vector3f& position) = 0;
+
+        //! Returns the listener world position.
+        virtual Gs::Vector3f GetListenerPosition() const = 0;
+
+        //! Sets the listener world velocity. This is used for the "Doppler"-effect. By default (0, 0, 0).
+        virtual void SetListenerVelocity(const Gs::Vector3f& velocity) = 0;
+        
+        //! Returns the listener world velocity.
+        virtual Gs::Vector3f GetListenerVelocity() const = 0;
+
+        //! Sets the listener world orientation. By default { (0, 0, 0), (0, 0, 0) }.
+        virtual void SetListenerOrientation(const ListenerOrientation& orientation) = 0;
+        
+        //! Returns the listener world position.
+        virtual ListenerOrientation GetListenerOrientation() const = 0;
 
     protected:
 

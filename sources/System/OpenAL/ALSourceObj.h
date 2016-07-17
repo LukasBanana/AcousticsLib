@@ -12,6 +12,7 @@
 #include "OpenAL.h"
 #include "ALBufferObj.h"
 
+#include <Gauss/Vector3.h>
 #include <Ac/AudioSystem.h>
 
 
@@ -30,8 +31,14 @@ class ALSourceObj
         void AttachBuffer(const ALBufferObj& bufferObj);
         void DetachBuffer();
 
-        //! Returns the value of AL_SOURCE_STATE for this source object.
-        ALint GetState() const;
+        void SetInt(ALenum param, ALint value);
+        ALint GetInt(ALenum param) const;
+
+        void SetFloat(ALenum param, ALfloat value);
+        ALfloat GetFloat(ALenum param) const;
+
+        void SetVector3(ALenum param, const Gs::Vector3f value);
+        Gs::Vector3f GetVector3(ALenum param) const;
 
         //! Returns the handle of this source object.
         inline ALuint Get() const

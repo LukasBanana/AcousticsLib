@@ -35,11 +35,43 @@ void ALSourceObj::DetachBuffer()
     alSourcei(handle_, AL_BUFFER, AL_NONE);
 }
 
-ALint ALSourceObj::GetState() const
+void ALSourceObj::SetInt(ALenum param, ALint value)
 {
-    ALint result = 0;
-    alGetSourcei(handle_, AL_SOURCE_STATE, &result);
-    return result;
+    alSourcei(handle_, param, value);
+}
+
+ALint ALSourceObj::GetInt(ALenum param) const
+{
+    ALint value = 0;
+    alGetSourcei(handle_, param, &value);
+    return value;
+}
+
+void ALSourceObj::SetFloat(ALenum param, ALfloat value)
+{
+    alSourcef(handle_, param, value);
+}
+
+ALfloat ALSourceObj::GetFloat(ALenum param) const
+{
+    ALfloat value = 0.0f;
+    alGetSourcef(handle_, param, &value);
+    return value;
+}
+
+void ALSourceObj::SetVector3(ALenum param, const Gs::Vector3f value)
+{
+    /* Set vector and swap Z coordinate from a right-handed to a left-handed coordinate system */
+    alSource3f(handle_, param, value.x, value.y, -value.z);
+}
+
+Gs::Vector3f ALSourceObj::GetVector3(ALenum param) const
+{
+    /* Get vector and swap Z coordinate from a right-handed to a left-handed coordinate system */
+    Gs::Vector3f value(Gs::UninitializeTag{});
+    alGetSource3f(handle_, param, &value.x, &value.y, &value.z);
+    value.z = -value.z;
+    return value;
 }
 
 

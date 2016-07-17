@@ -30,6 +30,16 @@ class ALAudioSystem : public AudioSystem
         std::string GetVersion() const override;
 
         std::unique_ptr<Sound> LoadSound(const std::string& filename) override;
+        std::unique_ptr<Sound3D> LoadSound3D(const std::string& filename) override;
+
+        void SetListenerPosition(const Gs::Vector3f& position) override;
+        Gs::Vector3f GetListenerPosition() const override;
+
+        void SetListenerVelocity(const Gs::Vector3f& velocity) override;
+        Gs::Vector3f GetListenerVelocity() const override;
+
+        void SetListenerOrientation(const ListenerOrientation& orientation) override;
+        ListenerOrientation GetListenerOrientation() const override;
 
     private:
 

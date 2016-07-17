@@ -57,6 +57,8 @@ elseif(UNIX)
 endif()
 
 set(FilesTest1 ${PROJECT_SOURCE_DIR}/test/test1.cpp)
+set(FilesTest2 ${PROJECT_SOURCE_DIR}/test/test2.cpp)
+set(FilesTest3 ${PROJECT_SOURCE_DIR}/test/test3.cpp)
 
 
 # === Source group folders ===
@@ -76,8 +78,8 @@ source_group("Sources\\Platform" FILES ${FilesPlatformBase} ${FilesPlatform})
 
 include_directories("${PROJECT_INCLUDE_DIR}")
 
-#find_path(GaussianLib_INCLUDE_DIR NAMES Gauss/Gauss.h)
-#include_directories(${GaussianLib_INCLUDE_DIR})
+find_path(GaussianLib_INCLUDE_DIR NAMES Gauss/Gauss.h)
+include_directories(${GaussianLib_INCLUDE_DIR})
 
 
 # === Binaries ===
@@ -118,9 +120,15 @@ if(WIN32)
 	target_compile_features(AcLib_XAudio2 PRIVATE cxx_range_for)
 endif()
 
-add_executable(test1 ${FilesTest1})
-target_link_libraries(test1 AcLib)
-set_target_properties(test1 PROPERTIES LINKER_LANGUAGE CXX DEBUG_POSTFIX "D")
-target_compile_features(test1 PRIVATE cxx_range_for)
+macro(ADD_TEST_PROJECT TEST_NAME TEST_FILES)
+	add_executable(${TEST_NAME} ${TEST_FILES})
+	target_link_libraries(${TEST_NAME} AcLib)
+	set_target_properties(${TEST_NAME} PROPERTIES LINKER_LANGUAGE CXX DEBUG_POSTFIX "D")
+	target_compile_features(${TEST_NAME} PRIVATE cxx_range_for)
+endmacro()
+
+ADD_TEST_PROJECT(test1 ${FilesTest1})
+ADD_TEST_PROJECT(test2 ${FilesTest2})
+ADD_TEST_PROJECT(test3 ${FilesTest3})
 
 

@@ -18,7 +18,7 @@ namespace Ac
 ALSound::ALSound()
 {
     /* Use relative coordinates to make a appear as a 2D sound */
-    alSourcei(sourceObj_.Get(), AL_SOURCE_RELATIVE, AL_TRUE);
+    sourceObj_.SetInt(AL_SOURCE_RELATIVE, AL_TRUE);
 }
 
 ALSound::~ALSound()
@@ -42,48 +42,42 @@ void ALSound::Stop()
 
 void ALSound::SetVolume(float volume)
 {
-    alSourcef(sourceObj_.Get(), AL_GAIN, volume);
+    sourceObj_.SetFloat(AL_GAIN, volume);
 }
 
 float ALSound::GetVolume() const
 {
-    float volume = 0.0f;
-    alGetSourcef(sourceObj_.Get(), AL_GAIN, &volume);
-    return volume;
+    return sourceObj_.GetFloat(AL_GAIN);
 }
 
 void ALSound::SetPitch(float pitch)
 {
-    alSourcef(sourceObj_.Get(), AL_PITCH, pitch);
+    sourceObj_.SetFloat(AL_PITCH, pitch);
 }
 
 float ALSound::GetPitch() const
 {
-    float pitch = 0.0f;
-    alGetSourcef(sourceObj_.Get(), AL_PITCH, &pitch);
-    return pitch;
+    return sourceObj_.GetFloat(AL_PITCH);
 }
 
 bool ALSound::IsPlaying() const
 {
-    return (sourceObj_.GetState() == AL_PLAYING);
+    return (sourceObj_.GetInt(AL_SOURCE_STATE) == AL_PLAYING);
 }
 
 bool ALSound::IsPaused() const
 {
-    return (sourceObj_.GetState() == AL_PAUSED);
+    return (sourceObj_.GetInt(AL_SOURCE_STATE) == AL_PAUSED);
 }
 
 void ALSound::SetSeek(double position)
 {
-    alSourcef(sourceObj_.Get(), AL_SEC_OFFSET, static_cast<float>(position));
+    sourceObj_.SetFloat(AL_SEC_OFFSET, static_cast<float>(position));
 }
 
 double ALSound::GetSeek() const
 {
-    float position = 0.0f;
-    alGetSourcef(sourceObj_.Get(), AL_SEC_OFFSET, &position);
-    return static_cast<double>(position);
+    return static_cast<double>(sourceObj_.GetFloat(AL_SEC_OFFSET));
 }
 
 double ALSound::TotalTime() const
