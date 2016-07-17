@@ -65,7 +65,8 @@ endif()
 
 set(FilesTest1 ${PROJECT_SOURCE_DIR}/test/test1.cpp)
 set(FilesTest2 ${PROJECT_SOURCE_DIR}/test/test2.cpp)
-set(FilesTest3 ${PROJECT_SOURCE_DIR}/test/test3.cpp)
+set(FilesTest3 ${PROJECT_SOURCE_DIR}/test/test3_3d.cpp)
+set(FilesTest4 ${PROJECT_SOURCE_DIR}/test/test4_stream.cpp)
 
 
 # === Source group folders ===
@@ -144,6 +145,7 @@ endif()
 # Test Projects
 ADD_TEST_PROJECT(test1 ${FilesTest1})
 ADD_TEST_PROJECT(test2 ${FilesTest2})
-ADD_TEST_PROJECT(test3 ${FilesTest3})
+ADD_TEST_PROJECT(test3_3d ${FilesTest3})
+ADD_TEST_PROJECT(test4_stream ${FilesTest4})
 
 
