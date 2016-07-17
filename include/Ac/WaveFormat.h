@@ -9,8 +9,6 @@
 #define __AC_WAVE_FORMAT_H__
 
 
-#include "Export.h"
-
 #include <cstdint>
 
 
@@ -33,20 +31,6 @@ struct WaveFormat
 AC_PACK_STRUCT;
 
 #include "PackPop.h"
-
-
-/**
-\brief Generates a PCM wave format.
-\param[in] channels Specifies the number of channels.
-This is commonly 1 (for mono) or 2 (for stereo) sounds.
-\param[in] sampleRate Specifies the sample rate. Common values are 8000 (8 KHz) or 44100 (44.1 KHz).
-\param[in] bitsPerSample Specifies the number of bits per sample. This is commonly 8 or 16.
-\return The generated wave format. All members are initialized with
-the respective values depending on the input parameters.
-\see WaveFormat
-\see WaveFormatTags::PCM
-*/
-AC_EXPORT WaveFormat MakeWaveFormatPCM(unsigned short channels, unsigned long sampleRate, unsigned short bitsPerSample);
 
 
 } // /namespace Ac

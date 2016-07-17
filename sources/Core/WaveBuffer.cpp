@@ -6,6 +6,7 @@
  */
 
 #include <Ac/WaveBuffer.h>
+#include <Ac/WaveFormatTags.h>
 #include <algorithm>
 
 
@@ -154,6 +155,21 @@ double WaveBuffer::TotalTime(std::size_t bufferSize, std::size_t sampleRate, std
     auto blockAlign     = (channels * bitsPerSample) / 8;
     auto bytesPerSecond = sampleRate * blockAlign;
     return (bytesPerSecond> 0 ? static_cast<double>(bufferSize) / bytesPerSecond : 0.0);
+}
+
+WaveFormat WaveBuffer::MakeWaveFormatPCM(
+    unsigned short channels, unsigned long sampleRate, unsigned short bitsPerSample)
+{
+    WaveFormat waveFormat;
+
+    waveFormat.formatTag        = WaveFormatTags::PCM;
+    waveFormat.channels         = channels;
+    waveFormat.sampleRate       = sampleRate;
+    waveFormat.bitsPerSample    = bitsPerSample;
+    waveFormat.blockAlign       = (waveFormat.channels * waveFormat.bitsPerSample) / 8;
+    waveFormat.bytesPerSecond   = waveFormat.sampleRate * waveFormat.blockAlign;
+
+    return waveFormat;
 }
 
 

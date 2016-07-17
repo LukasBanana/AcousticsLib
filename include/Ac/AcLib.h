@@ -10,6 +10,8 @@
 
 
 #include "AudioSystem.h"
+#include "WaveBuffer.h"
+#include "WaveFormatTags.h"
 
 
 #endif
