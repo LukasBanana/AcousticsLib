@@ -52,7 +52,7 @@ std::string ALAudioSystem::GetVersion() const
 
 std::unique_ptr<Sound> ALAudioSystem::LoadSound(const std::string& filename)
 {
-    auto bufferObj = CreateBufferObjFromFile(filename);
+    auto bufferObj = CreateBufferObjFromFile(filename, false);
     if (bufferObj)
     {
         auto sound = std::unique_ptr<ALSound>(new ALSound());
@@ -104,7 +104,7 @@ ALCcontext* ALAudioSystem::CreateContext()
     return context;
 }
 
-std::unique_ptr<ALBufferObj> ALAudioSystem::CreateBufferObjFromFile(const std::string& filename)
+std::unique_ptr<ALBufferObj> ALAudioSystem::CreateBufferObjFromFile(const std::string& filename, bool makeMono)
 {
     std::ifstream file(filename);
     if (file.good())
@@ -114,6 +114,9 @@ std::unique_ptr<ALBufferObj> ALAudioSystem::CreateBufferObjFromFile(const std::s
 
         WaveBuffer waveBuffer;
         reader.ReadWaveBuffer(file, waveBuffer);
+        
+        if (makeMono)
+            waveBuffer.MakeMono();
 
         /* Create AL buffer object and fill with wave buffer data */
         auto bufferObj = std::unique_ptr<ALBufferObj>(new ALBufferObj());

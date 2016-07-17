@@ -82,7 +82,7 @@ void MakeMonoTmpl(WaveFormat& format, PCMBuffer& buffer)
 void WaveBuffer::MakeMono()
 {
     /* Only allow conversion from stereo sound */
-    if (format.channels == 2 && buffer.empty())
+    if (format.channels == 2 && !buffer.empty())
     {
         switch (format.bitsPerSample)
         {

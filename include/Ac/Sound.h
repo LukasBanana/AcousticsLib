@@ -44,11 +44,6 @@ class AC_EXPORT Sound
         //! Returns the sound volume.
         virtual float GetVolume() const = 0;
 
-        //! Sets the sound balance between the audio channels in the range [-1, 1]. By deafult 0.
-        virtual void SetBalance(float balance) = 0;
-        //! Returns the sound balance between the audio channels.
-        virtual float GetBalance() const = 0;
-
         //! Sets the sound pitch (or frequency ratio) in the range (0, +inf). By default 1.
         virtual void SetPitch(float pitch) = 0;
         //! Returns the sound pitch.

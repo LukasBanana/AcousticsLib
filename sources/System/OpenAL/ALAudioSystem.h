@@ -38,7 +38,7 @@ class ALAudioSystem : public AudioSystem
         ALCdevice* OpenDevice();
         ALCcontext* CreateContext();
 
-        std::unique_ptr<ALBufferObj> CreateBufferObjFromFile(const std::string& filename);
+        std::unique_ptr<ALBufferObj> CreateBufferObjFromFile(const std::string& filename, bool makeMono);
 
         ALCdevice*  device_     = nullptr;
         ALCcontext* context_    = nullptr;

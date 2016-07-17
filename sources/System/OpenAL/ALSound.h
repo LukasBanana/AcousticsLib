@@ -35,9 +35,6 @@ class ALSound : public Sound
         void SetVolume(float volume) override;
         float GetVolume() const override;
 
-        void SetBalance(float balance) override;
-        float GetBalance() const override;
-
         void SetPitch(float pitch) override;
         float GetPitch() const override;
 
