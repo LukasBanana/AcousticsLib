@@ -39,10 +39,12 @@ Play a sound with less code as possible:
 
 int main()
 {
-	auto audioSystem = Ac::AudioSystem::Load(); // Load default audio system module
-	auto sound = audioSystem->Load("mySound.wav"); // Load sound
-	auto sound->Play(); // Play sound
-	while (sound->IsPlaying()) { /* wait while sound is playing */ }
+	// Load default audio system module
+	auto audioSystem = Ac::AudioSystem::Load();
+	
+	// Play sound with 100% volume and wait until the end
+	audioSystem->PlaySound("mySound.wav", 1.0f, 0, [](Ac::Sound&) { return true; });
+	
 	return 0;
 }
 ```

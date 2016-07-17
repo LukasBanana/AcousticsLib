@@ -15,6 +15,8 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <list>
+#include <functional>
 
 
 namespace Ac
@@ -72,6 +74,22 @@ class AC_EXPORT AudioSystem
         //! Loads the specified sound from file.
         virtual std::unique_ptr<Sound> LoadSound(const std::string& filename) = 0;
 
+        /**
+        \brief Play specified sound file.
+        \param[in] filename Specifies the sound file to play.
+        \param[in] volume Specifies the volume. By default 1.
+        \param[in] repetitions Specifies the repetitions. By default 0.
+        \param[in] waitCallback Specifies whether to wait until the sound has been played to the end.
+        The callback can be used to cancel the waiting process. By default null.
+        \remarks This is a 'very high level' function and is commonly used for tests only, to reduce the code to a minimum.
+        */
+        void PlaySound(
+            const std::string& filename,
+            float volume = 1.0f,
+            std::size_t repetitions = 0,
+            const std::function<bool(Sound&)> waitCallback = nullptr
+        );
+
     protected:
 
         AudioSystem() = default;
@@ -79,6 +97,8 @@ class AC_EXPORT AudioSystem
     private:
 
         std::string name_;
+
+        std::list<std::unique_ptr<Sound>> immediateSounds_;
 
 };
 

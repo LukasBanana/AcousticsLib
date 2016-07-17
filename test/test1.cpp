@@ -17,11 +17,15 @@ int main()
     #if 1
     
     auto audioSystem = Ac::AudioSystem::Load();
-    if (auto sound = audioSystem->LoadSound("shutter.wav"))
-    {
-        sound->Play();
-        while (sound->IsPlaying()) { /* wait */ }
-    }
+    audioSystem->PlaySound(
+        "shutter.wav", 1.0f, 0,
+        [](Ac::Sound& s)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(25));
+            s.SetVolume(s.GetVolume() - 0.01f);
+            return s.GetVolume() > 0.05f;
+        }
+    );
     
     #else
     

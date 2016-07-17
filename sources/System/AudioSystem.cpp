@@ -87,6 +87,30 @@ std::shared_ptr<AudioSystem> AudioSystem::Load()
     return (modules.empty() ? nullptr : Load(modules.front()));
 }
 
+void AudioSystem::PlaySound(const std::string& filename, float volume, std::size_t repetitions, const std::function<bool(Sound&)> waitCallback)
+{
+    /* Load and play sounds */
+    auto sound = LoadSound(filename);
+    
+    sound->SetVolume(volume);
+    sound->Play();
+    
+    /* Wait or add sound to immediate sound list */
+    if (waitCallback)
+    {
+        while (sound->IsPlaying())
+        {
+            if (!waitCallback(*sound))
+            {
+                immediateSounds_.push_back(std::move(sound));
+                break;
+            }
+        }
+    }
+    else
+        immediateSounds_.push_back(std::move(sound));
+}
+
 
 } // /namespace Ac
 
