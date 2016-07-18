@@ -157,21 +157,6 @@ double WaveBuffer::TotalTime(std::size_t bufferSize, std::size_t sampleRate, std
     return (bytesPerSecond> 0 ? static_cast<double>(bufferSize) / bytesPerSecond : 0.0);
 }
 
-WaveFormat WaveBuffer::MakeWaveFormatPCM(
-    unsigned short channels, unsigned long sampleRate, unsigned short bitsPerSample)
-{
-    WaveFormat waveFormat;
-
-    waveFormat.formatTag        = WaveFormatTags::PCM;
-    waveFormat.channels         = channels;
-    waveFormat.sampleRate       = sampleRate;
-    waveFormat.bitsPerSample    = bitsPerSample;
-    waveFormat.blockAlign       = (waveFormat.channels * waveFormat.bitsPerSample) / 8;
-    waveFormat.bytesPerSecond   = waveFormat.sampleRate * waveFormat.blockAlign;
-
-    return waveFormat;
-}
-
 
 } // /namespace Ac
 
