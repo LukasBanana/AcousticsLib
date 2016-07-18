@@ -12,6 +12,8 @@
 #include <cmath>
 
 
+using namespace std::placeholders;
+
 namespace Ac
 {
 
@@ -35,9 +37,9 @@ AC_EXPORT void InitWaveBuffer(WaveBuffer& buffer, double duration, unsigned shor
     buffer.buffer.resize(static_cast<std::size_t>(duration * buffer.format.bytesPerSecond));
 }
     
-AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, const WaveGenerationFunction& waveFunction)
+AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, const WaveGeneratorFunction& waveGenerator)
 {
-    if (!waveFunction)
+    if (!waveGenerator)
         return;
     
     phaseBegin  = std::max(0.0, phaseBegin);
@@ -78,7 +80,7 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
                 PCMDataToSample(sample, *sampleData.bits8);
             
             /* Compute current audio sample and clamp to range [-1, 1] */
-            waveFunction(sample, chn, phase);
+            waveGenerator(sample, chn, phase);
             sample = std::max(-1.0, std::min(sample, 1.0));
             
             /* Write sample to PCM data */
@@ -96,20 +98,21 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
     }
 }
 
-AC_EXPORT void GenerateWave(WaveBuffer& buffer, const WaveGenerationFunction& waveFunction)
+AC_EXPORT void GenerateWave(WaveBuffer& buffer, const WaveGeneratorFunction& waveGenerator)
 {
-    GenerateWave(buffer, 0.0, buffer.TotalTime(), waveFunction);
+    GenerateWave(buffer, 0.0, buffer.TotalTime(), waveGenerator);
 }
 
-AC_EXPORT void GenerateSineWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, double amplitude, double phaseShift, double frequency)
+static void SineWaveGeneratorCallback(
+    double& sample, unsigned short channel, double phase,
+    double amplitude, double phaseShift, double frequency)
 {
-    GenerateWave(
-        buffer, phaseBegin, phaseEnd,
-        [&](double& sample, unsigned short channel, double phase)
-        {
-            sample += std::sin((phase + phaseShift)*2.0*M_PI*frequency)*amplitude;
-        }
-    );
+    sample += std::sin((phase + phaseShift)*2.0*M_PI*frequency)*amplitude;
+}
+
+AC_EXPORT WaveGeneratorFunction SineWaveGenerator(double amplitude, double phaseShift, double frequency)
+{
+    return std::bind(SineWaveGeneratorCallback, _1, _2, _3, amplitude, phaseShift, frequency);
 }
 
 

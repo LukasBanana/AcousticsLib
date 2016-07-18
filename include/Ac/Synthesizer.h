@@ -30,7 +30,7 @@ namespace Synthesizer
 \remarks This function interface is used for the 'GenerateWave' function.
 \see GenerateWave
 */
-using WaveGenerationFunction = std::function<void(double& sample, unsigned short channel, double phase)>;
+using WaveGeneratorFunction = std::function<void(double& sample, unsigned short channel, double phase)>;
     
 //! 44.1 kHz sample rate.
 static const unsigned int sampleRate44kHz   = 44100;
@@ -82,25 +82,20 @@ AC_EXPORT void InitWaveBuffer(
 \param[in,out] buffer Specifies the buffer which is to be modified.
 \param[in] phaseBegin Specifies the phase beginning (in seconds). This will be clamped to [0, +inf).
 \param[in] phaseEnd Specifies the phase ending (in seconds). This will be clamped to [phaseBegin, +inf).
-\param[in] waveFunction Specifies the generation callback function.
-\see WaveGenerationFunction
+\param[in] waveGenerator Specifies the wave generator callback function.
+\see WaveGeneratorFunction
 */
-AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, const WaveGenerationFunction& waveFunction);
+AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, const WaveGeneratorFunction& waveGenerator);
 
 /**
 \brief Modifies the entire wave buffer.
-\see GenerateWave(WaveBuffer&, double, double, const WaveGenerationFunction&)
+\see GenerateWave(WaveBuffer&, double, double, const WaveGeneratorFunction&)
 */
-AC_EXPORT void GenerateWave(WaveBuffer& buffer, const WaveGenerationFunction& waveFunction);
+AC_EXPORT void GenerateWave(WaveBuffer& buffer, const WaveGeneratorFunction& waveGenerator);
 
-AC_EXPORT void GenerateSineWave(
-    WaveBuffer& buffer,
-    double phaseBegin,
-    double phaseEnd,
-    double amplitude,
-    double phaseShift,
-    double frequency
-);
+AC_EXPORT WaveGeneratorFunction SineWaveGenerator(double amplitude, double phaseShift, double frequency);
+
+//AC_EXPORT void ReverseWave(WaveBuffer& buffer);
     
     
 } // /namesapce Synthesizer

@@ -14,6 +14,14 @@
 #include <cmath>
 
 
+
+#define TEST_MODE_SYNTH     1
+#define TEST_MODE_LOAD      2
+#define TEST_MODE           TEST_MODE_SYNTH
+#define TEST_WRITE_OUTPUT   1
+
+using namespace std::placeholders;
+
 int main()
 {
     try
@@ -22,23 +30,27 @@ int main()
     
         #if 1
     
-        Ac::WaveBuffer buffer;
-        //Ac::Synthesizer::InitWaveBuffer(buffer, 2.0, 2);
+        Ac::WaveBuffer buffer, outputBuffer;
+
+        #if TEST_MODE == TEST_MODE_SYNTH
+
+        Ac::Synthesizer::InitWaveBuffer(buffer, 1.0, 2);
         //Ac::Synthesizer::GenerateSineWave(buffer, 0.0, 2.0, 0.8, 0.0, 300.0);
         //Ac::Synthesizer::GenerateSineWave(buffer, 1.0, 2.0, 0.2, 0.0, 1500.0);
 
-        /*Ac::Synthesizer::GenerateWave(
-            buffer, 0.0, 2.0,
-            [](double& sample, unsigned short channel, double phase)
-            {
-                sample += std::sin(phase*2.0*M_PI*50.0)*(0.6 + std::sin(phase*2.0*M_PI*800.0)*0.4);
-            }
-        );*/
+        Ac::Synthesizer::GenerateWave(
+            buffer,
+            Ac::Synthesizer::SineWaveGenerator(0.3, 0.0, 300.0)
+        );
+
+        outputBuffer = buffer;
+
+        #elif TEST_MODE == TEST_MODE_LOAD
 
         std::ifstream inputFile("thorndike.wav", std::ios_base::binary);
         audioSystem->ReadAudioBuffer(Ac::AudioFormats::WAV, inputFile, buffer);
         
-        auto outputBuffer = buffer;
+        outputBuffer = buffer;
 
         Ac::Synthesizer::GenerateWave(
             outputBuffer,
@@ -48,9 +60,15 @@ int main()
             }
         );
 
-        #if 0
-        std::ofstream outputFile("synthesized_sound.wav", std::ios_base::binary);
+        #endif
+
+        #if TEST_WRITE_OUTPUT != 0
+        
+        std::string outputFilename = "synthesized_sound.wav";
+        std::ofstream outputFile(outputFilename, std::ios_base::binary);
+        std::cout << "write sound file: \"" << outputFilename << '\"' << std::endl;
         audioSystem->WriteAudioBuffer(Ac::AudioFormats::WAV, outputFile, outputBuffer);
+
         #endif
 
         auto sound = audioSystem->CreateSound(outputBuffer);
