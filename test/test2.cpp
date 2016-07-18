@@ -23,22 +23,37 @@ int main()
         #if 1
     
         Ac::WaveBuffer buffer;
-        Ac::Synthesizer::InitWaveBuffer(buffer, 2.0, 2);
+        //Ac::Synthesizer::InitWaveBuffer(buffer, 2.0, 2);
         //Ac::Synthesizer::GenerateSineWave(buffer, 0.0, 2.0, 0.8, 0.0, 300.0);
         //Ac::Synthesizer::GenerateSineWave(buffer, 1.0, 2.0, 0.2, 0.0, 1500.0);
 
-        Ac::Synthesizer::GenerateWave(
+        /*Ac::Synthesizer::GenerateWave(
             buffer, 0.0, 2.0,
             [](double& sample, unsigned short channel, double phase)
             {
                 sample += std::sin(phase*2.0*M_PI*50.0)*(0.6 + std::sin(phase*2.0*M_PI*800.0)*0.4);
             }
+        );*/
+
+        std::ifstream inputFile("thorndike.wav", std::ios_base::binary);
+        audioSystem->ReadAudioBuffer(Ac::AudioFormats::WAV, inputFile, buffer);
+        
+        auto outputBuffer = buffer;
+
+        Ac::Synthesizer::GenerateWave(
+            outputBuffer,
+            [&](double& sample, unsigned short channel, double phase)
+            {
+                sample = buffer.ReadSample(phase, channel);
+            }
         );
 
+        #if 0
         std::ofstream outputFile("synthesized_sound.wav", std::ios_base::binary);
-        audioSystem->WriteAudioBuffer(Ac::AudioFormats::WAV, outputFile, buffer);
+        audioSystem->WriteAudioBuffer(Ac::AudioFormats::WAV, outputFile, outputBuffer);
+        #endif
 
-        auto sound = audioSystem->CreateSound(buffer);
+        auto sound = audioSystem->CreateSound(outputBuffer);
     
         if (sound)
         {

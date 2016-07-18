@@ -34,6 +34,13 @@ using WaveGenerationFunction = std::function<void(double& sample, unsigned short
     
 //! 44.1 kHz sample rate.
 static const unsigned int sampleRate44kHz   = 44100;
+
+//! 22.05 kHz sample rate.
+static const unsigned int sampleRate22kHz   = 22050;
+
+//! 11.025 kHz sample rate.
+static const unsigned int sampleRate11kHz   = 11025;
+
 //! 8 kHz sample rate.
 static const unsigned int sampleRate8kHz    = 8000;
 
@@ -73,17 +80,18 @@ AC_EXPORT void InitWaveBuffer(
 /**
 \brief Main function for wave buffer generation.
 \param[in,out] buffer Specifies the buffer which is to be modified.
-\param[in] phaseBegin Specifies the phase beginning (in seconds).
-\param[in] phaseEnd Specifies the phase ending (in seconds).
+\param[in] phaseBegin Specifies the phase beginning (in seconds). This will be clamped to [0, +inf).
+\param[in] phaseEnd Specifies the phase ending (in seconds). This will be clamped to [phaseBegin, +inf).
 \param[in] waveFunction Specifies the generation callback function.
 \see WaveGenerationFunction
 */
-AC_EXPORT void GenerateWave(
-    WaveBuffer& buffer,
-    double phaseBegin,
-    double phaseEnd,
-    const WaveGenerationFunction& waveFunction
-);
+AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, const WaveGenerationFunction& waveFunction);
+
+/**
+\brief Modifies the entire wave buffer.
+\see GenerateWave(WaveBuffer&, double, double, const WaveGenerationFunction&)
+*/
+AC_EXPORT void GenerateWave(WaveBuffer& buffer, const WaveGenerationFunction& waveFunction);
 
 AC_EXPORT void GenerateSineWave(
     WaveBuffer& buffer,

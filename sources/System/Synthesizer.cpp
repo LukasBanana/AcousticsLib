@@ -40,6 +40,9 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
     if (!waveFunction)
         return;
     
+    phaseBegin  = std::max(0.0, phaseBegin);
+    phaseEnd    = std::max(phaseBegin, phaseEnd);
+
     const auto& format          = buffer.format;
     auto&       pcmData         = buffer.buffer;
     auto        rate            = format.sampleRate;
@@ -91,7 +94,11 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
         phase += phaseStep;
         ++blk;
     }
+}
 
+AC_EXPORT void GenerateWave(WaveBuffer& buffer, const WaveGenerationFunction& waveFunction)
+{
+    GenerateWave(buffer, 0.0, buffer.TotalTime(), waveFunction);
 }
 
 AC_EXPORT void GenerateSineWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, double amplitude, double phaseShift, double frequency)
