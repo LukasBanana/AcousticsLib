@@ -99,23 +99,26 @@ void AudioSystem::PlaySound(const std::string& filename, float volume, std::size
     /* Load and play sounds */
     auto sound = LoadSound(filename);
     
-    sound->SetVolume(volume);
-    sound->Play();
-    
-    /* Wait or add sound to immediate sound list */
-    if (waitCallback)
+    if (sound)
     {
-        while (sound->IsPlaying())
+        sound->SetVolume(volume);
+        sound->Play();
+    
+        /* Wait or add sound to immediate sound list */
+        if (waitCallback)
         {
-            if (!waitCallback(*sound))
+            while (sound->IsPlaying())
             {
-                immediateSounds_.push_back(std::move(sound));
-                break;
+                if (!waitCallback(*sound))
+                {
+                    immediateSounds_.push_back(std::move(sound));
+                    break;
+                }
             }
         }
+        else
+            immediateSounds_.push_back(std::move(sound));
     }
-    else
-        immediateSounds_.push_back(std::move(sound));
 }
 
 /* ----- Audio data access ------ */

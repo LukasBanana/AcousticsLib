@@ -177,7 +177,7 @@ ALCcontext* ALAudioSystem::CreateContext()
 
 std::unique_ptr<ALBufferObj> ALAudioSystem::CreateBufferObjFromFile(const std::string& filename, bool makeMono)
 {
-    std::ifstream file(filename);
+    std::ifstream file(filename, std::ios_base::binary);
     if (file.good())
     {
         /* Read sound file */
