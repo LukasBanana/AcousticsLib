@@ -21,6 +21,14 @@ Platform Support
 * **Linux**
 
 
+File Format Support
+----------------
+
+* **Wave** (WAV) Read/Write
+* **Ogg Vorbis** (OGG) Read
+* more coming ...
+
+
 Audio Engines
 -------------
 
