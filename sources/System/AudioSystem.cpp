@@ -139,7 +139,9 @@ std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(const AudioStreamForma
     switch (format)
     {
         case AudioStreamFormats::OGG:
+            #ifdef AC_PLUGIN_OGGVORBIS
             return std::unique_ptr<AudioStream>(new OGGStream(stream));
+            #endif
             break;
     }
     return nullptr;

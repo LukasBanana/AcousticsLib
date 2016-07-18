@@ -8,6 +8,8 @@
 #ifndef __AC_OGG_STREAM_H__
 #define __AC_OGG_STREAM_H__
 
+#ifdef AC_PLUGIN_OGGVORBIS
+
 
 #include <Ac/AudioStream.h>
 #include <vorbis/vorbisfile.h>
@@ -48,6 +50,8 @@ class AC_EXPORT OGGStream : public AudioStream
 
 } // /namespace Ac
 
+
+#endif
 
 #endif
 
