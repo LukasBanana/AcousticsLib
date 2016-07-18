@@ -27,7 +27,7 @@ int main()
     try
     {
         auto audioSystem = Ac::AudioSystem::Load();
-    
+        
         #if 1
     
         Ac::WaveBuffer buffer, outputBuffer;
@@ -47,7 +47,10 @@ int main()
 
         #elif TEST_MODE == TEST_MODE_LOAD
 
-        std::ifstream inputFile("thorndike.wav", std::ios_base::binary);
+        std::string inputFilename = "thorndike.wav";
+        std::cout << "read sound file: \"" << inputFilename << '\"' << std::endl;
+        
+        std::ifstream inputFile(inputFilename, std::ios_base::binary);
         audioSystem->ReadAudioBuffer(Ac::AudioFormats::WAV, inputFile, buffer);
         
         outputBuffer = buffer;
@@ -62,8 +65,9 @@ int main()
         #if TEST_WRITE_OUTPUT != 0
         
         std::string outputFilename = "synthesized_sound.wav";
-        std::ofstream outputFile(outputFilename, std::ios_base::binary);
         std::cout << "write sound file: \"" << outputFilename << '\"' << std::endl;
+        
+        std::ofstream outputFile(outputFilename, std::ios_base::binary);
         audioSystem->WriteAudioBuffer(Ac::AudioFormats::WAV, outputFile, outputBuffer);
 
         #endif

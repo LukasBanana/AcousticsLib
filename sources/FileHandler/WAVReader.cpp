@@ -52,11 +52,17 @@ static RIFFWAVEChunk WAVFindChunk(std::istream& stream, std::streamoff streamSiz
 
     while (offset < streamSize)
     {
-        /* Read next chunk header */
+        /* Read next chunk header (workaround with tmpID and tmpSize necessary due to packed fields) */
         stream.seekg(offset, std::ios::beg);
-        Read(stream, chunk.id);
-        Read(stream, chunk.size);
-
+        
+        std::uint32_t tmpID = 0;
+        Read(stream, tmpID);
+        chunk.id = tmpID;
+        
+        std::uint32_t tmpSize = 0;
+        Read(stream, tmpSize);
+        chunk.size = tmpSize;
+        
         if (chunk.id == UINT32_FROM_STRING(chunkID))
             return chunk;
 
