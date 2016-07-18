@@ -51,9 +51,21 @@ AC_EXPORT void InitWaveBuffer(
     unsigned short bitsPerSample = 16
 );
 
-AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, const std::function<double(double phase)>& waveFunction);
+AC_EXPORT void GenerateWave(
+    WaveBuffer& buffer,
+    double phaseBegin,
+    double phaseEnd,
+    const std::function<void(double& sample, double phase)>& waveFunction
+);
 
-AC_EXPORT void GenerateSineWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, double amplitude, double phaseShift, double frequency);
+AC_EXPORT void GenerateSineWave(
+    WaveBuffer& buffer,
+    double phaseBegin,
+    double phaseEnd,
+    double amplitude,
+    double phaseShift,
+    double frequency
+);
     
     
 } // /namesapce Synthesizer

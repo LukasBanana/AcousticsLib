@@ -12,6 +12,7 @@
 #include "AudioSystem.h"
 #include "WaveBuffer.h"
 #include "WaveFormatTags.h"
+#include "Synthesizer.h"
 
 
 #endif

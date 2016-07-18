@@ -112,6 +112,12 @@ class AC_EXPORT AudioSystem
             const std::function<bool(Sound&)> waitCallback = nullptr
         );
 
+        //! Creates a sound from the specified wave buffer.
+        virtual std::unique_ptr<Sound> CreateSound(const WaveBuffer& waveBuffer) = 0;
+
+        //! Creates a 3D sound from the specified wave buffer.
+        virtual std::unique_ptr<Sound3D> CreateSound3D(const WaveBuffer& waveBuffer) = 0;
+    
         /* ----- Listener ----- */
 
         //! Sets the listener world position. By default (0, 0, 0).
