@@ -143,10 +143,10 @@ class AC_EXPORT AudioSystem
         /**
         \brief Reads the audio data from the specified stream and stores it in the wave buffer.
         \param[in,out] stream Specifies the input stream to read from. This stream must be opened in binary mode!
-        \param[out] buffer Specifies the output wave buffer.
+        \param[out] waveBuffer Specifies the output wave buffer.
         \throws std::runtime_exception If something went wrong while reading.
         */
-        void ReadAudioBuffer(const AudioFormats format, std::istream& inputStream, WaveBuffer& waveBuffer);
+        void ReadAudioBuffer(const AudioFormats format, std::istream& stream, WaveBuffer& waveBuffer);
 
         /**
         \brief Opens a new audio stream.
@@ -155,6 +155,14 @@ class AC_EXPORT AudioSystem
         \throws std::runtime_exception If something went wrong while opening the stream.
         */
         std::unique_ptr<AudioStream> OpenAudioStream(const AudioStreamFormats format, std::istream& stream);
+
+        /**
+        \brief Writes the audio data to the specified stream.
+        \param[in,out] stream Specifies the output stream to write to. This stream must be opened in binary mode!
+        \param[out] waveBuffer Specifies the input wave buffer.
+        \throws std::runtime_exception If something went wrong while writing.
+        */
+        void WriteAudioBuffer(const AudioFormats format, std::ostream& stream, const WaveBuffer& waveBuffer);
 
     protected:
 

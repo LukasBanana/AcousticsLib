@@ -6,27 +6,12 @@
  */
 
 #include "WAVReader.h"
-#include <cstdint>
+#include "WAVFileFormat.h"
 #include <sstream>
 
 
 namespace Ac
 {
-
-
-#include <Ac/PackPush.h>
-
-struct RIFFWAVEChunk
-{
-    std::uint32_t id;   //!< Chunk ID (either 'fmt ' or 'data').
-    std::uint32_t size; //!< Chunk size (in bytes).
-}
-PACK_STRUCT;
-
-#include <Ac/PackPop.h>
-
-
-#define UINT32_FROM_STRING(s) (*reinterpret_cast<const std::uint32_t*>(s))
 
 
 template <typename T>
@@ -97,8 +82,6 @@ RIFF WAVE format chunk (for RIFF tags see details).
 */
 static void WAVReadChunks(std::istream& stream, std::streamoff streamSize, WaveBuffer& waveBuffer)
 {
-    static const std::uint16_t tagRIFF_MS_PCM = 0x0001;
-
     /* Read "fmt " chunk */
     auto chunkFMT = WAVFindChunk(stream, streamSize, "fmt ");
 
@@ -126,7 +109,7 @@ static void WAVReadChunks(std::istream& stream, std::streamoff streamSize, WaveB
 void WAVReader::ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer)
 {
     if (!stream.good())
-        throw std::runtime_error("invalid stream source");
+        throw std::runtime_error("invalid input stream for WAV file");
 
     /* Read RIFF WAVE header */
     std::uint32_t streamSize = 0;

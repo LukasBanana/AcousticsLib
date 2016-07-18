@@ -8,6 +8,7 @@
 #include "../Platform/Module.h"
 #include "../FileHandler/WAVReader.h"
 #include "../FileHandler/OGGStream.h"
+#include "../FileHandler/WAVWriter.h"
 
 #include <Ac/AudioSystem.h>
 #include <array>
@@ -123,13 +124,13 @@ void AudioSystem::PlaySound(const std::string& filename, float volume, std::size
 
 /* ----- Audio data access ------ */
 
-void AudioSystem::ReadAudioBuffer(const AudioFormats format, std::istream& inputStream, WaveBuffer& waveBuffer)
+void AudioSystem::ReadAudioBuffer(const AudioFormats format, std::istream& stream, WaveBuffer& waveBuffer)
 {
     switch (format)
     {
         case AudioFormats::WAV:
             WAVReader reader;
-            reader.ReadWaveBuffer(inputStream, waveBuffer);
+            reader.ReadWaveBuffer(stream, waveBuffer);
             break;
     }
 }
@@ -145,6 +146,17 @@ std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(const AudioStreamForma
             break;
     }
     return nullptr;
+}
+
+void AudioSystem::WriteAudioBuffer(const AudioFormats format, std::ostream& stream, const WaveBuffer& waveBuffer)
+{
+    switch (format)
+    {
+        case AudioFormats::WAV:
+            WAVWriter writer;
+            writer.WriteWaveBuffer(stream, waveBuffer);
+            break;
+    }
 }
 
 
