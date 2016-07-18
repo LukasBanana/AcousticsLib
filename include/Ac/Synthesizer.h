@@ -11,6 +11,7 @@
 
 #include "Export.h"
 #include "WaveBuffer.h"
+#include "MusicalNotes.h"
 
 #include <functional>
 
@@ -43,6 +44,13 @@ static const unsigned int sampleRate11kHz   = 11025;
 
 //! 8 kHz sample rate.
 static const unsigned int sampleRate8kHz    = 8000;
+
+/**
+\brief Returns the frequency (in Hz) for the specified musical note.
+\param[in] note Specifies the musical note (base value).
+\param[in] interval Specifies the interval of the musical note.
+*/
+AC_EXPORT double GetNoteFrequency(const MusicalNotes note, int interval);
 
 /**
 \brief Initializes the specified format with a PCM wave format.

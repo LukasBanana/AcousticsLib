@@ -21,6 +21,23 @@ namespace Synthesizer
 {
 
 
+// see https://en.wikipedia.org/wiki/Piano_key_frequencies
+AC_EXPORT double GetNoteFrequency(const MusicalNotes note, int interval)
+{
+    /* Determine key number */
+    int noteValue = static_cast<int>(note);
+
+    int keyNo = (interval * 12 + noteValue - 8);
+    keyNo = std::max(1, std::min(keyNo, 88));
+
+    /* Compute frequency by key number */
+    double baseFreq = 440.0;
+    double root_12_of_2 = std::pow(2.0, 1.0/12.0);
+    double freq = std::pow(root_12_of_2, keyNo - 49) * baseFreq;
+
+    return freq;
+}
+
 AC_EXPORT void InitWaveBufferFormat(WaveFormat& format, unsigned short channels, unsigned int sampleRate, unsigned short bitsPerSample)
 {
     format.formatTag        = WaveFormatTags::PCM;

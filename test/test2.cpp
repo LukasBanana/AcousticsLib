@@ -17,7 +17,7 @@
 
 #define TEST_MODE_SYNTH     1
 #define TEST_MODE_LOAD      2
-#define TEST_MODE           TEST_MODE_LOAD
+#define TEST_MODE           TEST_MODE_SYNTH
 #define TEST_WRITE_OUTPUT   1
 
 using namespace std::placeholders;
@@ -34,13 +34,26 @@ int main()
 
         #if TEST_MODE == TEST_MODE_SYNTH
 
-        Ac::Synthesizer::InitWaveBuffer(buffer, 1.0, 2);
+        Ac::Synthesizer::InitWaveBuffer(buffer, 4.0, 2);
         //Ac::Synthesizer::GenerateSineWave(buffer, 0.0, 2.0, 0.8, 0.0, 300.0);
         //Ac::Synthesizer::GenerateSineWave(buffer, 1.0, 2.0, 0.2, 0.0, 1500.0);
 
         Ac::Synthesizer::GenerateWave(
             buffer,
-            Ac::Synthesizer::SineWaveGenerator(0.3, 0.0, 300.0)
+            [](double& sample, unsigned short channel, double phase)
+            {
+                using N = Ac::MusicalNotes;
+                const N notes[] = { N::C, N::D, N::E, N::F, N::G, N::A, N::B };
+                
+                auto phaseIdx = static_cast<size_t>(phase*5.0);
+                auto interval = 4 + phaseIdx / 7;
+                auto noteIdx = phaseIdx % 7;
+
+                auto freq = Ac::Synthesizer::GetNoteFrequency(notes[noteIdx], interval);
+                auto sineWaveGen = Ac::Synthesizer::SineWaveGenerator(0.3, 0.0, freq);
+
+                sineWaveGen(sample, channel, phase);
+            }
         );
 
         outputBuffer = buffer;
