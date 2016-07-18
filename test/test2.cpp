@@ -20,15 +20,23 @@ int main()
     #if 1
     
     Ac::WaveBuffer buffer;
-    Ac::Synthesizer::InitWaveBuffer(buffer, 3.0);
-    Ac::Synthesizer::GenerateSineWave(buffer, 0.0, 3.0, 0.8, 0.0, 300.0);
-    Ac::Synthesizer::GenerateSineWave(buffer, 1.5, 3.0, 0.2, 0.0, 1500.0);
-    //Ac::Synthesizer::GenerateSineWave(buffer, 0.0, 1.5, 0.1, 0.3, 150.0);
+    Ac::Synthesizer::InitWaveBuffer(buffer, 2.0, 2);
+    //Ac::Synthesizer::GenerateSineWave(buffer, 0.0, 2.0, 0.8, 0.0, 300.0);
+    //Ac::Synthesizer::GenerateSineWave(buffer, 1.0, 2.0, 0.2, 0.0, 1500.0);
+
+    Ac::Synthesizer::GenerateWave(
+        buffer, 0.0, 2.0,
+        [](double& sample, unsigned short channel, double phase)
+        {
+            sample += std::sin(phase*2.0*M_PI*50.0)*(0.6 + std::sin(phase*2.0*M_PI*800.0)*0.4);
+        }
+    );
     
     auto sound = audioSystem->CreateSound(buffer);
     
     if (sound)
     {
+        sound->SetVolume(0.25f);
         sound->Play();
         
         while (sound->IsPlaying())

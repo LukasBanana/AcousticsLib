@@ -37,6 +37,7 @@ if(WIN32)
 	if(MSVC)
 		# Disable some warnings for MSVC compiler
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4250 /wd4251 /wd4290 /wd4103")
+		ADD_DEFINE(_USE_MATH_DEFINES)
 	endif()
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /DAC_DEBUG")
 else()

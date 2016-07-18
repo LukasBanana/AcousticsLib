@@ -60,8 +60,7 @@ static T SampleToData(double sample)
     return static_cast<T>(sample);
 }
 
-AC_EXPORT void GenerateWave(
-    WaveBuffer& buffer, double phaseBegin, double phaseEnd, const std::function<void(double& sample, double phase)>& waveFunction)
+AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, const WaveGenerationFunction& waveFunction)
 {
     if (!waveFunction)
         return;
@@ -95,7 +94,7 @@ AC_EXPORT void GenerateWave(
     /* Generate since wave for each channel */
     while (blk < blocks && phase <= phaseEnd)
     {
-        for (std::size_t chn = 0; chn < channels; ++chn)
+        for (unsigned short chn = 0; chn < channels; ++chn)
         {
             auto sample = 0.0;
             
@@ -108,7 +107,7 @@ AC_EXPORT void GenerateWave(
                 sample = DataToSample(*sampleData.bits8);
             
             /* Compute current audio sample and clamp to range [-1, 1] */
-            waveFunction(sample, phase);
+            waveFunction(sample, chn, phase);
             sample = std::max(-1.0, std::min(sample, 1.0));
             
             /* Write sample to PCM data */
@@ -131,7 +130,7 @@ AC_EXPORT void GenerateSineWave(WaveBuffer& buffer, double phaseBegin, double ph
 {
     GenerateWave(
         buffer, phaseBegin, phaseEnd,
-        [&](double& sample, double phase)
+        [&](double& sample, unsigned short channel, double phase)
         {
             sample += std::sin((phase + phaseShift)*2.0*M_PI*frequency)*amplitude;
         }
