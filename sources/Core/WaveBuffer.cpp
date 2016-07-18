@@ -5,6 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
+#include "PCMData.h"
+
 #include <Ac/WaveBuffer.h>
 #include <Ac/WaveFormatTags.h>
 #include <algorithm>
@@ -145,7 +147,7 @@ double WaveBuffer::TotalTime() const
     if (format.bytesPerSecond > 0)
     {
         auto numBytes = static_cast<double>(buffer.size());
-        return numBytes / static_cast<double>(format.bytesPerSecond);
+        return (numBytes / static_cast<double>(format.bytesPerSecond));
     }
     return 0.0;
 }
@@ -154,7 +156,68 @@ double WaveBuffer::TotalTime(std::size_t bufferSize, std::size_t sampleRate, std
 {
     auto blockAlign     = (channels * bitsPerSample) / 8;
     auto bytesPerSecond = sampleRate * blockAlign;
-    return (bytesPerSecond> 0 ? static_cast<double>(bufferSize) / bytesPerSecond : 0.0);
+    return (bytesPerSecond > 0 ? static_cast<double>(bufferSize) / bytesPerSecond : 0.0);
+}
+
+double WaveBuffer::ReadSample(double phase, unsigned short channel) const
+{
+    double sample = 0.0;
+
+    PCMSampleConst pcmSample;
+    pcmSample.raw = GetPCMOffsetPtr(phase, channel);
+
+    if (pcmSample.raw)
+    {
+        if (format.bitsPerSample == 16)
+            PCMDataToSample(sample, *pcmSample.bits16);
+        else if (format.bitsPerSample == 8)
+            PCMDataToSample(sample, *pcmSample.bits8);
+    }
+
+    return sample;
+}
+
+void WaveBuffer::WriteSample(double phase, unsigned short channel, double sample)
+{
+    PCMSample pcmSample;
+    pcmSample.raw = GetPCMOffsetPtr(phase, channel);
+
+    if (pcmSample.raw)
+    {
+        if (format.bitsPerSample == 16)
+            SampleToPCMData(*pcmSample.bits16, sample);
+        else if (format.bitsPerSample == 8)
+            SampleToPCMData(*pcmSample.bits8, sample);
+    }
+}
+
+
+/*
+ * ======= Private: =======
+ */
+
+std::size_t WaveBuffer::GetPCMBufferOffset(double phase, unsigned short channel) const
+{
+    if (!buffer.empty() && channel < format.channels && phase >= 0.0 && phase <= TotalTime())
+    {
+        auto bytesPerSample = (format.bitsPerSample / 8);
+        auto block          = (static_cast<std::size_t>(phase * static_cast<double>(format.sampleRate)));
+        auto offset         = (block * format.channels + channel) * bytesPerSample;
+        return std::min(offset, buffer.size() - 1u);
+    }
+    return 0;
+}
+
+void* WaveBuffer::GetPCMOffsetPtr(double phase, unsigned short channel)
+{
+    auto offset = GetPCMBufferOffset(phase, channel);
+    return (offset < buffer.size() ? reinterpret_cast<void*>(&buffer[offset]) : nullptr);
+}
+
+const void* WaveBuffer::GetPCMOffsetPtr(double phase, unsigned short channel) const
+{
+    auto offset = GetPCMBufferOffset(phase, channel);
+    return (offset < buffer.size() ? reinterpret_cast<const void*>(&buffer[offset]) : nullptr);
 }
 
 

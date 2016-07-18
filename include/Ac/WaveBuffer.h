@@ -25,28 +25,42 @@ namespace Ac
 using PCMBuffer = std::vector<char>;
 
 //! Data model structure for an audio wave buffer.
-struct AC_EXPORT WaveBuffer
+class AC_EXPORT WaveBuffer
 {
-    //! Reverses the raw buffer.
-    void Reverse();
+
+    public:
+
+        //! Reverses the raw buffer.
+        void Reverse();
     
-    //! Converts the raw buffer to mono sound (1 channel).
-    void MakeMono();
+        //! Converts the raw buffer to mono sound (1 channel).
+        void MakeMono();
 
-    //! Converts the raw buffer to stereo sound (2 channels).
-    void MakeStereo();
+        //! Converts the raw buffer to stereo sound (2 channels).
+        void MakeStereo();
 
-    //! Returns the number of samples (independently of the number of channels).
-    std::size_t NumSamples() const;
+        //! Returns the number of samples (independently of the number of channels).
+        std::size_t NumSamples() const;
 
-    //! Returns the total time (in seconds) which is required to play this entire wave buffer.
-    double TotalTime() const;
+        //! Returns the total time (in seconds) which is required to play this entire wave buffer.
+        double TotalTime() const;
 
-    //! Returns the total time (in seconds) which is required to play an entire wave buffer with the specified configuration.
-    static double TotalTime(std::size_t bufferSize, std::size_t sampleRate, std::size_t channels, std::size_t bitsPerSample);
+        //! Returns the total time (in seconds) which is required to play an entire wave buffer with the specified configuration.
+        static double TotalTime(std::size_t bufferSize, std::size_t sampleRate, std::size_t channels, std::size_t bitsPerSample);
 
-    WaveFormat  format; //!< Wave buffer format.
-    PCMBuffer   buffer; //!< Wave PCM (Pulse Modulation Code) buffer.
+        double ReadSample(double phase, unsigned short channel) const;
+        void WriteSample(double phase, unsigned short channel, double sample);
+
+        WaveFormat  format; //!< Wave buffer format.
+        PCMBuffer   buffer; //!< Wave PCM (Pulse Modulation Code) buffer.
+
+    private:
+
+        std::size_t GetPCMBufferOffset(double phase, unsigned short channel) const;
+
+        void* GetPCMOffsetPtr(double phase, unsigned short channel);
+        const void* GetPCMOffsetPtr(double phase, unsigned short channel) const;
+
 };
 
 

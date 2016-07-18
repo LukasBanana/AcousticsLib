@@ -5,11 +5,11 @@
  * See "LICENSE.txt" for license information.
  */
 
+#include "../Core/PCMData.h"
+
 #include <Ac/Synthesizer.h>
 #include <Ac/WaveFormatTags.h>
 #include <cmath>
-#include <algorithm>
-#include <limits>
 
 
 namespace Ac
@@ -35,31 +35,6 @@ AC_EXPORT void InitWaveBuffer(WaveBuffer& buffer, double duration, unsigned shor
     buffer.buffer.resize(static_cast<std::size_t>(duration * buffer.format.bytesPerSecond));
 }
     
-template <typename T>
-static double DataToSample(T data)
-{
-    /* Scale sample and clamp into range [min, max] */
-    auto sample = static_cast<double>(data);
-    
-    const auto upperEnd = static_cast<double>(std::numeric_limits<T>::max());
-    sample /= upperEnd;
-    
-    return sample;
-}
-
-template <typename T>
-static T SampleToData(double sample)
-{
-    /* Scale sample and clamp into range [min, max] */
-    const auto lowerEnd = static_cast<double>(std::numeric_limits<T>::lowest());
-    const auto upperEnd = static_cast<double>(std::numeric_limits<T>::max());
-    
-    sample *= upperEnd;
-    sample = std::max(lowerEnd, std::min(sample, upperEnd));
-    
-    return static_cast<T>(sample);
-}
-
 AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, const WaveGenerationFunction& waveFunction)
 {
     if (!waveFunction)
@@ -69,7 +44,7 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
     auto&       pcmData         = buffer.buffer;
     auto        rate            = format.sampleRate;
     
-    if (rate == 0 || format.blockAlign == 0)
+    if (rate == 0 || format.blockAlign == 0 || format.channels == 0)
         return;
     
     auto        bytesPerSample  = format.bitsPerSample/8;
@@ -81,14 +56,7 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
     auto        blk             = static_cast<std::size_t>(phaseBegin*static_cast<double>(rate));
     auto        offset          = blk*channels*bytesPerSample;
     
-    union
-    {
-        void*   raw;
-        short*  bits16;
-        char*   bits8;
-    }
-    sampleData;
-    
+    PCMSample sampleData;
     sampleData.raw = nullptr;
     
     /* Generate since wave for each channel */
@@ -102,9 +70,9 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
             sampleData.raw = reinterpret_cast<void*>(&pcmData[offset]);
             
             if (bytesPerSample == 2)
-                sample = DataToSample(*sampleData.bits16);
+                PCMDataToSample(sample, *sampleData.bits16);
             else if (bytesPerSample == 1)
-                sample = DataToSample(*sampleData.bits8);
+                PCMDataToSample(sample, *sampleData.bits8);
             
             /* Compute current audio sample and clamp to range [-1, 1] */
             waveFunction(sample, chn, phase);
@@ -112,9 +80,9 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
             
             /* Write sample to PCM data */
             if (bytesPerSample == 2)
-                *sampleData.bits16 = SampleToData<short>(sample);
+                SampleToPCMData(*sampleData.bits16, sample);
             else if (bytesPerSample == 1)
-                *sampleData.bits8 = SampleToData<char>(sample);
+                SampleToPCMData(*sampleData.bits8, sample);
             
             offset += bytesPerSample;
         }
