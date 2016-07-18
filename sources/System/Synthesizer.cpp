@@ -115,6 +115,16 @@ AC_EXPORT WaveGeneratorFunction SineWaveGenerator(double amplitude, double phase
     return std::bind(SineWaveGeneratorCallback, _1, _2, _3, amplitude, phaseShift, frequency);
 }
 
+static void ReverseWaveGeneratorCallback(double& sample, unsigned short channel, double phase, const WaveBuffer& buffer)
+{
+    sample = buffer.ReadSample(buffer.TotalTime() - phase, channel);
+}
+
+AC_EXPORT WaveGeneratorFunction ReverseWaveGenerator(const WaveBuffer& buffer)
+{
+    return std::bind(ReverseWaveGeneratorCallback, _1, _2, _3, buffer);
+}
+
 
 } // /namesapce Synthesizer
 

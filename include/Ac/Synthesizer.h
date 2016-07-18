@@ -93,9 +93,25 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
 */
 AC_EXPORT void GenerateWave(WaveBuffer& buffer, const WaveGeneratorFunction& waveGenerator);
 
+/**
+\brief Returns a function object of a sine wave generator of the form: sin((phase + phaseShift)*2*PI*frequency)*amplitude.
+\param[in] amplitude Specifies the sine wave amplitude (maximal sine value).
+\param[in] phaseShift Specifies the phase shift value within the sine function.
+\param[in] frequency Specifies the sine wave frequency. This frequency should be in the human hearable frequency range, which is 20 to 20,000 Hz.
+\see WaveGeneratorFunction
+\see GenerateWave
+*/
 AC_EXPORT WaveGeneratorFunction SineWaveGenerator(double amplitude, double phaseShift, double frequency);
 
-//AC_EXPORT void ReverseWave(WaveBuffer& buffer);
+/**
+\brief Returns a function object of a reversion wave generator.
+\param[in] buffer Specifies the buffer to reverse.
+\remarks Note that the input buffer of this function should not be the same buffer object
+which is currently being modified within the "GenerateWave" function!
+\see WaveGeneratorFunction
+\see GenerateWave
+*/
+AC_EXPORT WaveGeneratorFunction ReverseWaveGenerator(const WaveBuffer& buffer);
     
     
 } // /namesapce Synthesizer

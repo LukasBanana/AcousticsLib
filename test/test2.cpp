@@ -17,7 +17,7 @@
 
 #define TEST_MODE_SYNTH     1
 #define TEST_MODE_LOAD      2
-#define TEST_MODE           TEST_MODE_SYNTH
+#define TEST_MODE           TEST_MODE_LOAD
 #define TEST_WRITE_OUTPUT   1
 
 using namespace std::placeholders;
@@ -54,10 +54,7 @@ int main()
 
         Ac::Synthesizer::GenerateWave(
             outputBuffer,
-            [&](double& sample, unsigned short channel, double phase)
-            {
-                sample = buffer.ReadSample(phase, channel);
-            }
+            Ac::Synthesizer::ReverseWaveGenerator(buffer)
         );
 
         #endif
