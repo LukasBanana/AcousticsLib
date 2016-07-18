@@ -24,8 +24,8 @@ Platform Support
 File Format Support
 ----------------
 
-* **Wave** (WAV) Read/Write
-* **Ogg Vorbis** (OGG) Read
+* **WAV** *(Wave)* Read/Write
+* **OGG** *(Ogg Vorbis)* Read
 * more coming ...
 
 
