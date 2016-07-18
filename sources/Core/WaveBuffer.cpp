@@ -24,37 +24,6 @@ static void ChangeFormatChannels(WaveFormat& format, unsigned short channels)
 }
 
 template <typename T>
-void ReverseTmpl(const WaveFormat& format, PCMBuffer& buffer)
-{
-    auto size       = buffer.size();
-    auto num        = size / sizeof(T);
-    auto numHalf    = num / format.channels / 2;
-    auto rawBuffer  = reinterpret_cast<T*>(buffer.data());
-
-    for (std::size_t i = 0, j = 0; i < numHalf; ++i, j += format.channels)
-    {
-        for (unsigned short chn = 0; chn < format.channels; ++chn)
-            std::swap(rawBuffer[chn + j], rawBuffer[num + chn - format.channels - j]);
-    }
-}
-
-void WaveBuffer::Reverse()
-{
-    if (!buffer.empty())
-    {
-        switch (format.bitsPerSample)
-        {
-            case 8:
-                ReverseTmpl<char>(format, buffer);
-                break;
-            case 16:
-                ReverseTmpl<short>(format, buffer);
-                break;
-        }
-    }
-}
-
-template <typename T>
 void MakeMonoTmpl(WaveFormat& format, PCMBuffer& buffer)
 {
     auto size = buffer.size()/2;

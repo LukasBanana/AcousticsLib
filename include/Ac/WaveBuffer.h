@@ -30,9 +30,6 @@ class AC_EXPORT WaveBuffer
 
     public:
 
-        //! Reverses the raw buffer.
-        void Reverse();
-    
         //! Converts the raw buffer to mono sound (1 channel).
         void MakeMono();
 
