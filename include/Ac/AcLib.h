@@ -13,6 +13,7 @@
 #include "WaveBuffer.h"
 #include "WaveFormatTags.h"
 #include "Synthesizer.h"
+#include "ChannelTypes.h"
 
 
 #endif
