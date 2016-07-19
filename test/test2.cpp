@@ -12,12 +12,13 @@
 #include <vector>
 #include <thread>
 #include <cmath>
+#include <array>
 
 
 
 #define TEST_MODE_SYNTH     1
 #define TEST_MODE_LOAD      2
-#define TEST_MODE           TEST_MODE_LOAD
+#define TEST_MODE           TEST_MODE_SYNTH
 #define TEST_WRITE_OUTPUT   1
 
 int main()
@@ -43,13 +44,42 @@ int main()
                 #if 0
 
                 using N = Ac::MusicalNotes;
-                const N notes[] = { N::C, N::D, N::E, N::F, N::G, N::A, N::B };
+                std::array<N, 7> notes { N::C, N::D, N::E, N::F, N::G, N::A, N::B };
                 
                 auto phaseIdx = static_cast<size_t>(phase*5.0);
-                auto interval = 4 + phaseIdx / 7;
-                auto noteIdx = phaseIdx % 7;
+                auto interval = 4 + phaseIdx / notes.size();
+                auto noteIdx = phaseIdx % notes.size();
 
                 auto freq = Ac::Synthesizer::GetNoteFrequency(notes[noteIdx], interval);
+                auto sineWaveGen = Ac::Synthesizer::SineWaveGenerator(0.3, 0.0, freq);
+
+                sineWaveGen(sample, channel, phase);
+
+                #elif 1
+
+                using N = Ac::MusicalNotes;
+                struct Note
+                {
+                    N   n;
+                    int i;
+                };
+                std::array<Note, 9> notes
+                {
+                    Note{ N::E, 4 },
+                    Note{ N::DSharp, 4 },
+                    Note{ N::E, 4 },
+                    Note{ N::DSharp, 4 },
+                    Note{ N::E, 4 },
+                    Note{ N::B, 3 },
+                    Note{ N::D, 4 },
+                    Note{ N::C, 4 },
+                    Note{ N::A, 3 }
+                };
+                
+                auto phaseIdx = static_cast<size_t>(phase*4.0);
+                auto noteIdx = phaseIdx % notes.size();
+
+                auto freq = Ac::Synthesizer::GetNoteFrequency(notes[noteIdx].n, notes[noteIdx].i);
                 auto sineWaveGen = Ac::Synthesizer::SineWaveGenerator(0.3, 0.0, freq);
 
                 sineWaveGen(sample, channel, phase);
