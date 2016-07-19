@@ -33,7 +33,7 @@ std::size_t WaveBuffer::GetSampleCount() const
 
 void WaveBuffer::SetTotalTime(double duration)
 {
-    auto bufferSize = duration * format_.BytesPerSecond();
+    auto bufferSize = duration * format_.sampleRate;
     SetSampleCount(static_cast<std::size_t>(bufferSize));
 }
 

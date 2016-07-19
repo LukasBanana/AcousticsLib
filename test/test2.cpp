@@ -29,7 +29,7 @@ int main()
         
         #if 1
     
-        Ac::WaveBuffer buffer, outputBuffer;
+        Ac::WaveBuffer buffer(Ac::WaveBufferFormat(44100, 8, 1)), outputBuffer;
 
         #if TEST_MODE == TEST_MODE_SYNTH
 
