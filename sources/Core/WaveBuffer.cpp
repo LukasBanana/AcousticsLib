@@ -20,6 +20,20 @@ WaveBuffer::WaveBuffer(const WaveBufferFormat& format) :
 {
 }
 
+WaveBuffer::WaveBuffer(WaveBuffer&& other) :
+    format_( other.format_            ),
+    buffer_( std::move(other.buffer_) )
+{
+}
+
+WaveBuffer& WaveBuffer::operator = (WaveBuffer&& other)
+{
+    format_ = other.format_;
+    buffer_ = std::move(other.buffer_);
+    return *this;
+}
+
+
 std::size_t WaveBuffer::GetSampleCount() const
 {
     auto blockAlign = format_.BlockAlign();
@@ -127,8 +141,24 @@ void WaveBuffer::SetFormat(const WaveBufferFormat& format)
 {
     if (format_ != format)
     {
-        format_ = format;
-        //todo...
+        if (!buffer_.empty())
+        {
+            WaveBuffer tempBuffer(format);
+            tempBuffer.SetSampleCount(GetSampleCount());
+
+            unsigned short maxChannels = format_.channels - 1;
+            tempBuffer.ForEachSample(
+                [&](double& sample, unsigned short channel, std::size_t index, double phase)
+                {
+                    /* Copy sample from current buffer to temporary buffer */
+                    sample = ReadSample(index, std::min(channel, maxChannels));
+                }
+            );
+
+            *this = std::move(tempBuffer);
+        }
+        else
+            format_ = format;
     }
 }
 

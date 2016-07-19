@@ -48,6 +48,8 @@ class AC_EXPORT WaveBuffer
         WaveBuffer& operator = (const WaveBuffer&) = default;
 
         WaveBuffer(const WaveBufferFormat& format);
+        WaveBuffer(WaveBuffer&& other);
+        WaveBuffer& operator = (WaveBuffer&& other);
 
         //! Returns the number of samples (independently of the number of channels).
         std::size_t GetSampleCount() const;
