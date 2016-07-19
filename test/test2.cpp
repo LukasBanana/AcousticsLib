@@ -18,7 +18,7 @@
 
 #define TEST_MODE_SYNTH     1
 #define TEST_MODE_LOAD      2
-#define TEST_MODE           TEST_MODE_LOAD
+#define TEST_MODE           TEST_MODE_SYNTH
 #define TEST_WRITE_OUTPUT   1
 
 int main()
@@ -28,7 +28,7 @@ int main()
         auto audioSystem = Ac::AudioSystem::Load();
         
         #if 1
-    
+
         Ac::WaveBuffer buffer(Ac::WaveBufferFormat(/*44100*/Ac::Synthesizer::sampleRate22kHz, 16, 1)), outputBuffer;
 
         #if TEST_MODE == TEST_MODE_SYNTH
@@ -37,9 +37,8 @@ int main()
         //Ac::Synthesizer::GenerateSineWave(buffer, 0.0, 2.0, 0.8, 0.0, 300.0);
         //Ac::Synthesizer::GenerateSineWave(buffer, 1.0, 2.0, 0.2, 0.0, 1500.0);
 
-        Ac::Synthesizer::GenerateWave(
-            buffer,
-            [](double& sample, unsigned short channel, double phase)
+        buffer.ForEachSample(
+            [](double& sample, unsigned short channel, std::size_t index, double phase)
             {
                 #if 0
 
@@ -82,14 +81,14 @@ int main()
                 auto freq = Ac::Synthesizer::GetNoteFrequency(notes[noteIdx].n, notes[noteIdx].i);
                 auto sineWaveGen = Ac::Synthesizer::SineWaveGenerator(0.3, 0.0, freq);
 
-                sineWaveGen(sample, channel, phase);
+                sineWaveGen(sample, channel, index, phase);
 
                 #elif 1
 
                 if (phase < 2.0)
-                    Ac::Synthesizer::HalfCircleWaveGenerator(0.3, 0.0, 440.0)(sample, channel, phase);
+                    Ac::Synthesizer::HalfCircleWaveGenerator(0.3, 0.0, 440.0)(sample, channel, index, phase);
                 else
-                    Ac::Synthesizer::SineWaveGenerator(0.3, 0.0, 440.0)(sample, channel, phase);
+                    Ac::Synthesizer::SineWaveGenerator(0.3, 0.0, 440.0)(sample, channel, index, phase);
 
                 #endif
             }
@@ -107,10 +106,9 @@ int main()
         
         outputBuffer = buffer;
 
-        Ac::Synthesizer::GenerateWave(
-            outputBuffer,
+        outputBuffer.ForEachSample(
             //Ac::Synthesizer::ReverseWaveGenerator(buffer)
-            [&](double& sample, unsigned short channel, double phase)
+            [&](double& sample, unsigned short channel, std::size_t index, double phase)
             {
                 sample = buffer.ReadSample(phase, channel);
                 if (phase >= 0.2)

@@ -102,13 +102,25 @@ void WaveBuffer::WriteSample(double phase, unsigned short channel, double sample
 std::size_t WaveBuffer::GetIndexFromPhase(double phase) const
 {
     /* Clamp phase to range [0, GetTotalTime()) */
-    if (!buffer_.empty())
+    auto sampleCount = GetSampleCount();
+    if (sampleCount > 0)
     {
         phase       = std::max(0.0, std::min(phase, GetTotalTime()));
         auto index  = (static_cast<std::size_t>(phase * static_cast<double>(format_.sampleRate)));
-        return std::min(index, GetSampleCount() - 1);
+        return std::min(index, sampleCount - 1);
     }
     return 0;
+}
+
+double WaveBuffer::GetPhaseFromIndex(std::size_t index) const
+{
+    auto sampleCount = GetSampleCount();
+    if (sampleCount > 0)
+    {
+        index = std::min(index, sampleCount - 1);
+        return (static_cast<double>(index) / static_cast<double>(format_.sampleRate));
+    }
+    return 0.0;
 }
 
 void WaveBuffer::SetFormat(const WaveBufferFormat& format)
@@ -125,6 +137,49 @@ void WaveBuffer::SetChannels(unsigned short channels)
     auto format = GetFormat();
     format.channels = channels;
     SetFormat(format);
+}
+
+void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, std::size_t indexBegin, std::size_t indexEnd)
+{
+    /* Validate parameters and clamp range to [0, bufferSize) */
+    auto sampleCount = GetSampleCount();
+    if (sampleCount == 0 || !iterator)
+        return;
+
+    indexBegin  = std::max(0u, std::min(indexBegin, sampleCount - 1));
+    indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleCount - 1));
+
+    auto channels   = format_.channels;
+    auto rate       = format_.sampleRate;
+
+    auto phase      = GetPhaseFromIndex(indexBegin);
+    auto phaseStep  = (1.0 / static_cast<double>(rate));
+
+    for (std::size_t i = indexBegin; i <= indexEnd; ++i)
+    {
+        for (unsigned short chn = 0; chn < channels; ++chn)
+        {
+            /* Read sample, modify sample with generator callback, and write sample back to buffer */
+            auto sample = ReadSample(i, chn);
+            iterator(sample, chn, i, phase);
+            WriteSample(i, chn, sample);
+        }
+
+        /* Increase phase */
+        phase += phaseStep;
+    }
+}
+
+void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, double phaseBegin, double phaseEnd)
+{
+    ForEachSample(iterator, GetIndexFromPhase(phaseBegin), GetIndexFromPhase(phaseEnd));
+}
+
+void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator)
+{
+    auto sampleCount = GetSampleCount();
+    if (sampleCount > 0)
+        ForEachSample(iterator, 0, sampleCount - 1);
 }
 
 

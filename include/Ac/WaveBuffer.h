@@ -15,6 +15,7 @@
 #include <vector>
 #include <queue>
 #include <memory>
+#include <functional>
 
 
 namespace Ac
@@ -23,6 +24,17 @@ namespace Ac
 
 //! Raw audio PCM (Pulse Modulation Code) buffer type.
 using PCMBuffer = std::vector<char>;
+
+/**
+\brief Sample iteration callback function interface.
+\param[in,out] sample Specifies the current sample which is to be modified. Each sample will be clamped to the range [-1, 1].
+\param[in] channel Specifies the current channel to which the sample belongs.
+\param[in] index Specifies the current sample index.
+\param[in] phase Specifies the current phase within the entire wave buffer (in seconds).
+\remarks This function interface is used for the 'GenerateWave' function.
+\see GenerateWave
+*/
+using SampleIterationFunction = std::function<void(double& sample, unsigned short channel, std::size_t index, double phase)>;
 
 
 //! Data model structure for an audio wave buffer.
@@ -68,8 +80,15 @@ class AC_EXPORT WaveBuffer
         \brief Determines the sample index for the specified phase (in seconds).
         \see ReadSample(std::size_t, unsigned short)
         \see WriteSample(std::size_t, unsigned short, double)
+        \see GetPhaseFromIndex
         */
         std::size_t GetIndexFromPhase(double phase) const;
+
+        /**
+        \brief Determines the phase (in seconds) for the specified sample index.
+        \see GetIndexFromPhase
+        */
+        double GetPhaseFromIndex(std::size_t index) const;
 
         /**
         \brief Sets the new wave buffer format.
@@ -89,6 +108,32 @@ class AC_EXPORT WaveBuffer
         \see SetFormat
         */
         void SetChannels(unsigned short channels);
+        
+        /**
+        \brief Iterates over all samples of this wave buffer within the specified range.
+        \param[in] iterator Specifies the sample iteration callback function. This function will be used to modify each sample.
+        \param[in] indexBegin Specifies the first sample index.
+        \param[in] indexEnd Specifies the last sample index. The ending is inclusive, i.e. the iteration range is [indexBegin, indexEnd].
+        \see SampleIterationFunction
+        */
+        void ForEachSample(const SampleIterationFunction& iterator, std::size_t indexBegin, std::size_t indexEnd);
+
+        /**
+        \brief Iterates over all samples of this wave buffer within the specified phase range.
+        \param[in] iterator Specifies the sample iteration callback function. This function will be used to modify each sample.
+        \param[in] phaseBegin Specifies the phase beginning (in seconds). This will be clamped to [0, +inf).
+        \param[in] phaseEnd Specifies the phase ending (in seconds). This will be clamped to [phaseBegin, +inf).
+        The ending is inclusive, i.e. the iteration range is [phaseBegin, phaseEnd].
+        \see SampleIterationFunction
+        */
+        void ForEachSample(const SampleIterationFunction& iterator, double phaseBegin, double phaseEnd);
+
+        /**
+        \brief Iterates over all samples of this wave buffer.
+        \param[in] iterator Specifies the sample iteration callback function. This function will be used to modify each sample.
+        \see SampleIterationFunction
+        */
+        void ForEachSample(const SampleIterationFunction& iterator);
 
         //! Returns the actual PCM buffer size (in bytes).
         inline std::size_t BufferSize() const

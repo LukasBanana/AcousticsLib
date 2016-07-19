@@ -23,16 +23,6 @@ namespace Synthesizer
 {
 
 
-/**
-\brief Wave generation function interface.
-\param[in,out] sample Specifies the current sample which is to be modified. Each sample will be clamped to the range [-1, 1].
-\param[in] channel Specifies the current channel to which the sample belongs.
-\param[in] phase Specifies the current phase within the entire wave buffer (in seconds).
-\remarks This function interface is used for the 'GenerateWave' function.
-\see GenerateWave
-*/
-using WaveGeneratorFunction = std::function<void(double& sample, unsigned short channel, double phase)>;
-    
 //! 44.1 kHz sample rate.
 static const unsigned int sampleRate44kHz   = 44100;
 
@@ -53,22 +43,6 @@ static const unsigned int sampleRate8kHz    = 8000;
 AC_EXPORT double GetNoteFrequency(const MusicalNotes note, int interval);
 
 /**
-\brief Main function for wave buffer generation.
-\param[in,out] buffer Specifies the buffer which is to be modified.
-\param[in] phaseBegin Specifies the phase beginning (in seconds). This will be clamped to [0, +inf).
-\param[in] phaseEnd Specifies the phase ending (in seconds). This will be clamped to [phaseBegin, +inf).
-\param[in] waveGenerator Specifies the wave generator callback function.
-\see WaveGeneratorFunction
-*/
-AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, const WaveGeneratorFunction& waveGenerator);
-
-/**
-\brief Modifies the entire wave buffer.
-\see GenerateWave(WaveBuffer&, double, double, const WaveGeneratorFunction&)
-*/
-AC_EXPORT void GenerateWave(WaveBuffer& buffer, const WaveGeneratorFunction& waveGenerator);
-
-/**
 \brief Returns a function object of a sine wave generator of the form: sin((phase + phaseShift)*2*PI*frequency)*amplitude.
 \param[in] amplitude Specifies the sine wave amplitude (maximal sine value).
 \param[in] phaseShift Specifies the phase shift value within the sine function.
@@ -76,9 +50,9 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, const WaveGeneratorFunction& wav
 \see WaveGeneratorFunction
 \see GenerateWave
 */
-AC_EXPORT WaveGeneratorFunction SineWaveGenerator(double amplitude, double phaseShift, double frequency);
+AC_EXPORT SampleIterationFunction SineWaveGenerator(double amplitude, double phaseShift, double frequency);
 
-AC_EXPORT WaveGeneratorFunction HalfCircleWaveGenerator(double amplitude, double phaseShift, double frequency);
+AC_EXPORT SampleIterationFunction HalfCircleWaveGenerator(double amplitude, double phaseShift, double frequency);
 
 /**
 \brief Returns a function object of a reversion wave generator.
@@ -88,7 +62,7 @@ which is currently being modified within the "GenerateWave" function!
 \see WaveGeneratorFunction
 \see GenerateWave
 */
-AC_EXPORT WaveGeneratorFunction ReverseWaveGenerator(const WaveBuffer& buffer);
+AC_EXPORT SampleIterationFunction ReverseWaveGenerator(const WaveBuffer& buffer);
     
     
 } // /namesapce Synthesizer
