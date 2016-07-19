@@ -146,8 +146,8 @@ void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, std::siz
     if (sampleCount == 0 || !iterator)
         return;
 
-    indexBegin  = std::max(0u, std::min(indexBegin, sampleCount - 1));
-    indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleCount - 1));
+    indexBegin  = std::max(std::size_t(0u), std::min(indexBegin, sampleCount - 1u));
+    indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleCount - 1u));
 
     auto channels   = format_.channels;
     auto rate       = format_.sampleRate;
