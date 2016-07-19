@@ -14,23 +14,23 @@ namespace Ac
 {
 
 
-static bool ALFormatFromWaveFormat(const WaveFormat& waveFormat, ALenum& outputFormat)
+static bool ALFormatFromWaveFormat(ALenum& outFormat, const WaveBufferFormat& inFormat)
 {
-    if (waveFormat.bitsPerSample == 16)
+    if (inFormat.bitsPerSample == 16)
     {
-        if (waveFormat.channels == 2)
-            outputFormat = AL_FORMAT_STEREO16;
-        else if (waveFormat.channels == 1)
-            outputFormat = AL_FORMAT_MONO16;
+        if (inFormat.channels == 2)
+            outFormat = AL_FORMAT_STEREO16;
+        else if (inFormat.channels == 1)
+            outFormat = AL_FORMAT_MONO16;
         else
             return false;
     }
-    else if (waveFormat.bitsPerSample == 8)
+    else if (inFormat.bitsPerSample == 8)
     {
-        if (waveFormat.channels == 2)
-            outputFormat = AL_FORMAT_STEREO8;
-        else if (waveFormat.channels == 1)
-            outputFormat = AL_FORMAT_MONO8;
+        if (inFormat.channels == 2)
+            outFormat = AL_FORMAT_STEREO8;
+        else if (inFormat.channels == 1)
+            outFormat = AL_FORMAT_MONO8;
         else
             return false;
     }
@@ -58,7 +58,7 @@ void ALBufferObj::BufferData(ALenum format, const ALvoid* buffer, ALsizei size, 
     alBufferData(handle_, format, buffer, size, sampleRate);
 
     /* Compute total buffer time in seconds */
-    std::size_t channels = 0, bitsPerSample = 0;
+    unsigned short channels = 0, bitsPerSample = 0;
     
     switch (format)
     {
@@ -80,19 +80,19 @@ void ALBufferObj::BufferData(ALenum format, const ALvoid* buffer, ALsizei size, 
             break;
     }
     
-    totalTime_ = WaveBuffer::TotalTime(size, sampleRate, channels, bitsPerSample);
+    totalTime_ = WaveBufferFormat(sampleRate, channels, bitsPerSample).TotalTime(size);
 }
 
 void ALBufferObj::BufferData(const WaveBuffer& waveBuffer)
 {
-    ALenum outputFormat = 0;
-    if (ALFormatFromWaveFormat(waveBuffer.format, outputFormat))
+    ALenum fmt = 0;
+    if (ALFormatFromWaveFormat(fmt, waveBuffer.GetFormat()))
     {
         BufferData(
-            outputFormat,
-            waveBuffer.buffer.data(),
-            waveBuffer.buffer.size(),
-            waveBuffer.format.sampleRate
+            fmt,
+            waveBuffer.Data(),
+            waveBuffer.BufferSize(),
+            waveBuffer.GetFormat().sampleRate
         );
     }
 }

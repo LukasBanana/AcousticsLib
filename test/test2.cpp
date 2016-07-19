@@ -33,7 +33,7 @@ int main()
 
         #if TEST_MODE == TEST_MODE_SYNTH
 
-        Ac::Synthesizer::InitWaveBuffer(buffer, 4.0, 2);
+        buffer.SetTotalTime(4.0);
         //Ac::Synthesizer::GenerateSineWave(buffer, 0.0, 2.0, 0.8, 0.0, 300.0);
         //Ac::Synthesizer::GenerateSineWave(buffer, 1.0, 2.0, 0.2, 0.0, 1500.0);
 

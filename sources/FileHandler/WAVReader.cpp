@@ -7,12 +7,18 @@
 
 #include "WAVReader.h"
 #include "WAVFileFormat.h"
+#include "WAVFormatTags.h"
 #include <sstream>
 
 
 namespace Ac
 {
 
+
+static WaveBufferFormat GetBufferFormat(const RIFFWAVEFormat& fmt)
+{
+    return WaveBufferFormat(fmt.sampleRate, fmt.bitsPerSample, fmt.channels);
+}
 
 template <typename T>
 static void Read(std::istream& stream, T& buffer)
@@ -91,16 +97,17 @@ static void WAVReadChunks(std::istream& stream, std::streamoff streamSize, WaveB
     /* Read "fmt " chunk */
     auto chunkFMT = WAVFindChunk(stream, streamSize, "fmt ");
 
-    Read(stream, waveBuffer.format);
+    RIFFWAVEFormat format;
+    Read(stream, format);
     
     /* Validate format chunk */
     if (chunkFMT.size < 16)
         throw std::runtime_error("invalid length in RIFF WAVE format chunk");
 
-    if (waveBuffer.format.formatTag != tagRIFF_MS_PCM)
+    if (format.formatTag != RIFFWAVEFormatTags::PCM)
     {
         std::stringstream s;
-        s << "unsupported RIFF WAVE format tag (0x" << std::hex << waveBuffer.format.formatTag << ")";
+        s << "unsupported RIFF WAVE format tag (0x" << std::hex << format.formatTag << ")";
         throw std::runtime_error(s.str());
     }
 
@@ -108,8 +115,9 @@ static void WAVReadChunks(std::istream& stream, std::streamoff streamSize, WaveB
     auto chunkDATA = WAVFindChunk(stream, streamSize, "data");
 
     /* Read PCM data */
-    waveBuffer.buffer.resize(chunkDATA.size);
-    stream.read(waveBuffer.buffer.data(), chunkDATA.size);
+    waveBuffer.SetFormat(GetBufferFormat(format));
+    waveBuffer.SetSampleCount(chunkDATA.size / waveBuffer.GetFormat().BlockAlign());
+    stream.read(waveBuffer.Data(), chunkDATA.size);
 }
 
 void WAVReader::ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer)

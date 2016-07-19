@@ -8,7 +8,7 @@
 #include "../Core/PCMData.h"
 
 #include <Ac/Synthesizer.h>
-#include <Ac/WaveFormatTags.h>
+//#include <Ac/WaveFormatTags.h>
 #include <cmath>
 
 
@@ -38,22 +38,6 @@ AC_EXPORT double GetNoteFrequency(const MusicalNotes note, int interval)
     return freq;
 }
 
-AC_EXPORT void InitWaveBufferFormat(WaveFormat& format, unsigned short channels, unsigned int sampleRate, unsigned short bitsPerSample)
-{
-    format.formatTag        = WaveFormatTags::PCM;
-    format.channels         = channels;
-    format.sampleRate       = sampleRate;
-    format.bitsPerSample    = bitsPerSample;
-    format.blockAlign       = (format.channels * format.bitsPerSample) / 8;
-    format.bytesPerSecond   = format.sampleRate * format.blockAlign;
-}
-
-AC_EXPORT void InitWaveBuffer(WaveBuffer& buffer, double duration, unsigned short channels, unsigned int sampleRate, unsigned short bitsPerSample)
-{
-    InitWaveBufferFormat(buffer.format, channels, sampleRate, bitsPerSample);
-    buffer.buffer.resize(static_cast<std::size_t>(duration * buffer.format.bytesPerSecond));
-}
-    
 AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, const WaveGeneratorFunction& waveGenerator)
 {
     if (!waveGenerator)
@@ -62,16 +46,15 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
     phaseBegin  = std::max(0.0, phaseBegin);
     phaseEnd    = std::max(phaseBegin, phaseEnd);
 
-    const auto& format          = buffer.format;
-    auto&       pcmData         = buffer.buffer;
+    const auto& format          = buffer.GetFormat();
     auto        rate            = format.sampleRate;
     
-    if (rate == 0 || format.blockAlign == 0 || format.channels == 0)
+    if (rate == 0 || format.BlockAlign() == 0 || format.channels == 0)
         return;
     
     auto        bytesPerSample  = format.bitsPerSample/8;
     auto        channels        = format.channels;
-    auto        blocks          = pcmData.size() / format.blockAlign;
+    auto        blocks          = buffer.BufferSize() / format.BlockAlign();
     
     auto        phase           = phaseBegin;
     auto        phaseStep       = 1.0 / static_cast<double>(rate);
@@ -89,7 +72,7 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
             auto sample = 0.0;
             
             /* Read sample from PCM data */
-            sampleData.raw = reinterpret_cast<void*>(&pcmData[offset]);
+            sampleData.raw = reinterpret_cast<void*>(buffer.Data() + offset);
             
             if (bytesPerSample == 2)
                 PCMDataToSample(sample, *sampleData.bits16);
@@ -117,7 +100,7 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
 
 AC_EXPORT void GenerateWave(WaveBuffer& buffer, const WaveGeneratorFunction& waveGenerator)
 {
-    GenerateWave(buffer, 0.0, buffer.TotalTime(), waveGenerator);
+    GenerateWave(buffer, 0.0, buffer.GetTotalTime(), waveGenerator);
 }
 
 static void SineWaveGeneratorCallback(
@@ -153,7 +136,7 @@ AC_EXPORT WaveGeneratorFunction HalfCircleWaveGenerator(double amplitude, double
 
 static void ReverseWaveGeneratorCallback(double& sample, unsigned short channel, double phase, const WaveBuffer& buffer)
 {
-    sample = buffer.ReadSample(buffer.TotalTime() - phase, channel);
+    sample = buffer.ReadSample(buffer.GetTotalTime() - phase, channel);
 }
 
 AC_EXPORT WaveGeneratorFunction ReverseWaveGenerator(const WaveBuffer& buffer)

@@ -219,7 +219,7 @@ std::unique_ptr<ALBufferObj> ALAudioSystem::CreateBufferObjFromFile(const std::s
         reader.ReadWaveBuffer(file, waveBuffer);
         
         if (makeMono)
-            waveBuffer.MakeMono();
+            waveBuffer.SetChannels(1);
 
         return CreateBufferObjFromWaveBuffer(waveBuffer);
     }

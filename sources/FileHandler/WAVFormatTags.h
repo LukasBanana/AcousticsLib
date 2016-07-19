@@ -1,12 +1,15 @@
 /*
- * WaveFormatTags.h
+ * WAVFormatTags.h
  * 
  * This file is part of the "AcousticsLib" project (Copyright (c) 2016 by Lukas Hermanns)
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_WAVE_FORMAT_TAGS_H__
-#define __AC_WAVE_FORMAT_TAGS_H__
+#ifndef __AC_WAV_FORMAT_TAGS_H__
+#define __AC_WAV_FORMAT_TAGS_H__
+
+
+#include <cstdint>
 
 
 namespace Ac
@@ -14,12 +17,12 @@ namespace Ac
 
 
 /**
-Wave format encoding tags.
+RIFF WAVE format encoding tags.
 \see http://www.onicos.com/staff/iz/formats/wav.html
 */
-struct WaveFormatTags
+struct RIFFWAVEFormatTags
 {
-    enum : unsigned short
+    enum : std::uint16_t
     {
         __Unknown__                 = 0x0000, //!< Unknown Format
         PCM                         = 0x0001, //!< PCM

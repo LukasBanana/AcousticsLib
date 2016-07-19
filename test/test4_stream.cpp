@@ -33,7 +33,7 @@ int main()
                 std::cout << "streaming:" << std::endl;
 
                 Ac::WaveBuffer buffer;
-                buffer.buffer.resize(16*2*10000);
+                buffer.SetSampleCount(10000);
 
                 while (auto bytes = stream->StreamWaveBuffer(buffer))
                 {

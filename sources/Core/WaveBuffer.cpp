@@ -8,7 +8,6 @@
 #include "PCMData.h"
 
 #include <Ac/WaveBuffer.h>
-#include <Ac/WaveFormatTags.h>
 #include <algorithm>
 
 
@@ -16,116 +15,31 @@ namespace Ac
 {
 
 
-static void ChangeFormatChannels(WaveFormat& format, unsigned short channels)
+WaveBuffer::WaveBuffer(const WaveBufferFormat& format) :
+    format_( format )
 {
-    format.channels         = channels;
-    format.bytesPerSecond   = format.sampleRate * format.channels * format.bitsPerSample / 8;
-    format.blockAlign       = format.channels * format.bitsPerSample / 8;
 }
 
-template <typename T>
-void MakeMonoTmpl(WaveFormat& format, PCMBuffer& buffer)
+void WaveBuffer::SetSampleCount(std::size_t sampleCount)
 {
-    auto size = buffer.size()/2;
-    auto num = size / sizeof(T);
-
-    PCMBuffer tempBuffer(size, 0);
-
-    auto rawBufferSrc = reinterpret_cast<const T*>(buffer.data());
-    auto rawBufferDst = reinterpret_cast<T*>(tempBuffer.data());
-
-    long long sample;
-
-    for (std::size_t i = 0; i < num; ++i)
-    {
-        /* Set mono sample to average of the two stereo samples */
-        sample = rawBufferSrc[i*2];
-        sample += rawBufferSrc[i*2 + 1];
-        sample /= 2;
-
-        rawBufferDst[i] = static_cast<T>(sample);
-    }
-    
-    buffer = tempBuffer;
-    ChangeFormatChannels(format, 1);
+    buffer_.resize(sampleCount * format_.BlockAlign());
 }
 
-void WaveBuffer::MakeMono()
+std::size_t WaveBuffer::GetSampleCount() const
 {
-    /* Only allow conversion from stereo sound */
-    if (format.channels == 2 && !buffer.empty())
-    {
-        switch (format.bitsPerSample)
-        {
-            case 8:
-                MakeMonoTmpl<char>(format, buffer);
-                break;
-            case 16:
-                MakeMonoTmpl<short>(format, buffer);
-                break;
-        }
-    }
+    auto blockAlign = format_.BlockAlign();
+    return (blockAlign > 0 ? BufferSize() / blockAlign : 0);
 }
 
-template <typename T>
-void MakeStereoTmpl(WaveFormat& format, PCMBuffer& buffer)
+void WaveBuffer::SetTotalTime(double duration)
 {
-    auto size = buffer.size();
-    auto num = size / sizeof(T);
-
-    PCMBuffer tempBuffer(size*2, 0);
-
-    auto rawBufferSrc = reinterpret_cast<const T*>(buffer.data());
-    auto rawBufferDst = reinterpret_cast<T*>(tempBuffer.data());
-
-    for (std::size_t i = 0; i < num; ++i)
-    {
-        /* Copy mono sample to the two stereo samples */
-        rawBufferDst[i*2    ] = rawBufferSrc[i];
-        rawBufferDst[i*2 + 1] = rawBufferSrc[i];
-    }
-    
-    buffer = tempBuffer;
-    ChangeFormatChannels(format, 2);
+    auto bufferSize = duration * format_.BytesPerSecond();
+    SetSampleCount(static_cast<std::size_t>(bufferSize));
 }
 
-void WaveBuffer::MakeStereo()
+double WaveBuffer::GetTotalTime() const
 {
-    /* Only allow conversion from mono sound */
-    if (format.channels == 1 && !buffer.empty())
-    {
-        switch (format.bitsPerSample)
-        {
-            case 8:
-                MakeStereoTmpl<char>(format, buffer);
-                break;
-            case 16:
-                MakeStereoTmpl<short>(format, buffer);
-                break;
-        }
-    }
-}
-
-std::size_t WaveBuffer::NumSamples() const
-{
-    return (format.blockAlign > 0 ? buffer.size() / static_cast<std::size_t>(format.blockAlign) : 0);
-}
-
-double WaveBuffer::TotalTime() const
-{
-    if (format.bytesPerSecond > 0)
-    {
-        auto numBytes = static_cast<double>(buffer.size());
-        return (numBytes / static_cast<double>(format.bytesPerSecond));
-    }
-    return 0.0;
-}
-
-double WaveBuffer::TotalTime(std::size_t bufferSize, std::size_t sampleRate, std::size_t channels, std::size_t bitsPerSample)
-{
-    auto blockAlign     = (channels * bitsPerSample) / 8;
-    auto bytesPerSecond = sampleRate * blockAlign;
-    return (bytesPerSecond > 0 ? static_cast<double>(bufferSize) / bytesPerSecond : 0.0);
+    return format_.TotalTime(BufferSize());
 }
 
 double WaveBuffer::ReadSample(double phase, unsigned short channel) const
@@ -137,10 +51,15 @@ double WaveBuffer::ReadSample(double phase, unsigned short channel) const
 
     if (pcmSample.raw)
     {
-        if (format.bitsPerSample == 16)
-            PCMDataToSample(sample, *pcmSample.bits16);
-        else if (format.bitsPerSample == 8)
-            PCMDataToSample(sample, *pcmSample.bits8);
+        switch (format_.bitsPerSample)
+        {
+            case 16:
+                PCMDataToSample(sample, *pcmSample.bits16);
+                break;
+            case 8:
+                PCMDataToSample(sample, *pcmSample.bits8);
+                break;
+        }
     }
 
     return sample;
@@ -153,11 +72,29 @@ void WaveBuffer::WriteSample(double phase, unsigned short channel, double sample
 
     if (pcmSample.raw)
     {
-        if (format.bitsPerSample == 16)
-            SampleToPCMData(*pcmSample.bits16, sample);
-        else if (format.bitsPerSample == 8)
-            SampleToPCMData(*pcmSample.bits8, sample);
+        switch (format_.bitsPerSample)
+        {
+            case 16:
+                SampleToPCMData(*pcmSample.bits16, sample);
+                break;
+            case 8:
+                SampleToPCMData(*pcmSample.bits8, sample);
+                break;
+        }
     }
+}
+
+void WaveBuffer::SetFormat(const WaveBufferFormat& format)
+{
+    //format_ = format;
+    //todo...
+}
+
+void WaveBuffer::SetChannels(unsigned short channels)
+{
+    auto format = GetFormat();
+    format.channels = channels;
+    SetFormat(format);
 }
 
 
@@ -167,12 +104,12 @@ void WaveBuffer::WriteSample(double phase, unsigned short channel, double sample
 
 std::size_t WaveBuffer::GetPCMBufferOffset(double phase, unsigned short channel) const
 {
-    if (!buffer.empty() && channel < format.channels && phase >= 0.0 && phase <= TotalTime())
+    if (!buffer_.empty() && channel < format_.channels && phase >= 0.0 && phase <= GetTotalTime())
     {
-        auto bytesPerSample = (format.bitsPerSample / 8);
-        auto block          = (static_cast<std::size_t>(phase * static_cast<double>(format.sampleRate)));
-        auto offset         = (block * format.channels + channel) * bytesPerSample;
-        return std::min(offset, buffer.size() - 1u);
+        auto bytesPerSample = (format_.bitsPerSample / 8u);
+        auto block          = (static_cast<std::size_t>(phase * static_cast<double>(format_.sampleRate)));
+        auto offset         = (block * format_.channels + channel) * bytesPerSample;
+        return std::min(offset, BufferSize() - 1u);
     }
     return 0;
 }
@@ -180,13 +117,13 @@ std::size_t WaveBuffer::GetPCMBufferOffset(double phase, unsigned short channel)
 void* WaveBuffer::GetPCMOffsetPtr(double phase, unsigned short channel)
 {
     auto offset = GetPCMBufferOffset(phase, channel);
-    return (offset < buffer.size() ? reinterpret_cast<void*>(&buffer[offset]) : nullptr);
+    return (offset < BufferSize() ? reinterpret_cast<void*>(&buffer_[offset]) : nullptr);
 }
 
 const void* WaveBuffer::GetPCMOffsetPtr(double phase, unsigned short channel) const
 {
     auto offset = GetPCMBufferOffset(phase, channel);
-    return (offset < buffer.size() ? reinterpret_cast<const void*>(&buffer[offset]) : nullptr);
+    return (offset < BufferSize() ? reinterpret_cast<const void*>(&buffer_[offset]) : nullptr);
 }
 
 

@@ -7,12 +7,23 @@
 
 #include "WAVWriter.h"
 #include "WAVFileFormat.h"
+#include "WAVFormatTags.h"
 #include <sstream>
 
 
 namespace Ac
 {
 
+
+static void GetRIFFWAVEFormat(RIFFWAVEFormat& format, const WaveBufferFormat& fmt)
+{
+    format.formatTag        = RIFFWAVEFormatTags::PCM;
+    format.channels         = fmt.channels;
+    format.sampleRate       = fmt.sampleRate;
+    format.bytesPerSecond   = fmt.BytesPerSecond();
+    format.blockAlign       = static_cast<std::uint16_t>(fmt.BlockAlign());
+    format.bitsPerSample    = fmt.bitsPerSample;
+}
 
 template <typename T>
 static void Write(std::ostream& stream, const T& buffer)
@@ -51,25 +62,21 @@ RIFF WAVE format chunk (for RIFF tags see details).
 */
 static void WAVWriteChunks(std::ostream& stream, const WaveBuffer& waveBuffer)
 {
-    /* Validate format chunk */
-    if (waveBuffer.format.formatTag != tagRIFF_MS_PCM)
-    {
-        std::stringstream s;
-        s << "unsupported RIFF WAVE format tag (0x" << std::hex << waveBuffer.format.formatTag << ")";
-        throw std::runtime_error(s.str());
-    }
+    /* Get RIFF WAVE format from buffer format object */
+    RIFFWAVEFormat format;
+    GetRIFFWAVEFormat(format, waveBuffer.GetFormat());
 
     /* Write "fmt " chunk */
-    std::uint32_t chunkSizeFMT = sizeof(waveBuffer.format);
+    std::uint32_t chunkSizeFMT = sizeof(format);
     WAVWriteChunk(stream, "fmt ", chunkSizeFMT);
 
-    Write(stream, waveBuffer.format);
+    Write(stream, format);
     
     /* Write "data" chunk and PCM data */
-    std::uint32_t chunkSizeDATA = waveBuffer.buffer.size();
+    std::uint32_t chunkSizeDATA = waveBuffer.BufferSize();
     WAVWriteChunk(stream, "data", chunkSizeDATA);
 
-    stream.write(waveBuffer.buffer.data(), waveBuffer.buffer.size());
+    stream.write(waveBuffer.Data(), waveBuffer.BufferSize());
 }
 
 void WAVWriter::WriteWaveBuffer(std::ostream& stream, const WaveBuffer& buffer)
@@ -78,7 +85,7 @@ void WAVWriter::WriteWaveBuffer(std::ostream& stream, const WaveBuffer& buffer)
         throw std::runtime_error("invalid output stream for WAV file");
 
     /* Write RIFF WAVE header */
-    std::uint32_t streamSize = 4u + 2u*sizeof(RIFFWAVEChunk) + sizeof(WaveFormat) + buffer.buffer.size();
+    std::uint32_t streamSize = 4u + 2u*sizeof(RIFFWAVEChunk) + sizeof(RIFFWAVEFormat) + buffer.BufferSize();
     WAVWriteRIFFWAVEHeader(stream, streamSize);
 
     /* Fill wave buffer by reading chunks "fmt " and "data" */

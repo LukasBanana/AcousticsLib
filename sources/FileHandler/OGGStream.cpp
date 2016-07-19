@@ -9,8 +9,6 @@
 
 #include "OGGStream.h"
 
-#include <Ac/WaveFormatTags.h>
-
 
 namespace Ac
 {
@@ -138,20 +136,18 @@ OGGStream::~OGGStream()
 
 std::size_t OGGStream::StreamWaveBuffer(WaveBuffer& buffer)
 {
-    auto& waveFormat = buffer.format;
-    auto& pcmData = buffer.buffer;
-
     /* Setup buffer format */
-    waveFormat.formatTag        = WaveFormatTags::PCM;
-    waveFormat.channels         = static_cast<std::uint16_t>(info_->channels);
-    waveFormat.sampleRate       = static_cast<std::uint32_t>(info_->rate);
-    waveFormat.bitsPerSample    = 16;
-    waveFormat.blockAlign       = (waveFormat.channels * waveFormat.bitsPerSample) / 8;
-    waveFormat.bytesPerSecond   = waveFormat.sampleRate * waveFormat.blockAlign;
+    WaveBufferFormat format;
+
+    format.channels         = static_cast<std::uint16_t>(info_->channels);
+    format.sampleRate       = static_cast<std::uint32_t>(info_->rate);
+    format.bitsPerSample    = 16;
+
+    buffer.SetFormat(format);
 
     /* Read next data chunk */
     std::size_t bytes = 0;
-    std::size_t size = pcmData.size();
+    std::size_t size = buffer.BufferSize();
 
     int bitStream = 0;
 
@@ -159,13 +155,13 @@ std::size_t OGGStream::StreamWaveBuffer(WaveBuffer& buffer)
     {
         /* Read next ogg vorbis chunk */
         auto result = ov_read(
-            &file_,             // Ogg vorbis stream handle
-            &(pcmData[bytes]),  // Byte aligned buffer
-            size,               // Buffer size
-            0,                  // Little endian
-            2,                  // 2 byte (16 bit) samples
-            1,                  // Signed samples
-            &bitStream          // Current bit stream section
+            &file_,                     // Ogg vorbis stream handle
+            (buffer.Data() + bytes),    // Byte aligned buffer
+            size,                       // Buffer size
+            0,                          // Little endian
+            2,                          // 2 byte (16 bit) samples
+            1,                          // Signed samples
+            &bitStream                  // Current bit stream section
         );
 
         /* Copy array into output buffer */
