@@ -35,6 +35,25 @@ double WaveBufferFormat::TotalTime(std::size_t bufferSize) const
     return (bytesPerSecond > 0 ? static_cast<double>(bufferSize) / bytesPerSecond : 0.0);
 }
 
+bool WaveBufferFormat::IsSigned() const
+{
+    return (bitsPerSample > 8);
+}
+
+
+AC_EXPORT bool operator == (const WaveBufferFormat& lhs, const WaveBufferFormat& rhs)
+{
+    return
+        ( lhs.sampleRate    == rhs.sampleRate    ) &&
+        ( lhs.bitsPerSample == rhs.bitsPerSample ) &&
+        ( lhs.channels      == rhs.channels      );
+}
+
+AC_EXPORT bool operator != (const WaveBufferFormat& lhs, const WaveBufferFormat& rhs)
+{
+    return !(lhs == rhs);
+}
+
 
 } // /namespace Ac
 

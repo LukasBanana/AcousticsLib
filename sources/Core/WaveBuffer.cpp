@@ -22,7 +22,12 @@ WaveBuffer::WaveBuffer(const WaveBufferFormat& format) :
 
 void WaveBuffer::SetSampleCount(std::size_t sampleCount)
 {
-    buffer_.resize(sampleCount * format_.BlockAlign());
+    /* Resize buffer and initialize with 0 for signed formats and with 127 for 8-bit unsigned format */
+    auto bufferSize = sampleCount * format_.BlockAlign();
+    if (format_.IsSigned())
+        buffer_.resize(bufferSize, 0);
+    else
+        buffer_.resize(bufferSize, 127);
 }
 
 std::size_t WaveBuffer::GetSampleCount() const

@@ -36,6 +36,9 @@ struct AC_EXPORT WaveBufferFormat
     //! Returns the total time (in seconds) a PCM buffer with the specified size (in bytes) requires to play with this wave buffer format.
     double TotalTime(std::size_t bufferSize) const;
 
+    //! Returns true if this is a signed format. This is true if (bitsPerSample > 8) holds true.
+    bool IsSigned() const;
+
     /**
     \brief Number of samples per second (in Hz). Default value is 44100.
     \remarks The commonly used sample rates are: 8 kHz, 11.025 kHz, 22.05 kHz, and 44.1 kHz.
@@ -48,6 +51,12 @@ struct AC_EXPORT WaveBufferFormat
     //! Number of channels. 1 for mono and 2 for stereo. Default value is 1.
     unsigned short  channels        = 1;
 };
+
+
+//! Returns true if the two wave buffer formats are equal.
+AC_EXPORT bool operator == (const WaveBufferFormat& lhs, const WaveBufferFormat& rhs);
+//! Returns true if the two wave buffer formats are unequal.
+AC_EXPORT bool operator != (const WaveBufferFormat& lhs, const WaveBufferFormat& rhs);
 
 
 } // /namespace Ac

@@ -57,21 +57,21 @@ inline PCMLimits GetPCMLimits()
 template <typename T>
 inline void PCMDataToSample(double& sample, const T data)
 {
-    /* Scale sample and clamp into range [min, max] */
+    /* Scale data (no need to clamp into range [-1, 1] due to data limits) */
+    const auto limits = GetPCMLimits<T>();
+
     sample = static_cast<double>(data);
-    
-    const auto upperEnd = static_cast<double>(std::numeric_limits<T>::max());
-    sample /= upperEnd;
+    sample = (sample - limits.nullPoint) / (limits.range*0.5);
 }
 
 template <typename T>
 inline void SampleToPCMData(T& data, double sample)
 {
     /* Scale sample and clamp into range [min, max] */
-    const auto limtis = GetPCMLimits<T>();
+    const auto limits = GetPCMLimits<T>();
 
-    sample = sample * limtis.range*0.5 + limtis.nullPoint;
-    sample = std::max(limtis.lowerEnd, std::min(sample, limtis.upperEnd));
+    sample = sample * (limits.range*0.5) + limits.nullPoint;
+    sample = std::max(limits.lowerEnd, std::min(sample, limits.upperEnd));
     
     data = static_cast<T>(sample);
 }
