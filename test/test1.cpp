@@ -25,7 +25,7 @@ int main()
             std::cout << "Audio System: " << audioSystem->GetName() << "; Version: " << audioSystem->GetVersion() << std::endl;
 
             // Play sound
-            auto soundFile = "lighter.wav";
+            auto soundFile = "in/lighter.wav";
             auto sound = audioSystem->LoadSound(soundFile);
 
             if (sound)

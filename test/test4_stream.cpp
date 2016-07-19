@@ -18,7 +18,7 @@ int main()
         auto audioSystem = Ac::AudioSystem::Load("OpenAL");
 
         // Open OggVorbis stream
-        std::ifstream file("gong.ogg", std::ios_base::binary);
+        std::ifstream file("in/gong.ogg", std::ios_base::binary);
         if (file.good())
         {
             auto stream = audioSystem->OpenAudioStream(Ac::AudioStreamFormats::OGG, file);

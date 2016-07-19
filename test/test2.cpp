@@ -98,7 +98,7 @@ int main()
 
         #elif TEST_MODE == TEST_MODE_LOAD
 
-        std::string inputFilename = "thorndike.wav";
+        std::string inputFilename = "in/thorndike.wav";
         std::cout << "read sound file: \"" << inputFilename << '\"' << std::endl;
         
         std::ifstream inputFile(inputFilename, std::ios_base::binary);
@@ -117,7 +117,7 @@ int main()
             }
         );*/
 
-        outputBuffer.SetFormat(Ac::WaveBufferFormat(Ac::Synthesizer::sampleRate8kHz, 8, 1));
+        //outputBuffer.SetFormat(Ac::WaveBufferFormat(Ac::Synthesizer::sampleRate8kHz, 8, 1));
 
         //Ac::Synthesizer::ReverseWaveBuffer(outputBuffer);
 
@@ -125,7 +125,7 @@ int main()
 
         #if TEST_WRITE_OUTPUT != 0
         
-        std::string outputFilename = "synthesized_sound.wav";
+        std::string outputFilename = "out/synthesized_sound.wav";
         std::cout << "write sound file: \"" << outputFilename << '\"' << std::endl;
         
         std::ofstream outputFile(outputFilename, std::ios_base::binary);
@@ -150,7 +150,7 @@ int main()
         #else
     
         audioSystem->PlaySound(
-            "shutter.wav", 1.0f, 0,
+            "in/shutter.wav", 1.0f, 0,
             [](Ac::Sound& s)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(25));

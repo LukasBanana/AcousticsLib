@@ -17,7 +17,7 @@ int main()
 {
     auto audioSystem = Ac::AudioSystem::Load();
 
-    auto sound = audioSystem->LoadSound3D("shutter.wav");
+    auto sound = audioSystem->LoadSound3D("in/shutter.wav");
     if (sound)
     {
         Gs::Vector3f pos(10, 0, 1), prevPos, deltaPos;
