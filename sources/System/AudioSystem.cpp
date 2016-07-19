@@ -7,8 +7,9 @@
 
 #include "../Platform/Module.h"
 #include "../FileHandler/WAVReader.h"
-#include "../FileHandler/OGGStream.h"
 #include "../FileHandler/WAVWriter.h"
+#include "../FileHandler/OGGStream.h"
+#include "../FileHandler/MODStream.h"
 
 #include <Ac/AudioSystem.h>
 #include <array>
@@ -143,6 +144,9 @@ std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(const AudioStreamForma
             #ifdef AC_PLUGIN_OGGVORBIS
             return std::unique_ptr<AudioStream>(new OGGStream(stream));
             #endif
+            break;
+        case AudioStreamFormats::MOD:
+            return std::unique_ptr<AudioStream>(new MODStream(stream));
             break;
     }
     return nullptr;

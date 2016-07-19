@@ -17,11 +17,22 @@ int main()
     {
         auto audioSystem = Ac::AudioSystem::Load("OpenAL");
 
-        // Open OggVorbis stream
-        std::ifstream file("in/gong.ogg", std::ios_base::binary);
+        // Open audio stream
+        const std::string filename = (
+            //"in/gong.ogg"
+            "in/chiptune_1.mod"
+        );
+
+        const std::string fileExt = filename.substr(filename.size() - 4);
+
+        std::ifstream file(filename, std::ios_base::binary);
+
         if (file.good())
         {
-            auto stream = audioSystem->OpenAudioStream(Ac::AudioStreamFormats::OGG, file);
+            auto stream = audioSystem->OpenAudioStream(
+                (fileExt == ".ogg" ? Ac::AudioStreamFormats::OGG : Ac::AudioStreamFormats::MOD),
+                file
+            );
 
             if (stream)
             {

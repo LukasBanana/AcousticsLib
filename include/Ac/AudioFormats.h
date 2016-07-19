@@ -29,6 +29,12 @@ enum class AudioStreamFormats
     \see http://vorbis.com/
     */
     OGG,
+
+    /**
+    \breif Module autio stream format (MOD).
+    \see http://www.fileformat.info/format/mod/corion.htm
+    */
+    MOD,
 };
 
 
