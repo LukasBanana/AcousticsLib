@@ -18,7 +18,7 @@
 
 #define TEST_MODE_SYNTH     1
 #define TEST_MODE_LOAD      2
-#define TEST_MODE           TEST_MODE_SYNTH
+#define TEST_MODE           TEST_MODE_LOAD
 #define TEST_WRITE_OUTPUT   1
 
 int main()
@@ -29,7 +29,7 @@ int main()
         
         #if 1
 
-        Ac::WaveBuffer buffer(Ac::WaveBufferFormat(/*44100*/Ac::Synthesizer::sampleRate22kHz, 16, 1)), outputBuffer;
+        Ac::WaveBuffer buffer(Ac::WaveBufferFormat(Ac::Synthesizer::sampleRate44kHz, 16, 1)), outputBuffer;
 
         #if TEST_MODE == TEST_MODE_SYNTH
 
@@ -107,7 +107,6 @@ int main()
         outputBuffer = buffer;
 
         outputBuffer.ForEachSample(
-            //Ac::Synthesizer::ReverseWaveGenerator(buffer)
             [&](double& sample, unsigned short channel, std::size_t index, double phase)
             {
                 sample = buffer.ReadSample(phase, channel);
@@ -117,6 +116,8 @@ int main()
                     sample += buffer.ReadSample(phase - 0.4, channel)*0.15;
             }
         );
+
+        Ac::Synthesizer::ReverseWaveBuffer(outputBuffer);
 
         #endif
 

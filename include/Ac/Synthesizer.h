@@ -23,6 +23,8 @@ namespace Synthesizer
 {
 
 
+/* ----- Constants ----- */
+
 //! 44.1 kHz sample rate.
 static const unsigned int sampleRate44kHz   = 44100;
 
@@ -35,12 +37,7 @@ static const unsigned int sampleRate11kHz   = 11025;
 //! 8 kHz sample rate.
 static const unsigned int sampleRate8kHz    = 8000;
 
-/**
-\brief Returns the frequency (in Hz) for the specified musical note.
-\param[in] note Specifies the musical note (base value).
-\param[in] interval Specifies the interval of the musical note.
-*/
-AC_EXPORT double GetNoteFrequency(const MusicalNotes note, int interval);
+/* ----- Wave generators ----- */
 
 /**
 \brief Returns a function object of a sine wave generator of the form: sin((phase + phaseShift)*2*PI*frequency)*amplitude.
@@ -54,15 +51,20 @@ AC_EXPORT SampleIterationFunction SineWaveGenerator(double amplitude, double pha
 
 AC_EXPORT SampleIterationFunction HalfCircleWaveGenerator(double amplitude, double phaseShift, double frequency);
 
+/* ----- Misc ----- */
+
 /**
-\brief Returns a function object of a reversion wave generator.
-\param[in] buffer Specifies the buffer to reverse.
-\remarks Note that the input buffer of this function should not be the same buffer object
-which is currently being modified within the "GenerateWave" function!
-\see WaveGeneratorFunction
-\see GenerateWave
+\brief Returns the frequency (in Hz) for the specified musical note.
+\param[in] note Specifies the musical note (base value).
+\param[in] interval Specifies the interval of the musical note.
 */
-AC_EXPORT SampleIterationFunction ReverseWaveGenerator(const WaveBuffer& buffer);
+AC_EXPORT double GetNoteFrequency(const MusicalNotes note, int interval);
+
+/**
+\brief Reverses the specified wave buffer.
+\see ReverseWaveGenerator
+*/
+AC_EXPORT void ReverseWaveBuffer(WaveBuffer& buffer);
     
     
 } // /namesapce Synthesizer

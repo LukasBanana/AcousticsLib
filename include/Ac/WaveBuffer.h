@@ -44,6 +44,9 @@ class AC_EXPORT WaveBuffer
     public:
 
         WaveBuffer() = default;
+        WaveBuffer(const WaveBuffer&) = default;
+        WaveBuffer& operator = (const WaveBuffer&) = default;
+
         WaveBuffer(const WaveBufferFormat& format);
 
         //! Returns the number of samples (independently of the number of channels).
