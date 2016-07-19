@@ -40,6 +40,8 @@ AC_EXPORT double GetNoteFrequency(const MusicalNotes note, int interval)
 
 AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseEnd, const WaveGeneratorFunction& waveGenerator)
 {
+#if 0
+
     if (!waveGenerator)
         return;
     
@@ -81,7 +83,7 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
             
             /* Compute current audio sample and clamp to range [-1, 1] */
             waveGenerator(sample, chn, phase);
-            sample = std::max(-1.0, std::min(sample, 1.0));
+            //sample = std::max(-1.0, std::min(sample, 1.0));
             
             /* Write sample to PCM data */
             if (bytesPerSample == 2)
@@ -96,6 +98,38 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, double phaseBegin, double phaseE
         phase += phaseStep;
         ++blk;
     }
+
+#else
+
+    if (!waveGenerator)
+        return;
+    
+    phaseBegin      = std::max(0.0, phaseBegin);
+    phaseEnd        = std::max(phaseBegin, phaseEnd);
+
+    auto channels   = buffer.GetFormat().channels;
+    auto rate       = buffer.GetFormat().sampleRate;
+    auto idxBegin   = buffer.GetIndexFromPhase(phaseBegin);
+    auto idxEnd     = buffer.GetIndexFromPhase(phaseEnd);
+
+    auto phase      = phaseBegin;
+    auto phaseStep  = (1.0 / static_cast<double>(rate));
+
+    for (std::size_t i = idxBegin; i < idxEnd; ++i)
+    {
+        for (unsigned short chn = 0; chn < channels; ++chn)
+        {
+            /* Read sample, modify sample with generator callback, and write sample back to buffer */
+            auto sample = buffer.ReadSample(i, chn);
+            waveGenerator(sample, chn, phase);
+            buffer.WriteSample(i, chn, sample);
+        }
+
+        /* Increase phase */
+        phase += phaseStep;
+    }
+
+#endif
 }
 
 AC_EXPORT void GenerateWave(WaveBuffer& buffer, const WaveGeneratorFunction& waveGenerator)

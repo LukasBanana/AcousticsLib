@@ -18,7 +18,7 @@
 
 #define TEST_MODE_SYNTH     1
 #define TEST_MODE_LOAD      2
-#define TEST_MODE           TEST_MODE_SYNTH
+#define TEST_MODE           TEST_MODE_LOAD
 #define TEST_WRITE_OUTPUT   1
 
 int main()
@@ -29,7 +29,7 @@ int main()
         
         #if 1
     
-        Ac::WaveBuffer buffer(Ac::WaveBufferFormat(44100, 8, 1)), outputBuffer;
+        Ac::WaveBuffer buffer(Ac::WaveBufferFormat(/*44100*/Ac::Synthesizer::sampleRate22kHz, 16, 1)), outputBuffer;
 
         #if TEST_MODE == TEST_MODE_SYNTH
 

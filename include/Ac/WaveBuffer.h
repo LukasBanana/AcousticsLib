@@ -34,23 +34,42 @@ class AC_EXPORT WaveBuffer
         WaveBuffer() = default;
         WaveBuffer(const WaveBufferFormat& format);
 
+        //! Returns the number of samples (independently of the number of channels).
+        std::size_t GetSampleCount() const;
+
         //! Sets the new number of samples (independently of the number of channels).
         void SetSampleCount(std::size_t sampleCount);
 
-        //! Returns the number of samples (independently of the number of channels).
-        std::size_t GetSampleCount() const;
+        //! Returns the total time (in seconds) which is required to play this entire wave buffer.
+        double GetTotalTime() const;
 
         //! Resizes the buffer to the specified total time (in seconds).
         void SetTotalTime(double duration);
 
-        //! Returns the total time (in seconds) which is required to play this entire wave buffer.
-        double GetTotalTime() const;
+        /**
+        \brief Returns the sample at the specified index of the specified channel.
+        \param[in] index Specifies the sample index. One can use the "GetIndexFromPhase" function, to determine the index by the phase (in seconds).
+        \param[in] channel Specifies the channel from which to read the sample. This will be clamped to the range [0, GetFormat().channels).
+        \return The read sample in the range [-1, 1].
+        \see GetIndexFromPhase
+        */
+        double ReadSample(std::size_t index, unsigned short channel) const;
+
+        //! Sets the sample at the specified index of the specified channel.
+        void WriteSample(std::size_t index, unsigned short channel, double sample);
 
         //! Returns the sample at the specified time point (phase) of the specified channel.
         double ReadSample(double phase, unsigned short channel) const;
 
         //! Sets the sample at the specified time point (phase) of the specified channel.
         void WriteSample(double phase, unsigned short channel, double sample);
+
+        /**
+        \brief Determines the sample index for the specified phase (in seconds).
+        \see ReadSample(std::size_t, unsigned short)
+        \see WriteSample(std::size_t, unsigned short, double)
+        */
+        std::size_t GetIndexFromPhase(double phase) const;
 
         /**
         \brief Sets the new wave buffer format.
@@ -97,10 +116,10 @@ class AC_EXPORT WaveBuffer
 
     private:
 
-        std::size_t GetPCMBufferOffset(double phase, unsigned short channel) const;
+        std::size_t GetPCMBufferOffset(std::size_t index, unsigned short channel) const;
 
-        void* GetPCMOffsetPtr(double phase, unsigned short channel);
-        const void* GetPCMOffsetPtr(double phase, unsigned short channel) const;
+        void* GetPCMOffsetPtr(std::size_t offset);
+        const void* GetPCMOffsetPtr(std::size_t offset) const;
 
         WaveBufferFormat    format_;
 
