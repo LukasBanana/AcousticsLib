@@ -143,18 +143,28 @@ void WaveBuffer::SetFormat(const WaveBufferFormat& format)
     {
         if (!buffer_.empty())
         {
+            /* Configure temporary buffer with new format */
             WaveBuffer tempBuffer(format);
-            tempBuffer.SetSampleCount(GetSampleCount());
+            if (format_.sampleRate == format.sampleRate)
+                tempBuffer.SetSampleCount(GetSampleCount());
+            else
+                tempBuffer.SetTotalTime(GetTotalTime());
 
-            unsigned short maxChannels = format_.channels - 1;
+            unsigned short maxChannels = (format_.channels - 1);
+
+            /* Copy samples from current buffer to temporary buffer */
             tempBuffer.ForEachSample(
                 [&](double& sample, unsigned short channel, std::size_t index, double phase)
                 {
-                    /* Copy sample from current buffer to temporary buffer */
-                    sample = ReadSample(index, std::min(channel, maxChannels));
+                    channel = std::min(channel, maxChannels);
+                    if (format_.sampleRate == format.sampleRate)
+                        sample = ReadSample(index, channel);
+                    else
+                        sample = ReadSample(phase, channel);
                 }
             );
 
+            /* Take temporary buffer as new buffer */
             *this = std::move(tempBuffer);
         }
         else

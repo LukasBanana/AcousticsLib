@@ -106,7 +106,7 @@ int main()
         
         outputBuffer = buffer;
 
-        outputBuffer.ForEachSample(
+        /*outputBuffer.ForEachSample(
             [&](double& sample, unsigned short channel, std::size_t index, double phase)
             {
                 sample = buffer.ReadSample(phase, channel);
@@ -115,9 +115,11 @@ int main()
                 if (phase >= 0.4)
                     sample += buffer.ReadSample(phase - 0.4, channel)*0.15;
             }
-        );
+        );*/
 
-        Ac::Synthesizer::ReverseWaveBuffer(outputBuffer);
+        outputBuffer.SetFormat(Ac::WaveBufferFormat(Ac::Synthesizer::sampleRate8kHz, 8, 1));
+
+        //Ac::Synthesizer::ReverseWaveBuffer(outputBuffer);
 
         #endif
 
