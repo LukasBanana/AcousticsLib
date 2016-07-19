@@ -111,6 +111,8 @@ AC_EXPORT void GenerateWave(WaveBuffer& buffer, const WaveGeneratorFunction& wav
 */
 AC_EXPORT WaveGeneratorFunction SineWaveGenerator(double amplitude, double phaseShift, double frequency);
 
+AC_EXPORT WaveGeneratorFunction HalfCircleWaveGenerator(double amplitude, double phaseShift, double frequency);
+
 /**
 \brief Returns a function object of a reversion wave generator.
 \param[in] buffer Specifies the buffer to reverse.

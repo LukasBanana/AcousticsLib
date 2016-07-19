@@ -20,8 +20,6 @@
 #define TEST_MODE           TEST_MODE_SYNTH
 #define TEST_WRITE_OUTPUT   1
 
-using namespace std::placeholders;
-
 int main()
 {
     try
@@ -42,6 +40,8 @@ int main()
             buffer,
             [](double& sample, unsigned short channel, double phase)
             {
+                #if 0
+
                 using N = Ac::MusicalNotes;
                 const N notes[] = { N::C, N::D, N::E, N::F, N::G, N::A, N::B };
                 
@@ -53,6 +53,15 @@ int main()
                 auto sineWaveGen = Ac::Synthesizer::SineWaveGenerator(0.3, 0.0, freq);
 
                 sineWaveGen(sample, channel, phase);
+
+                #else
+
+                if (phase < 2.0)
+                    Ac::Synthesizer::HalfCircleWaveGenerator(0.3, 0.0, 440.0)(sample, channel, phase);
+                else
+                    Ac::Synthesizer::SineWaveGenerator(0.3, 0.0, 440.0)(sample, channel, phase);
+
+                #endif
             }
         );
 

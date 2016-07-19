@@ -132,6 +132,25 @@ AC_EXPORT WaveGeneratorFunction SineWaveGenerator(double amplitude, double phase
     return std::bind(SineWaveGeneratorCallback, _1, _2, _3, amplitude, phaseShift, frequency);
 }
 
+static void HalfCircleWaveGeneratorCallback(
+    double& sample, unsigned short channel, double phase,
+    double amplitude, double phaseShift, double frequency)
+{
+    double xInt = 0.0;
+    double x    = std::modf((phase + phaseShift)*2.0*frequency, &xInt)*2.0 - 1.0;
+    double y    = std::sqrt(1.0 - x*x);
+
+    if (static_cast<int>(xInt) % 2 == 1)
+        y = -y;
+
+    sample += y*amplitude;
+}
+
+AC_EXPORT WaveGeneratorFunction HalfCircleWaveGenerator(double amplitude, double phaseShift, double frequency)
+{
+    return std::bind(HalfCircleWaveGeneratorCallback, _1, _2, _3, amplitude, phaseShift, frequency);
+}
+
 static void ReverseWaveGeneratorCallback(double& sample, unsigned short channel, double phase, const WaveBuffer& buffer)
 {
     sample = buffer.ReadSample(buffer.TotalTime() - phase, channel);
