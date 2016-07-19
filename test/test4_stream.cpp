@@ -20,7 +20,7 @@ int main()
         // Open audio stream
         const std::string filename = (
             //"in/gong.ogg"
-            "in/chiptune_1.mod"
+            "in/chiptune_2.mod"
         );
 
         const std::string fileExt = filename.substr(filename.size() - 4);

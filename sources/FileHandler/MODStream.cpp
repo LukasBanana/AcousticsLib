@@ -6,6 +6,10 @@
  */
 
 #include "MODStream.h"
+#include "MODFileFormat.h"
+#include <algorithm>
+
+#include <iostream>//FOR DEBUGGING!!!
 
 
 namespace Ac
@@ -15,6 +19,37 @@ namespace Ac
 MODStream::MODStream(std::istream& stream) :
     stream_( stream )
 {
+    if (!stream_.good())
+        throw std::runtime_error("failed to start reading from MOD stream");
+
+    /* Read header */
+    MODHeader header;
+    stream_.read(reinterpret_cast<char*>(&header), sizeof(header));
+
+    /* Get number of patterns by the highest number stored in the pattern list */
+    std::uint8_t numPatterns = 0;
+    for (int i = 0; i < 128; ++i)
+        numPatterns = std::max(numPatterns, header.patternSequences[i]);
+
+    /* Read patterns */
+    for (std::uint8_t i = 0; i < numPatterns; ++i)
+    {
+        /* Read 64 rows for each pattern */
+        for ()
+        {
+
+
+        }
+    }
+
+
+    for (int i = 0; i < 128; ++i)
+        std::cout << (int)header.patternSequences[i] << ", ";
+    std::cout << std::endl;
+
+    std::cout << "song title: \"" << std::string(header.title) << '\"' << std::endl;
+
+
 
 }
 
