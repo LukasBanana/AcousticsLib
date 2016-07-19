@@ -17,7 +17,7 @@
 
 #define TEST_MODE_SYNTH     1
 #define TEST_MODE_LOAD      2
-#define TEST_MODE           TEST_MODE_SYNTH
+#define TEST_MODE           TEST_MODE_LOAD
 #define TEST_WRITE_OUTPUT   1
 
 int main()
@@ -54,7 +54,7 @@ int main()
 
                 sineWaveGen(sample, channel, phase);
 
-                #else
+                #elif 1
 
                 if (phase < 2.0)
                     Ac::Synthesizer::HalfCircleWaveGenerator(0.3, 0.0, 440.0)(sample, channel, phase);
@@ -79,7 +79,15 @@ int main()
 
         Ac::Synthesizer::GenerateWave(
             outputBuffer,
-            Ac::Synthesizer::ReverseWaveGenerator(buffer)
+            //Ac::Synthesizer::ReverseWaveGenerator(buffer)
+            [&](double& sample, unsigned short channel, double phase)
+            {
+                sample = buffer.ReadSample(phase, channel);
+                if (phase >= 0.2)
+                    sample += buffer.ReadSample(phase - 0.2, channel)*0.3;
+                if (phase >= 0.4)
+                    sample += buffer.ReadSample(phase - 0.4, channel)*0.15;
+            }
         );
 
         #endif
