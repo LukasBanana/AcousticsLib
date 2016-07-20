@@ -8,7 +8,6 @@
 #include "../Core/PCMData.h"
 
 #include <Ac/Synthesizer.h>
-//#include <Ac/WaveFormatTags.h>
 #include <cmath>
 
 
@@ -52,6 +51,18 @@ static void HalfCircleWaveGeneratorCallback(
 AC_EXPORT SampleIterationFunction HalfCircleWaveGenerator(double amplitude, double phaseShift, double frequency)
 {
     return std::bind(HalfCircleWaveGeneratorCallback, _1, _2, _3, _4, amplitude, phaseShift, frequency);
+}
+
+static void GaussianBlurWaveModifierCallback(
+    double& sample, unsigned short channel, std::size_t index, double phase,
+    double variance, std::size_t sampleSpread)
+{
+
+}
+
+AC_EXPORT SampleIterationFunction GaussianBlurWaveModifier(double variance, std::size_t sampleSpread)
+{
+    return std::bind(GaussianBlurWaveModifierCallback, _1, _2, _3, _4, variance, sampleSpread);
 }
 
 /* ----- Misc ----- */
