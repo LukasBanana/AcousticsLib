@@ -51,8 +51,6 @@ AC_EXPORT SampleIterationFunction SineWaveGenerator(double amplitude, double pha
 
 AC_EXPORT SampleIterationFunction HalfCircleWaveGenerator(double amplitude, double phaseShift, double frequency);
 
-AC_EXPORT SampleIterationFunction GaussianBlurWaveModifier(double variance = 1.0, std::size_t sampleSpread = 10);
-
 /* ----- Misc ----- */
 
 /**
@@ -67,6 +65,8 @@ AC_EXPORT double GetNoteFrequency(const MusicalNotes note, int interval);
 \see ReverseWaveGenerator
 */
 AC_EXPORT void ReverseWaveBuffer(WaveBuffer& buffer);
+
+AC_EXPORT void BlurWaveBuffer(WaveBuffer& buffer, double phaseSpread = 0.1, double variance = 1.0, std::size_t sampleCount = 6);
     
     
 } // /namesapce Synthesizer

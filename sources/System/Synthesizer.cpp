@@ -53,18 +53,6 @@ AC_EXPORT SampleIterationFunction HalfCircleWaveGenerator(double amplitude, doub
     return std::bind(HalfCircleWaveGeneratorCallback, _1, _2, _3, _4, amplitude, phaseShift, frequency);
 }
 
-static void GaussianBlurWaveModifierCallback(
-    double& sample, unsigned short channel, std::size_t index, double phase,
-    double variance, std::size_t sampleSpread)
-{
-
-}
-
-AC_EXPORT SampleIterationFunction GaussianBlurWaveModifier(double variance, std::size_t sampleSpread)
-{
-    return std::bind(GaussianBlurWaveModifierCallback, _1, _2, _3, _4, variance, sampleSpread);
-}
-
 /* ----- Misc ----- */
 
 // see https://en.wikipedia.org/wiki/Piano_key_frequencies
@@ -92,6 +80,47 @@ AC_EXPORT void ReverseWaveBuffer(WaveBuffer& buffer)
         [&bufferCopy](double& sample, unsigned short channel, std::size_t index, double phase)
         {
             sample = bufferCopy.ReadSample(bufferCopy.GetSampleCount() - index - 1u, channel);
+        }
+    );
+}
+
+static double NormalDistribution(double x, double mean, double variance)
+{
+    return std::exp(-(x - mean)*(x - mean) / (2.0 * variance)) / std::sqrt(2.0 * M_PI * variance);
+}
+
+AC_EXPORT void BlurWaveBuffer(WaveBuffer& buffer, double phaseSpread, double variance, std::size_t sampleCount)
+{
+    /* Compute weights for the normal distribution */
+    static const double maxDistributionSpread = 7.0;
+
+    std::vector<double> weights(sampleCount + 1u, 0.0);
+    double weightSum = 0.0;
+
+    for (std::size_t i = 0; i <= sampleCount; ++i)
+    {
+        auto x = (static_cast<double>(i) / sampleCount - 0.5) * maxDistributionSpread;
+        weights[i] = NormalDistribution(x, 0.0, variance);
+        weightSum += weights[i];
+    }
+
+    /* Normalize weights */
+    weightSum = 1.0 / weightSum;
+    for (auto& weight : weights)
+        weight *= weightSum;
+
+    /* Read from the copy of the buffer to prevent reading and writing on the same buffer */
+    auto bufferCopy = buffer;
+    buffer.ForEachSample(
+        [&](double& sample, unsigned short channel, std::size_t index, double phase)
+        {
+            sample = 0.0;
+
+            for (std::size_t i = 0; i <= sampleCount; ++i)
+            {
+                auto phaseShift = phaseSpread * (static_cast<double>(i) / sampleCount - 0.5);
+                sample += bufferCopy.ReadSample(phase + phaseShift, channel) * weights[i];
+            }
         }
     );
 }

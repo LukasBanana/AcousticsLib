@@ -121,6 +121,8 @@ int main()
 
         //Ac::Synthesizer::ReverseWaveBuffer(outputBuffer);
 
+        Ac::Synthesizer::BlurWaveBuffer(outputBuffer, 0.1, 1.0, 15);
+
         #endif
 
         #if TEST_WRITE_OUTPUT != 0
