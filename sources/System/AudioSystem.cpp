@@ -231,6 +231,13 @@ void AudioSystem::WriteAudioBuffer(const AudioFormats format, std::ostream& stre
     }
 }
 
+/* ----- Microphone ----- */
+
+std::unique_ptr<Microphone> AudioSystem::QueryMicrophone()
+{
+    return nullptr; //todo...
+}
+
 
 /*
  * ======= Private: =======

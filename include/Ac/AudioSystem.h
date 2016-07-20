@@ -14,6 +14,7 @@
 #include "Sound3D.h"
 #include "AudioStream.h"
 #include "AudioFormats.h"
+#include "Microphone.h"
 
 #include <Gauss/Vector3.h>
 #include <string>
@@ -192,6 +193,10 @@ class AC_EXPORT AudioSystem
         \throws std::runtime_exception If something went wrong while writing.
         */
         void WriteAudioBuffer(const AudioFormats format, std::ostream& stream, const WaveBuffer& waveBuffer);
+
+        /* ----- Microphone ----- */
+
+        std::unique_ptr<Microphone> QueryMicrophone();
 
     protected:
 
