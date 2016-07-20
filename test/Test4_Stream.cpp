@@ -22,16 +22,11 @@ int main()
 
         const std::string fileExt = filename.substr(filename.size() - 4);
 
-        auto file = std::unique_ptr<std::ifstream>(new std::ifstream(filename, std::ios_base::binary));
+        auto sound = audioSystem->LoadSound(filename);
 
-        auto sound = audioSystem->CreateSound();
-
-        if (file->good())
+        if (sound)
         {
-            auto stream = audioSystem->OpenAudioStream(
-                (fileExt == ".ogg" ? Ac::AudioStreamFormats::OGG : Ac::AudioStreamFormats::MOD),
-                std::move(file)
-            );
+            auto stream = sound->GetStreamSource();
 
             if (stream)
             {
@@ -80,7 +75,7 @@ int main()
                         }
                     }
 
-                    std::cout << "  " << GetTimeline(sound->GetSeek(), stream->TotalTime(), 30) << "  " << blocks << " blocks and " << bytesRead << " bytes read\r";
+                    std::cout << "  " << GetTimeline(*sound, 30) << "  " << blocks << " blocks and " << bytesRead << " bytes read\r";
                     std::flush(std::cout);
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 }

@@ -85,8 +85,11 @@ double ALSound::GetSeek() const
 
 double ALSound::TotalTime() const
 {
-    //TODO -> for streaming!!!
-    return (bufferObj_ ? bufferObj_->GetTotalTime() : 0.0);
+    if (GetStreamSource())
+        return GetStreamSource()->TotalTime();
+    if (bufferObj_)
+        return bufferObj_->GetTotalTime();
+    return 0.0;
 }
 
 void ALSound::AttachBuffer(const WaveBuffer& waveBuffer)
