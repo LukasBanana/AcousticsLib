@@ -35,7 +35,7 @@ static std::string GetTimeline(double time, double totalTime, std::size_t len = 
 
 static std::string GetTimeline(const Ac::Sound& snd, std::size_t len = 40)
 {
-    return GetTimeline(snd.GetSeek(), snd.TotalTime());
+    return GetTimeline(snd.GetSeek(), snd.TotalTime(), len);
 }
 
 

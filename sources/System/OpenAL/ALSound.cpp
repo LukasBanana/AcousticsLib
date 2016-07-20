@@ -77,11 +77,12 @@ void ALSound::SetSeek(double position)
 
 double ALSound::GetSeek() const
 {
-    return static_cast<double>(sourceObj_.GetFloat(AL_SEC_OFFSET));
+    return static_cast<double>(sourceObj_.GetFloat(AL_SEC_OFFSET)) + seekOffset_;
 }
 
 double ALSound::TotalTime() const
 {
+    //TODO -> for streaming!!!
     return (bufferObj_ ? bufferObj_->GetTotalTime() : 0.0);
 }
 
@@ -93,7 +94,34 @@ void ALSound::AttachBuffer(const WaveBuffer& waveBuffer)
 
 void ALSound::QueueBuffer(const WaveBuffer& waveBuffer)
 {
-    //todo...
+    /* Reset possible single buffer object */
+    if (bufferObj_)
+    {
+        sourceObj_.DetachBuffer();
+        bufferObj_.reset();
+    }
+
+    /* Initialize buffer object queue (if not done yet) */
+    if (!bufferObjQueue_)
+        bufferObjQueue_ = std::unique_ptr<ALBufferObjQueue>(new ALBufferObjQueue());
+
+    #if 1
+    if (GetProcessedQueueSize() > 0)
+        seekOffset_ += waveBuffer.GetTotalTime();
+    #endif
+
+    /* Fill buffer data */
+    bufferObjQueue_->QueueBufferData(sourceObj_.Get(), waveBuffer);
+}
+
+std::size_t ALSound::GetQueueSize() const
+{
+    return static_cast<std::size_t>(sourceObj_.GetInt(AL_BUFFERS_QUEUED));
+}
+
+std::size_t ALSound::GetProcessedQueueSize() const
+{
+    return static_cast<std::size_t>(sourceObj_.GetInt(AL_BUFFERS_PROCESSED));
 }
 
 

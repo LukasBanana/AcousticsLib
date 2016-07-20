@@ -11,6 +11,7 @@
 
 #include "ALSourceObj.h"
 #include "ALBufferObj.h"
+#include "ALBufferObjQueue.h"
 
 #include <Ac/Sound.h>
 #include <vector>
@@ -49,12 +50,16 @@ class ALSound : public Sound
         void AttachBuffer(const WaveBuffer& waveBuffer) override;
         void QueueBuffer(const WaveBuffer& waveBuffer) override;
 
-        //void AttachBuffer(const std::shared_ptr<ALBufferObj>& bufferObj);
+        std::size_t GetQueueSize() const override;
+        std::size_t GetProcessedQueueSize() const override;
 
     private:
 
-        ALSourceObj                     sourceObj_;
-        std::shared_ptr<ALBufferObj>    bufferObj_;
+        ALSourceObj                         sourceObj_;
+        std::shared_ptr<ALBufferObj>        bufferObj_;
+        std::unique_ptr<ALBufferObjQueue>   bufferObjQueue_;
+
+        double                              seekOffset_ = 0.0; //!< Offset for the "GetSeek" function, when a buffer queue is used.
 
 };
 

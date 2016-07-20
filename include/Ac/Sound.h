@@ -77,6 +77,36 @@ class AC_EXPORT Sound
         */
         virtual void QueueBuffer(const WaveBuffer& waveBuffer) = 0;
 
+        /**
+        \brief Returns the current size of the buffer queue.
+        \see QueueBuffer
+        \see GetProcessedQueueSize
+        */
+        virtual std::size_t GetQueueSize() const = 0;
+
+        /**
+        \brief Returns the number of the processed buffer in the queue.
+        \remarks This should be used for audio streaming. Example usage:
+        \code
+        // Initialize buffer queue with 10 buffers
+        for (int i = 0; i < 10 && audioStream->StreamWaveBuffer(waveBuffer) > 0; ++i)
+            sound->QueueBuffer(waveBuffer);
+
+        // Start continuous streaming
+        while (sound->IsPlaying())
+        {
+            while (sound->GetProcessedQueueSize() > 0)
+            {
+                if (audioStream->StreamWaveBuffer(waveBuffer) > 0)
+                    sound->QueueBuffer(waveBuffer);
+                else
+                    break;
+            }
+        }
+        \endcode
+        */
+        virtual std::size_t GetProcessedQueueSize() const = 0;
+
     protected:
 
         Sound() = default;

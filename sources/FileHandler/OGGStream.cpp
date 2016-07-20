@@ -148,10 +148,11 @@ std::size_t OGGStream::StreamWaveBuffer(WaveBuffer& buffer)
     /* Read next data chunk */
     std::size_t bytes = 0;
     std::size_t size = buffer.BufferSize();
+    auto maxSize = size;
 
     int bitStream = 0;
 
-    while (bytes < size)
+    while (bytes < maxSize)
     {
         /* Read next ogg vorbis chunk */
         auto result = ov_read(

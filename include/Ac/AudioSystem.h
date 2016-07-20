@@ -102,11 +102,18 @@ class AC_EXPORT AudioSystem
         //! Creates a 3D sound initialized with specified wave buffer.
         std::unique_ptr<Sound3D> CreateSound3D(const WaveBuffer& waveBuffer);
 
-        //! Loads the specified sound from file.
-        std::unique_ptr<Sound> LoadSound(const std::string& filename);
+        /**
+        \brief Loads the specified sound from file.
+        \param[in] alwaysCreateSound Specifies whether to always create a sound or to
+        return a null pointer if the file could not be found. By default false.
+        */
+        std::unique_ptr<Sound> LoadSound(const std::string& filename, bool alwaysCreateSound = false);
 
-        //! Loads the specified sound from file and returns it as a 3D sound.
-        std::unique_ptr<Sound3D> LoadSound3D(const std::string& filename);
+        /**
+        \brief Loads the specified sound from file and returns it as a 3D sound.
+        \see LoadSound
+        */
+        std::unique_ptr<Sound3D> LoadSound3D(const std::string& filename, bool alwaysCreateSound = false);
 
         /**
         \brief Play specified sound file.

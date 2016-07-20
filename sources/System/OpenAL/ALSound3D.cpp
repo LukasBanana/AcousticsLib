@@ -124,14 +124,15 @@ void ALSound3D::QueueBuffer(const WaveBuffer& waveBuffer)
     //todo...
 }
 
-/*void ALSound3D::AttachBuffer(const std::shared_ptr<ALBufferObj>& bufferObj)
+std::size_t ALSound3D::GetQueueSize() const
 {
-    bufferObj_ = bufferObj;
-    if (bufferObj)
-        sourceObj_.AttachBuffer(*bufferObj);
-    else
-        sourceObj_.DetachBuffer();
-}*/
+    return 0;//static_cast<std::size_t>(sourceObj_.GetInt(AL_BUFFERS_QUEUED));
+}
+
+std::size_t ALSound3D::GetProcessedQueueSize() const
+{
+    return 0;//static_cast<std::size_t>(sourceObj_.GetInt(AL_BUFFERS_PROCESSED));
+}
 
 
 } // /namespace Ac

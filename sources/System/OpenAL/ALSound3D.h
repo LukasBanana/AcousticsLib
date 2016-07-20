@@ -49,6 +49,9 @@ class ALSound3D : public Sound3D
         void AttachBuffer(const WaveBuffer& waveBuffer) override;
         void QueueBuffer(const WaveBuffer& waveBuffer) override;
 
+        std::size_t GetQueueSize() const override;
+        std::size_t GetProcessedQueueSize() const override;
+
         void SetPosition(const Gs::Vector3f& position) override;
         Gs::Vector3f GetPosition() const override;
 
@@ -57,8 +60,6 @@ class ALSound3D : public Sound3D
 
         void SetSpaceRelative(bool enable) override;
         bool GetSpaceRelative() const override;
-
-        //void AttachBuffer(const std::shared_ptr<ALBufferObj>& bufferObj);
 
     private:
 

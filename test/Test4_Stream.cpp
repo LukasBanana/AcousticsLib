@@ -5,10 +5,7 @@
  * See "LICENSE.txt" for license information.
  */
 
-#include <Ac/AcLib.h>
-#include <iostream>
-#include <thread>
-#include <fstream>
+#include "TestUtil.h"
 
 
 int main()
@@ -27,6 +24,8 @@ int main()
 
         std::ifstream file(filename, std::ios_base::binary);
 
+        auto sound = audioSystem->CreateSound();
+
         if (file.good())
         {
             auto stream = audioSystem->OpenAudioStream(
@@ -44,14 +43,46 @@ int main()
                 std::cout << "streaming:" << std::endl;
 
                 Ac::WaveBuffer buffer;
-                buffer.SetSampleCount(10000);
+                buffer.SetTotalTime(0.2);
 
-                std::size_t bytesRead = 0, blocks = 0;
+                std::size_t bytesRead = 0, blocks = 0, bytes = 0;
 
-                while (auto bytes = stream->StreamWaveBuffer(buffer))
+                // Initialize buffer queue with 10 buffers
+                for (int i = 0; i < 10; ++i)
                 {
-                    bytesRead += bytes;
-                    std::cout << "  " << ++blocks << " blocks and " << bytesRead << " bytes read\r";
+                    ++blocks;
+                    bytes = stream->StreamWaveBuffer(buffer);
+                    if (bytes > 0)
+                    {
+                        sound->QueueBuffer(buffer);
+                        bytesRead += bytes;
+                    }
+                    else
+                        break;
+                }
+
+                sound->SetVolume(0.5f);
+                sound->Play();
+
+                // Start continous streaming
+                while (sound->IsPlaying())
+                {
+                    // Process next buffer
+                    while (sound->GetProcessedQueueSize() > 0 && bytes > 0)
+                    {
+                        ++blocks;
+                        bytes = stream->StreamWaveBuffer(buffer);
+
+                        if (bytes > 0)
+                        {
+                            bytesRead += bytes;
+                            sound->QueueBuffer(buffer);
+                        }
+                    }
+
+                    std::cout << "  " << GetTimeline(sound->GetSeek(), stream->TotalTime(), 30) << "  " << blocks << " blocks and " << bytesRead << " bytes read\r";
+                    std::flush(std::cout);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 }
 
                 std::cout << std::endl;

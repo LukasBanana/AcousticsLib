@@ -111,24 +111,28 @@ std::unique_ptr<Sound3D> AudioSystem::CreateSound3D(const WaveBuffer& waveBuffer
     return sound;
 }
 
-std::unique_ptr<Sound> AudioSystem::LoadSound(const std::string& filename)
+std::unique_ptr<Sound> AudioSystem::LoadSound(const std::string& filename, bool alwaysCreateSound)
 {
     auto sound = CreateSound();
     
     auto waveBuffer = ReadAudioBuffer(filename);
     if (waveBuffer)
         sound->AttachBuffer(*waveBuffer);
+    else if (!alwaysCreateSound)
+        return nullptr;
 
     return sound;
 }
 
-std::unique_ptr<Sound3D> AudioSystem::LoadSound3D(const std::string& filename)
+std::unique_ptr<Sound3D> AudioSystem::LoadSound3D(const std::string& filename, bool alwaysCreateSound)
 {
     auto sound = CreateSound3D();
 
     auto waveBuffer = ReadAudioBuffer(filename);
     if (waveBuffer)
         sound->AttachBuffer(*waveBuffer);
+    else if (!alwaysCreateSound)
+        return nullptr;
 
     return sound;
 }
