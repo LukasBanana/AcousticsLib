@@ -37,7 +37,11 @@ using PCMBuffer = std::vector<char>;
 using SampleIterationFunction = std::function<void(double& sample, unsigned short channel, std::size_t index, double phase)>;
 
 
-//! Data model structure for an audio wave buffer.
+/**
+\brief Data model for an audio wave buffer.
+\remarks This class manages the PCM (Pulse Code Modulation) buffer by abstracting the underlying audio samples
+(8 or 16 bit, signed or unsigned) to double precision floating-points in the normalized range [-1, 1].
+*/
 class AC_EXPORT WaveBuffer
 {
 

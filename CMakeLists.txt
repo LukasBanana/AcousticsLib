@@ -64,10 +64,10 @@ elseif(UNIX)
 	file(GLOB FilesPlatform ${PROJECT_SOURCE_DIR}/sources/Platform/Linux/*.*)
 endif()
 
-set(FilesTest1 ${PROJECT_SOURCE_DIR}/test/test1.cpp)
-set(FilesTest2 ${PROJECT_SOURCE_DIR}/test/test2.cpp)
-set(FilesTest3 ${PROJECT_SOURCE_DIR}/test/test3_3d.cpp)
-set(FilesTest4 ${PROJECT_SOURCE_DIR}/test/test4_stream.cpp)
+set(FilesTest1 ${PROJECT_SOURCE_DIR}/test/Test1.cpp)
+set(FilesTest2 ${PROJECT_SOURCE_DIR}/test/Test2.cpp)
+set(FilesTest3 ${PROJECT_SOURCE_DIR}/test/Test3_3D.cpp)
+set(FilesTest4 ${PROJECT_SOURCE_DIR}/test/Test4_Stream.cpp)
 
 
 # === Source group folders ===
@@ -144,9 +144,9 @@ if(WIN32)
 endif()
 
 # Test Projects
-ADD_TEST_PROJECT(test1 ${FilesTest1})
-ADD_TEST_PROJECT(test2 ${FilesTest2})
-ADD_TEST_PROJECT(test3_3d ${FilesTest3})
-ADD_TEST_PROJECT(test4_stream ${FilesTest4})
+ADD_TEST_PROJECT(Test1 ${FilesTest1})
+ADD_TEST_PROJECT(Test2 ${FilesTest2})
+ADD_TEST_PROJECT(Test3_3D ${FilesTest3})
+ADD_TEST_PROJECT(Test4_Stream ${FilesTest4})
 
 
