@@ -13,7 +13,7 @@
 #include <thread>
 #include <cmath>
 #include <array>
-
+#include <iomanip>
 
 
 #define TEST_MODE_SYNTH     1
@@ -156,8 +156,12 @@ int main()
             while (sound->IsPlaying())
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
-                std::cout << "playing: " << sound->GetSeek() << " / " << sound->TotalTime() << std::endl;
+                //std::cout << "playing: " << sound->GetSeek() << " / " << sound->TotalTime() << std::endl;
+                std::cout << "playing: " << sound->GetSeek() << " / " << sound->TotalTime() << '\r';
+                std::flush(std::cout);
             }
+            
+            std::cout << std::endl;
         }
     
         #else
@@ -172,7 +176,7 @@ int main()
             
                 s.SetVolume(s.GetVolume() - 0.01f);
                 std::cout << "playing: " << s.GetSeek() << " / " << s.TotalTime() << std::endl;
-            
+                
                 #else
 
                 static float a;
