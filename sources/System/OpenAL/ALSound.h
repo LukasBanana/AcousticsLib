@@ -59,8 +59,6 @@ class ALSound : public Sound
         std::shared_ptr<ALBufferObj>        bufferObj_;
         std::unique_ptr<ALBufferObjQueue>   bufferObjQueue_;
 
-        double                              seekOffset_ = 0.0; //!< Offset for the "GetSeek" function, when a buffer queue is used.
-
 };
 
 

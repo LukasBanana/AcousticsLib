@@ -77,7 +77,10 @@ void ALSound::SetSeek(double position)
 
 double ALSound::GetSeek() const
 {
-    return static_cast<double>(sourceObj_.GetFloat(AL_SEC_OFFSET)) + seekOffset_;
+    auto seek = static_cast<double>(sourceObj_.GetFloat(AL_SEC_OFFSET));
+    if (bufferObjQueue_)
+        seek += bufferObjQueue_->ProcessedTime();
+    return seek;
 }
 
 double ALSound::TotalTime() const
@@ -103,15 +106,10 @@ void ALSound::QueueBuffer(const WaveBuffer& waveBuffer)
 
     /* Initialize buffer object queue (if not done yet) */
     if (!bufferObjQueue_)
-        bufferObjQueue_ = std::unique_ptr<ALBufferObjQueue>(new ALBufferObjQueue());
-
-    #if 1
-    if (GetProcessedQueueSize() > 0)
-        seekOffset_ += waveBuffer.GetTotalTime();
-    #endif
+        bufferObjQueue_ = std::unique_ptr<ALBufferObjQueue>(new ALBufferObjQueue(sourceObj_.Get()));
 
     /* Fill buffer data */
-    bufferObjQueue_->QueueBufferData(sourceObj_.Get(), waveBuffer);
+    bufferObjQueue_->QueueBufferData(waveBuffer);
 }
 
 std::size_t ALSound::GetQueueSize() const

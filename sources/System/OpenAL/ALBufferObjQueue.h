@@ -13,6 +13,7 @@
 
 #include <Ac/WaveBuffer.h>
 #include <vector>
+#include <queue>
 
 
 namespace Ac
@@ -24,21 +25,31 @@ class ALBufferObjQueue
 
     public:
 
+        ALBufferObjQueue(ALuint sourceHandle);
         ~ALBufferObjQueue();
 
-        void QueueBufferData(ALuint sourceHandle, ALenum format, const ALvoid* buffer, ALsizei size, ALsizei sampleRate);
-        void QueueBufferData(ALuint sourceHandle, const WaveBuffer& waveBuffer);
+        void Reset();
+
+        void QueueBufferData(const WaveBuffer& waveBuffer);
 
         inline std::size_t QueueSize() const
         {
             return handles_.size();
         }
 
+        inline double ProcessedTime() const
+        {
+            return processedTime_;
+        }
+
     private:
 
         ALuint AllocBuffer();
 
+        ALuint              sourceHandle_;
         std::vector<ALuint> handles_;
+        std::queue<double>  totalTimes_;
+        double              processedTime_ = 0.0;
 
 };
 

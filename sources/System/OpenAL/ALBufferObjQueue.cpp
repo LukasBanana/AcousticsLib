@@ -13,23 +13,51 @@ namespace Ac
 {
 
 
+ALBufferObjQueue::ALBufferObjQueue(ALuint sourceHandle) :
+    sourceHandle_( sourceHandle )
+{
+}
+
 ALBufferObjQueue::~ALBufferObjQueue()
 {
     alDeleteBuffers(static_cast<ALsizei>(handles_.size()), handles_.data());
 }
 
-void ALBufferObjQueue::QueueBufferData(ALuint sourceHandle, ALenum format, const ALvoid* buffer, ALsizei size, ALsizei sampleRate)
+void ALBufferObjQueue::Reset()
 {
+    /* Reset processed time */
+    processedTime_ = 0.0;
+
+    /* Unqueue all buffers */
+    /*ALint queued = 0;
+    alGetSourcei(sourceHandle_, AL_BUFFERS_QUEUED, &queued);
+    alSourceUnqueueBuffers(sourceHandle_, queued, nullptr);*/
+}
+
+void ALBufferObjQueue::QueueBufferData(const WaveBuffer& waveBuffer)
+{
+    /* Get wave buffer attributes */
+    auto size = static_cast<ALsizei>(waveBuffer.BufferSize());
+    auto sampleRate = static_cast<ALsizei>(waveBuffer.GetFormat().sampleRate);
+
+    ALenum format = 0;
+    if (!ALFormatFromWaveFormat(format, waveBuffer.GetFormat()))
+        return;
+    
     /* Select buffer handle */
     ALuint bufferHandle = 0;
 
     ALint processed = 0;
-    alGetSourcei(sourceHandle, AL_BUFFERS_PROCESSED, &processed);
+    alGetSourcei(sourceHandle_, AL_BUFFERS_PROCESSED, &processed);
 
     if (processed > 0)
     {
         /* Pop oldest buffer from queue and push it back with new data */
-        alSourceUnqueueBuffers(sourceHandle, 1, &bufferHandle);
+        alSourceUnqueueBuffers(sourceHandle_, 1, &bufferHandle);
+
+        /* Accumulate processed total time */
+        processedTime_ += totalTimes_.front();
+        totalTimes_.pop();
     }
     else
     {
@@ -38,25 +66,12 @@ void ALBufferObjQueue::QueueBufferData(ALuint sourceHandle, ALenum format, const
     }
 
     /* Fill buffer object with wave buffer data */
-    alBufferData(bufferHandle, format, buffer, size, sampleRate);
+    alBufferData(bufferHandle, format, waveBuffer.Data(), size, sampleRate);
 
     /* Push buffer to the end of the source buffer queue */
-    alSourceQueueBuffers(sourceHandle, 1, &bufferHandle);
-}
+    alSourceQueueBuffers(sourceHandle_, 1, &bufferHandle);
 
-void ALBufferObjQueue::QueueBufferData(ALuint sourceHandle, const WaveBuffer& waveBuffer)
-{
-    ALenum fmt = 0;
-    if (ALFormatFromWaveFormat(fmt, waveBuffer.GetFormat()))
-    {
-        QueueBufferData(
-            sourceHandle,
-            fmt,
-            waveBuffer.Data(),
-            waveBuffer.BufferSize(),
-            waveBuffer.GetFormat().sampleRate
-        );
-    }
+    totalTimes_.push(waveBuffer.GetTotalTime());
 }
 
 
