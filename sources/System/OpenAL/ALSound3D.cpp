@@ -115,7 +115,18 @@ bool ALSound3D::GetSpaceRelative() const
 
 void ALSound3D::AttachBuffer(const WaveBuffer& waveBuffer)
 {
-    bufferObj_ = std::make_shared<ALBufferObj>(waveBuffer);
+    bufferObj_ = std::make_shared<ALBufferObj>();
+
+    if (waveBuffer.GetFormat().channels != 1)
+    {
+        /* OpenAL only allows one channel for 3D sounds, so convert it */
+        auto waveBufferCopy = waveBuffer;
+        waveBufferCopy.SetChannels(1);
+        bufferObj_->BufferData(waveBufferCopy);
+    }
+    else
+        bufferObj_->BufferData(waveBuffer);
+
     sourceObj_.AttachBuffer(*bufferObj_);
 }
 
