@@ -19,8 +19,8 @@ int main()
 
         // Open audio stream
         const std::string filename = (
-            //"in/gong.ogg"
-            "in/chiptune_2.mod"
+            "in/gong.ogg"
+            //"in/chiptune_2.mod"
         );
 
         const std::string fileExt = filename.substr(filename.size() - 4);
@@ -46,10 +46,15 @@ int main()
                 Ac::WaveBuffer buffer;
                 buffer.SetSampleCount(10000);
 
+                std::size_t bytesRead = 0, blocks = 0;
+
                 while (auto bytes = stream->StreamWaveBuffer(buffer))
                 {
-                    std::cout << "  " << bytes << " bytes read" << std::endl;
+                    bytesRead += bytes;
+                    std::cout << "  " << ++blocks << " blocks and " << bytesRead << " bytes read\r";
                 }
+
+                std::cout << std::endl;
             }
         
             std::cout << "finished" << std::endl;
