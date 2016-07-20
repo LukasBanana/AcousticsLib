@@ -10,6 +10,7 @@
 
 
 #include <Ac/AudioStream.h>
+#include <memory>
 
 
 namespace Ac
@@ -21,7 +22,7 @@ class AC_EXPORT MODStream : public AudioStream
 
     public:
 
-        MODStream(std::istream& stream);
+        MODStream(std::unique_ptr<std::istream>&& stream);
         ~MODStream();
 
         std::size_t StreamWaveBuffer(WaveBuffer& buffer) override;
@@ -34,7 +35,7 @@ class AC_EXPORT MODStream : public AudioStream
 
     private:
 
-        std::istream& stream_;
+        std::unique_ptr<std::istream> stream_;
 
 };
 

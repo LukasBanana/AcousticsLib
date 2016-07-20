@@ -17,15 +17,15 @@ namespace Ac
 {
 
 
-MODStream::MODStream(std::istream& stream) :
-    stream_( stream )
+MODStream::MODStream(std::unique_ptr<std::istream>&& stream) :
+    stream_( std::move(stream) )
 {
-    if (!stream_.good())
+    if (!stream_->good())
         throw std::runtime_error("failed to start reading from MOD stream");
 
     /* Read header */
     MODHeader header;
-    stream_.read(reinterpret_cast<char*>(&header), sizeof(header));
+    stream_->read(reinterpret_cast<char*>(&header), sizeof(header));
 
     /* Swap word to Motorola byte order (big endian) */
     for (unsigned i = 0; i < 31; ++i)

@@ -155,7 +155,7 @@ class AC_EXPORT AudioSystem
 
         /**
         \brief Reads the audio data from the specified file and stores it in the output wave buffer.
-        \param[in] filenaem Specifies the filename of the input file stream.
+        \param[in] filename Specifies the filename of the input file stream.
         \see ReadAudioBuffer(const AudioFormats, std::istream&, WaveBuffer&)
         */
         std::unique_ptr<WaveBuffer> ReadAudioBuffer(const std::string& filename);
@@ -170,12 +170,20 @@ class AC_EXPORT AudioSystem
         void ReadAudioBuffer(const AudioFormats format, std::istream& stream, WaveBuffer& waveBuffer);
 
         /**
+        \brief Opens a new audio stream form the specified file.
+        \param[in] filename Specifies the filename of the input file stream.
+        \see OpenAudioStream(const AudioStreamFormats, std::istream&)
+        */
+        std::unique_ptr<AudioStream> OpenAudioStream(const std::string& filename);
+
+        /**
         \brief Opens a new audio stream.
-        \param[in,out] stream Specifies the input stream to read from. This stream must be opened in binary mode!
+        \param[in] stream Specifies the input stream to read from. This stream must be opened in binary mode!
         \return New AudioStream object or null if 'format' is invalid.
+        \remarks The input stream must be a unique pointer, so that the returned audio stream object can take care of the input stream to read from.
         \throws std::runtime_exception If something went wrong while opening the stream.
         */
-        std::unique_ptr<AudioStream> OpenAudioStream(const AudioStreamFormats format, std::istream& stream);
+        std::unique_ptr<AudioStream> OpenAudioStream(const AudioStreamFormats format, std::unique_ptr<std::istream>&& stream);
 
         /**
         \brief Writes the audio data to the specified stream.
@@ -190,6 +198,8 @@ class AC_EXPORT AudioSystem
         AudioSystem() = default;
 
     private:
+
+        bool LoadSoundFromFile(Sound& sound, const std::string& filename, bool alwaysCreateSound);
 
         std::string name_;
 

@@ -22,15 +22,15 @@ int main()
 
         const std::string fileExt = filename.substr(filename.size() - 4);
 
-        std::ifstream file(filename, std::ios_base::binary);
+        auto file = std::unique_ptr<std::ifstream>(new std::ifstream(filename, std::ios_base::binary));
 
         auto sound = audioSystem->CreateSound();
 
-        if (file.good())
+        if (file->good())
         {
             auto stream = audioSystem->OpenAudioStream(
                 (fileExt == ".ogg" ? Ac::AudioStreamFormats::OGG : Ac::AudioStreamFormats::MOD),
-                file
+                std::move(file)
             );
 
             if (stream)

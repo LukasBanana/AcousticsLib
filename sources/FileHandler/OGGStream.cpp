@@ -96,8 +96,8 @@ static long OggTell(void* datasource)
 
 #undef OGG_DATASOURCE
 
-OGGStream::OGGStream(std::istream& stream) :
-    stream_( stream )
+OGGStream::OGGStream(std::unique_ptr<std::istream>&& stream) :
+    stream_( std::move(stream) )
 {
     /* Initialize function callbacks */
     ov_callbacks callbacks;
@@ -108,7 +108,7 @@ OGGStream::OGGStream(std::istream& stream) :
     callbacks.tell_func     = OggTell;
 
     /* Open Ogg-Vorbis stream */
-    auto result = ov_open_callbacks(reinterpret_cast<void*>(&stream_), &file_, nullptr, 0, callbacks);
+    auto result = ov_open_callbacks(reinterpret_cast<void*>(stream_.get()), &file_, nullptr, 0, callbacks);
     if (result != 0)
         throw std::runtime_error(OggError(result));
 

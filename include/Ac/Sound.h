@@ -11,6 +11,7 @@
 
 #include "Export.h"
 #include "WaveBuffer.h"
+#include "AudioStream.h"
 
 #include <string>
 #include <memory>
@@ -107,9 +108,29 @@ class AC_EXPORT Sound
         */
         virtual std::size_t GetProcessedQueueSize() const = 0;
 
+        /**
+        \brief Connects this sound with the specified stream source.
+        \remarks This is used for the audio system, to perform continous streaming automatically.
+        If you do the streaming manually, you don't necessarily need this function.
+        */
+        virtual void SetStreamSource(const std::shared_ptr<AudioStream>& streamSource)
+        {
+            streamSource_ = streamSource;
+        }
+
+        //! Returns the previously connected stream source.
+        virtual const std::shared_ptr<AudioStream>& GetStreamSource() const
+        {
+            return streamSource_;
+        }
+
     protected:
 
         Sound() = default;
+
+    private:
+
+        std::shared_ptr<AudioStream> streamSource_;
 
 };
 

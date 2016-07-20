@@ -114,27 +114,13 @@ std::unique_ptr<Sound3D> AudioSystem::CreateSound3D(const WaveBuffer& waveBuffer
 std::unique_ptr<Sound> AudioSystem::LoadSound(const std::string& filename, bool alwaysCreateSound)
 {
     auto sound = CreateSound();
-    
-    auto waveBuffer = ReadAudioBuffer(filename);
-    if (waveBuffer)
-        sound->AttachBuffer(*waveBuffer);
-    else if (!alwaysCreateSound)
-        return nullptr;
-
-    return sound;
+    return (LoadSoundFromFile(*sound, filename, alwaysCreateSound) ? std::move(sound) : nullptr);
 }
 
 std::unique_ptr<Sound3D> AudioSystem::LoadSound3D(const std::string& filename, bool alwaysCreateSound)
 {
     auto sound = CreateSound3D();
-
-    auto waveBuffer = ReadAudioBuffer(filename);
-    if (waveBuffer)
-        sound->AttachBuffer(*waveBuffer);
-    else if (!alwaysCreateSound)
-        return nullptr;
-
-    return sound;
+    return (LoadSoundFromFile(*sound, filename, alwaysCreateSound) ? std::move(sound) : nullptr);
 }
 
 void AudioSystem::PlaySound(const std::string& filename, float volume, std::size_t repetitions, const std::function<bool(Sound&)> waitCallback)
@@ -199,17 +185,36 @@ void AudioSystem::ReadAudioBuffer(const AudioFormats format, std::istream& strea
     }
 }
 
-std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(const AudioStreamFormats format, std::istream& stream)
+std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(const std::string& filename)
+{
+    /* Open file stream in binary mode */
+    auto file = std::unique_ptr<std::ifstream>(new std::ifstream(filename, std::ios_base::binary));
+
+    if (file->good())
+    {
+        /* Determine audio file type */
+        auto format = AudioStreamFormats::OGG;
+
+        //TODO... (right now only OGG supported) !!!
+
+        /* Open audio stream from input stream */
+        return OpenAudioStream(format, std::move(file));
+    }
+
+    return nullptr;
+}
+
+std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(const AudioStreamFormats format, std::unique_ptr<std::istream>&& stream)
 {
     switch (format)
     {
         case AudioStreamFormats::OGG:
             #ifdef AC_PLUGIN_OGGVORBIS
-            return std::unique_ptr<AudioStream>(new OGGStream(stream));
+            return std::unique_ptr<AudioStream>(new OGGStream(std::move(stream)));
             #endif
             break;
         case AudioStreamFormats::MOD:
-            return std::unique_ptr<AudioStream>(new MODStream(stream));
+            return std::unique_ptr<AudioStream>(new MODStream(std::move(stream)));
             break;
     }
     return nullptr;
@@ -224,6 +229,35 @@ void AudioSystem::WriteAudioBuffer(const AudioFormats format, std::ostream& stre
             writer.WriteWaveBuffer(stream, waveBuffer);
             break;
     }
+}
+
+
+/*
+ * ======= Private: =======
+ */
+
+static bool IsFileAudioStream(const std::string& filename)
+{
+    //TODO -> perform magic number analysis of file!!!
+    return (filename.size() >= 4 ? filename.substr(filename.size() - 4) == ".ogg" : false);
+}
+
+bool AudioSystem::LoadSoundFromFile(Sound& sound, const std::string& filename, bool alwaysCreateSound)
+{
+    if (IsFileAudioStream(filename))
+    {
+        auto audioStream = OpenAudioStream(filename);
+        sound.SetStreamSource(std::move(audioStream));
+    }
+    else
+    {
+        auto waveBuffer = ReadAudioBuffer(filename);
+        if (waveBuffer)
+            sound.AttachBuffer(*waveBuffer);
+        else if (!alwaysCreateSound)
+            return false;
+    }
+    return true;
 }
 
 

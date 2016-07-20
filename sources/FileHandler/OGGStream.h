@@ -12,6 +12,7 @@
 
 
 #include <Ac/AudioStream.h>
+#include <memory>
 #include <vorbis/vorbisfile.h>
 
 
@@ -24,7 +25,7 @@ class AC_EXPORT OGGStream : public AudioStream
 
     public:
 
-        OGGStream(std::istream& stream);
+        OGGStream(std::unique_ptr<std::istream>&& stream);
         ~OGGStream();
 
         std::size_t StreamWaveBuffer(WaveBuffer& buffer) override;
@@ -37,13 +38,13 @@ class AC_EXPORT OGGStream : public AudioStream
 
     private:
 
-        std::istream&               stream_;
+        std::unique_ptr<std::istream>   stream_;
 
-        vorbis_info*                info_       = nullptr;
-        OggVorbis_File              file_;
+        vorbis_info*                    info_       = nullptr;
+        OggVorbis_File                  file_;
 
-        double                      totalTime_  = 0.0;
-        std::vector<std::string>    comments_;
+        double                          totalTime_  = 0.0;
+        std::vector<std::string>        comments_;
 
 };
 
