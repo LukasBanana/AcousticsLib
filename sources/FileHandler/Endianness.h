@@ -19,7 +19,7 @@ namespace Ac
 template <typename T>
 T SwapEndian(T value)
 {
-    static_assert(std::is_integral<T>::value, __FUNCTION__ " only allows integral types");
+    static_assert(std::is_integral<T>::value, "SwapEndian template only allows integral types");
 
     union
     {
