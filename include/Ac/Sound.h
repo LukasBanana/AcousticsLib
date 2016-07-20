@@ -10,6 +10,7 @@
 
 
 #include "Export.h"
+#include "WaveBuffer.h"
 
 #include <string>
 #include <memory>
@@ -62,7 +63,19 @@ class AC_EXPORT Sound
         //! Returns the total time (in seconds) this sound takes to be played.
         virtual double TotalTime() const = 0;
 
-        //virtual void AttachSource();
+        /**
+        \brief Attaches the specified wave buffer to this sound.
+        \remarks If this function is used, only a single buffer can be added to the sound, and the previous buffer will be removed.
+        \see QueueBuffer
+        */
+        virtual void AttachBuffer(const WaveBuffer& waveBuffer) = 0;
+
+        /**
+        \brief Appends the specified buffer at the end of the buffer queue of this sound.
+        \remarks If this function is used, the sound will be managed for audio streaming.
+        \see AttachBuffer
+        */
+        virtual void QueueBuffer(const WaveBuffer& waveBuffer) = 0;
 
     protected:
 

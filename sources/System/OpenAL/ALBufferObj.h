@@ -25,6 +25,7 @@ class ALBufferObj
     public:
 
         ALBufferObj();
+        ALBufferObj(const WaveBuffer& waveBuffer);
         ~ALBufferObj();
 
         void BufferData(ALenum format, const ALvoid* buffer, ALsizei size, ALsizei sampleRate);

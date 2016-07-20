@@ -55,52 +55,14 @@ std::string ALAudioSystem::GetVersion() const
 
 /* ----- Sounds ----- */
 
-std::unique_ptr<Sound> ALAudioSystem::LoadSound(const std::string& filename)
+std::unique_ptr<Sound> ALAudioSystem::CreateSound()
 {
-    auto bufferObj = CreateBufferObjFromFile(filename, false);
-    if (bufferObj)
-    {
-        auto sound = std::unique_ptr<ALSound>(new ALSound());
-        sound->AttachBuffer(std::move(bufferObj));
-        return std::move(sound);
-    }
-    return nullptr;
+    return std::unique_ptr<ALSound>(new ALSound());
 }
 
-std::unique_ptr<Sound3D> ALAudioSystem::LoadSound3D(const std::string& filename)
+std::unique_ptr<Sound3D> ALAudioSystem::CreateSound3D()
 {
-    auto bufferObj = CreateBufferObjFromFile(filename, true);
-    if (bufferObj)
-    {
-        auto sound = std::unique_ptr<ALSound3D>(new ALSound3D());
-        sound->AttachBuffer(std::move(bufferObj));
-        return std::move(sound);
-    }
-    return nullptr;
-}
-
-std::unique_ptr<Sound> ALAudioSystem::CreateSound(const WaveBuffer& waveBuffer)
-{
-    auto bufferObj = CreateBufferObjFromWaveBuffer(waveBuffer);
-    if (bufferObj)
-    {
-        auto sound = std::unique_ptr<ALSound>(new ALSound());
-        sound->AttachBuffer(std::move(bufferObj));
-        return std::move(sound);
-    }
-    return nullptr;
-}
-
-std::unique_ptr<Sound3D> ALAudioSystem::CreateSound3D(const WaveBuffer& waveBuffer)
-{
-    auto bufferObj = CreateBufferObjFromWaveBuffer(waveBuffer);
-    if (bufferObj)
-    {
-        auto sound = std::unique_ptr<ALSound3D>(new ALSound3D());
-        sound->AttachBuffer(std::move(bufferObj));
-        return std::move(sound);
-    }
-    return nullptr;
+    return std::unique_ptr<ALSound3D>(new ALSound3D());
 }
 
 /* ----- Listener ----- */
@@ -197,34 +159,6 @@ ALCcontext* ALAudioSystem::CreateContext()
     if (!alcMakeContextCurrent(context))
         throw std::runtime_error("failed to make OpenAL context current");
     return context;
-}
-
-std::unique_ptr<ALBufferObj> ALAudioSystem::CreateBufferObjFromWaveBuffer(const WaveBuffer& waveBuffer)
-{
-    /* Create AL buffer object and fill with wave buffer data */
-    auto bufferObj = std::unique_ptr<ALBufferObj>(new ALBufferObj());
-    bufferObj->BufferData(waveBuffer);
-    return bufferObj;
-}
-
-std::unique_ptr<ALBufferObj> ALAudioSystem::CreateBufferObjFromFile(const std::string& filename, bool makeMono)
-{
-    std::ifstream file(filename, std::ios_base::binary);
-    if (file.good())
-    {
-        /* Read sound file */
-        WAVReader reader;
-
-        WaveBuffer waveBuffer;
-        reader.ReadWaveBuffer(file, waveBuffer);
-        
-        if (makeMono)
-            waveBuffer.SetChannels(1);
-
-        return CreateBufferObjFromWaveBuffer(waveBuffer);
-    }
-
-    return nullptr;
 }
 
 

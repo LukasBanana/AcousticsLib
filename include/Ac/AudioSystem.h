@@ -85,16 +85,28 @@ class AC_EXPORT AudioSystem
             return name_;
         }
 
-        /* ----- Sounds ----- */
-
         //! Returns a descriptive version string of this audio system (e.g. "OpenAL 1.1").
         virtual std::string GetVersion() const = 0;
 
+        /* ----- Sounds ----- */
+
+        //! Creates an empty sound which can later be filled with a wave buffer.
+        virtual std::unique_ptr<Sound> CreateSound() = 0;
+
+        //! Creates an empty 3D sound which can later be filled with a wave buffer.
+        virtual std::unique_ptr<Sound3D> CreateSound3D() = 0;
+    
+        //! Creates a sound initialized with specified wave buffer.
+        std::unique_ptr<Sound> CreateSound(const WaveBuffer& waveBuffer);
+
+        //! Creates a 3D sound initialized with specified wave buffer.
+        std::unique_ptr<Sound3D> CreateSound3D(const WaveBuffer& waveBuffer);
+
         //! Loads the specified sound from file.
-        virtual std::unique_ptr<Sound> LoadSound(const std::string& filename) = 0;
+        std::unique_ptr<Sound> LoadSound(const std::string& filename);
 
         //! Loads the specified sound from file and returns it as a 3D sound.
-        virtual std::unique_ptr<Sound3D> LoadSound3D(const std::string& filename) = 0;
+        std::unique_ptr<Sound3D> LoadSound3D(const std::string& filename);
 
         /**
         \brief Play specified sound file.
@@ -112,12 +124,6 @@ class AC_EXPORT AudioSystem
             const std::function<bool(Sound&)> waitCallback = nullptr
         );
 
-        //! Creates a sound from the specified wave buffer.
-        virtual std::unique_ptr<Sound> CreateSound(const WaveBuffer& waveBuffer) = 0;
-
-        //! Creates a 3D sound from the specified wave buffer.
-        virtual std::unique_ptr<Sound3D> CreateSound3D(const WaveBuffer& waveBuffer) = 0;
-    
         /* ----- Listener ----- */
 
         //! Sets the listener world position. By default (0, 0, 0).
@@ -141,7 +147,15 @@ class AC_EXPORT AudioSystem
         /* ----- Audio data access ------ */
 
         /**
-        \brief Reads the audio data from the specified stream and stores it in the wave buffer.
+        \brief Reads the audio data from the specified file and stores it in the output wave buffer.
+        \param[in] filenaem Specifies the filename of the input file stream.
+        \see ReadAudioBuffer(const AudioFormats, std::istream&, WaveBuffer&)
+        */
+        std::unique_ptr<WaveBuffer> ReadAudioBuffer(const std::string& filename);
+
+        /**
+        \brief Reads the audio data from the specified stream and stores it in the output wave buffer.
+        \param[in] format Specifies the file audio format.
         \param[in,out] stream Specifies the input stream to read from. This stream must be opened in binary mode!
         \param[out] waveBuffer Specifies the output wave buffer.
         \throws std::runtime_exception If something went wrong while reading.

@@ -29,11 +29,8 @@ class ALAudioSystem : public AudioSystem
 
         std::string GetVersion() const override;
 
-        std::unique_ptr<Sound> LoadSound(const std::string& filename) override;
-        std::unique_ptr<Sound3D> LoadSound3D(const std::string& filename) override;
-
-        std::unique_ptr<Sound> CreateSound(const WaveBuffer& waveBuffer) override;
-        std::unique_ptr<Sound3D> CreateSound3D(const WaveBuffer& waveBuffer) override;
+        std::unique_ptr<Sound> CreateSound() override;
+        std::unique_ptr<Sound3D> CreateSound3D() override;
 
         void SetListenerPosition(const Gs::Vector3f& position) override;
         Gs::Vector3f GetListenerPosition() const override;
@@ -50,9 +47,6 @@ class ALAudioSystem : public AudioSystem
 
         ALCdevice* OpenDevice();
         ALCcontext* CreateContext();
-
-        std::unique_ptr<ALBufferObj> CreateBufferObjFromWaveBuffer(const WaveBuffer& waveBuffer);
-        std::unique_ptr<ALBufferObj> CreateBufferObjFromFile(const std::string& filename, bool makeMono);
 
         ALCdevice*  device_     = nullptr;
         ALCcontext* context_    = nullptr;

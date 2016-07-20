@@ -46,7 +46,10 @@ class ALSound : public Sound
 
         double TotalTime() const override;
 
-        void AttachBuffer(const std::shared_ptr<ALBufferObj>& bufferObj);
+        void AttachBuffer(const WaveBuffer& waveBuffer) override;
+        void QueueBuffer(const WaveBuffer& waveBuffer) override;
+
+        //void AttachBuffer(const std::shared_ptr<ALBufferObj>& bufferObj);
 
     private:
 

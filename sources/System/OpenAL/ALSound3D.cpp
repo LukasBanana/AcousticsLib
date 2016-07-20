@@ -113,14 +113,25 @@ bool ALSound3D::GetSpaceRelative() const
     return (sourceObj_.GetInt(AL_SOURCE_RELATIVE) != AL_FALSE);
 }
 
-void ALSound3D::AttachBuffer(const std::shared_ptr<ALBufferObj>& bufferObj)
+void ALSound3D::AttachBuffer(const WaveBuffer& waveBuffer)
+{
+    bufferObj_ = std::make_shared<ALBufferObj>(waveBuffer);
+    sourceObj_.AttachBuffer(*bufferObj_);
+}
+
+void ALSound3D::QueueBuffer(const WaveBuffer& waveBuffer)
+{
+    //todo...
+}
+
+/*void ALSound3D::AttachBuffer(const std::shared_ptr<ALBufferObj>& bufferObj)
 {
     bufferObj_ = bufferObj;
     if (bufferObj)
         sourceObj_.AttachBuffer(*bufferObj);
     else
         sourceObj_.DetachBuffer();
-}
+}*/
 
 
 } // /namespace Ac

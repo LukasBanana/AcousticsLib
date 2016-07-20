@@ -46,6 +46,12 @@ ALBufferObj::ALBufferObj()
         throw std::runtime_error("failed to generate OpenAL buffer object");
 }
 
+ALBufferObj::ALBufferObj(const WaveBuffer& waveBuffer) :
+    ALBufferObj()
+{
+    BufferData(waveBuffer);
+}
+
 ALBufferObj::~ALBufferObj()
 {
     if (handle_ != 0 && alIsBuffer(handle_))

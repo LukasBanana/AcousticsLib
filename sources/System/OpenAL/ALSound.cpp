@@ -85,13 +85,15 @@ double ALSound::TotalTime() const
     return (bufferObj_ ? bufferObj_->GetTotalTime() : 0.0);
 }
 
-void ALSound::AttachBuffer(const std::shared_ptr<ALBufferObj>& bufferObj)
+void ALSound::AttachBuffer(const WaveBuffer& waveBuffer)
 {
-    bufferObj_ = bufferObj;
-    if (bufferObj)
-        sourceObj_.AttachBuffer(*bufferObj);
-    else
-        sourceObj_.DetachBuffer();
+    bufferObj_ = std::make_shared<ALBufferObj>(waveBuffer);
+    sourceObj_.AttachBuffer(*bufferObj_);
+}
+
+void ALSound::QueueBuffer(const WaveBuffer& waveBuffer)
+{
+    //todo...
 }
 
 

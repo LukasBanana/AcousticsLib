@@ -13,6 +13,7 @@
 
 #include <Ac/AudioSystem.h>
 #include <array>
+#include <fstream>
 
 
 namespace Ac
@@ -96,6 +97,42 @@ std::shared_ptr<AudioSystem> AudioSystem::Load()
 
 /* ----- Sounds ----- */
 
+std::unique_ptr<Sound> AudioSystem::CreateSound(const WaveBuffer& waveBuffer)
+{
+    auto sound = CreateSound();
+    sound->AttachBuffer(waveBuffer);
+    return sound;
+}
+
+std::unique_ptr<Sound3D> AudioSystem::CreateSound3D(const WaveBuffer& waveBuffer)
+{
+    auto sound = CreateSound3D();
+    sound->AttachBuffer(waveBuffer);
+    return sound;
+}
+
+std::unique_ptr<Sound> AudioSystem::LoadSound(const std::string& filename)
+{
+    auto sound = CreateSound();
+    
+    auto waveBuffer = ReadAudioBuffer(filename);
+    if (waveBuffer)
+        sound->AttachBuffer(*waveBuffer);
+
+    return sound;
+}
+
+std::unique_ptr<Sound3D> AudioSystem::LoadSound3D(const std::string& filename)
+{
+    auto sound = CreateSound3D();
+
+    auto waveBuffer = ReadAudioBuffer(filename);
+    if (waveBuffer)
+        sound->AttachBuffer(*waveBuffer);
+
+    return sound;
+}
+
 void AudioSystem::PlaySound(const std::string& filename, float volume, std::size_t repetitions, const std::function<bool(Sound&)> waitCallback)
 {
     /* Load and play sounds */
@@ -124,6 +161,28 @@ void AudioSystem::PlaySound(const std::string& filename, float volume, std::size
 }
 
 /* ----- Audio data access ------ */
+
+std::unique_ptr<WaveBuffer> AudioSystem::ReadAudioBuffer(const std::string& filename)
+{
+    /* Open file stream in binary mode */
+    std::ifstream file(filename, std::ios_base::binary);
+
+    if (file.good())
+    {
+        /* Determine audio file type */
+        AudioFormats format = AudioFormats::WAV;
+
+        //TODO... (right now only WAV supported) !!!
+
+        /* Read audio buffer from stream */
+        auto waveBuffer = std::unique_ptr<WaveBuffer>(new WaveBuffer());
+        ReadAudioBuffer(format, file, *waveBuffer);
+
+        return waveBuffer;
+    }
+
+    return nullptr;
+}
 
 void AudioSystem::ReadAudioBuffer(const AudioFormats format, std::istream& stream, WaveBuffer& waveBuffer)
 {
