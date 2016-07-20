@@ -17,8 +17,11 @@
 
 
 #define TEST_MODE_SYNTH     1
-#define TEST_MODE_LOAD      2
+#define TEST_MODE_NOISE     2
+#define TEST_MODE_LOAD      3
+
 #define TEST_MODE           TEST_MODE_LOAD
+
 #define TEST_WRITE_OUTPUT   1
 
 int main()
@@ -96,6 +99,13 @@ int main()
 
         outputBuffer = buffer;
 
+        #elif TEST_MODE == TEST_MODE_NOISE
+
+        outputBuffer.SetTotalTime(1.0);
+
+        outputBuffer.ForEachSample(Ac::Synthesizer::NoiseGenerator(0.3));
+        Ac::Synthesizer::BlurWaveBuffer(outputBuffer, 0.2, 1.0, 100);
+
         #elif TEST_MODE == TEST_MODE_LOAD
 
         std::string inputFilename = "in/thorndike.wav";
@@ -122,6 +132,7 @@ int main()
         //Ac::Synthesizer::ReverseWaveBuffer(outputBuffer);
 
         Ac::Synthesizer::BlurWaveBuffer(outputBuffer, 0.1, 1.0, 15);
+        outputBuffer.ForEachSample(Ac::Synthesizer::Amplifier(3.0));
 
         #endif
 

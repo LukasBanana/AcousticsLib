@@ -47,9 +47,13 @@ static const unsigned int sampleRate8kHz    = 8000;
 \see WaveGeneratorFunction
 \see GenerateWave
 */
-AC_EXPORT SampleIterationFunction SineWaveGenerator(double amplitude, double phaseShift, double frequency);
+AC_EXPORT SampleIterationFunction SineGenerator(double amplitude, double phaseShift, double frequency);
 
-AC_EXPORT SampleIterationFunction HalfCircleWaveGenerator(double amplitude, double phaseShift, double frequency);
+AC_EXPORT SampleIterationFunction HalfCircleGenerator(double amplitude, double phaseShift, double frequency);
+
+AC_EXPORT SampleIterationFunction Amplifier(double multiplicator);
+
+AC_EXPORT SampleIterationFunction NoiseGenerator(double amplitude);
 
 /* ----- Misc ----- */
 

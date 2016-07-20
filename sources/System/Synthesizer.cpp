@@ -22,19 +22,19 @@ namespace Synthesizer
 
 /* ----- Wave generators ----- */
 
-static void SineWaveGeneratorCallback(
+static void SineGeneratorCallback(
     double& sample, unsigned short channel, std::size_t index, double phase,
     double amplitude, double phaseShift, double frequency)
 {
     sample += std::sin((phase + phaseShift)*2.0*M_PI*frequency)*amplitude;
 }
 
-AC_EXPORT SampleIterationFunction SineWaveGenerator(double amplitude, double phaseShift, double frequency)
+AC_EXPORT SampleIterationFunction SineGenerator(double amplitude, double phaseShift, double frequency)
 {
-    return std::bind(SineWaveGeneratorCallback, _1, _2, _3, _4, amplitude, phaseShift, frequency);
+    return std::bind(SineGeneratorCallback, _1, _2, _3, _4, amplitude, phaseShift, frequency);
 }
 
-static void HalfCircleWaveGeneratorCallback(
+static void HalfCircleGeneratorCallback(
     double& sample, unsigned short channel, std::size_t index, double phase,
     double amplitude, double phaseShift, double frequency)
 {
@@ -48,9 +48,26 @@ static void HalfCircleWaveGeneratorCallback(
     sample += y*amplitude;
 }
 
-AC_EXPORT SampleIterationFunction HalfCircleWaveGenerator(double amplitude, double phaseShift, double frequency)
+AC_EXPORT SampleIterationFunction HalfCircleGenerator(double amplitude, double phaseShift, double frequency)
 {
-    return std::bind(HalfCircleWaveGeneratorCallback, _1, _2, _3, _4, amplitude, phaseShift, frequency);
+    return std::bind(HalfCircleGeneratorCallback, _1, _2, _3, _4, amplitude, phaseShift, frequency);
+}
+
+AC_EXPORT SampleIterationFunction Amplifier(double multiplicator)
+{
+    return [multiplicator](double& sample, unsigned short channel, std::size_t index, double phase)
+    {
+        sample *= multiplicator;
+    };
+}
+
+AC_EXPORT SampleIterationFunction NoiseGenerator(double amplitude)
+{
+    return [amplitude](double& sample, unsigned short channel, std::size_t index, double phase)
+    {
+        auto noise = static_cast<double>(rand()) / RAND_MAX;
+        sample += (noise*2.0 - 1.0) * amplitude;
+    };
 }
 
 /* ----- Misc ----- */
