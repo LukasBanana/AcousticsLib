@@ -30,11 +30,11 @@ using PCMBuffer = std::vector<char>;
 \param[in,out] sample Specifies the current sample which is to be modified. Each sample will be clamped to the range [-1, 1].
 \param[in] channel Specifies the current channel to which the sample belongs.
 \param[in] index Specifies the current sample index.
-\param[in] phase Specifies the current phase within the entire wave buffer (in seconds).
+\param[in] timePoint Specifies the current timePoint within the entire wave buffer (in seconds).
 \remarks This function interface is used for the 'GenerateWave' function.
 \see GenerateWave
 */
-using SampleIterationFunction = std::function<void(double& sample, unsigned short channel, std::size_t index, double phase)>;
+using SampleIterationFunction = std::function<void(double& sample, unsigned short channel, std::size_t index, double timePoint)>;
 
 
 /**
@@ -69,35 +69,35 @@ class AC_EXPORT WaveBuffer
 
         /**
         \brief Returns the sample at the specified index of the specified channel.
-        \param[in] index Specifies the sample index. One can use the "GetIndexFromPhase" function, to determine the index by the phase (in seconds).
+        \param[in] index Specifies the sample index. One can use the "GetIndexFromTimePoint" function, to determine the index by the time point (in seconds).
         \param[in] channel Specifies the channel from which to read the sample. This will be clamped to the range [0, GetFormat().channels).
         \return The read sample in the range [-1, 1].
-        \see GetIndexFromPhase
+        \see GetIndexFromTimePoint
         */
         double ReadSample(std::size_t index, unsigned short channel) const;
 
         //! Sets the sample at the specified index of the specified channel.
         void WriteSample(std::size_t index, unsigned short channel, double sample);
 
-        //! Returns the sample at the specified time point (phase) of the specified channel.
-        double ReadSample(double phase, unsigned short channel) const;
+        //! Returns the sample at the specified time point of the specified channel.
+        double ReadSample(double timePoint, unsigned short channel) const;
 
-        //! Sets the sample at the specified time point (phase) of the specified channel.
-        void WriteSample(double phase, unsigned short channel, double sample);
+        //! Sets the sample at the specified time point of the specified channel.
+        void WriteSample(double timePoint, unsigned short channel, double sample);
 
         /**
-        \brief Determines the sample index for the specified phase (in seconds).
+        \brief Determines the sample index for the specified time point (in seconds).
         \see ReadSample(std::size_t, unsigned short)
         \see WriteSample(std::size_t, unsigned short, double)
-        \see GetPhaseFromIndex
+        \see GetTimePointFromIndex
         */
-        std::size_t GetIndexFromPhase(double phase) const;
+        std::size_t GetIndexFromTimePoint(double timePoint) const;
 
         /**
-        \brief Determines the phase (in seconds) for the specified sample index.
-        \see GetIndexFromPhase
+        \brief Determines the time point (in seconds) for the specified sample index.
+        \see GetIndexFromTimePoint
         */
-        double GetPhaseFromIndex(std::size_t index) const;
+        double GetTimePointFromIndex(std::size_t index) const;
 
         /**
         \brief Sets the new wave buffer format.
@@ -128,14 +128,14 @@ class AC_EXPORT WaveBuffer
         void ForEachSample(const SampleIterationFunction& iterator, std::size_t indexBegin, std::size_t indexEnd);
 
         /**
-        \brief Iterates over all samples of this wave buffer within the specified phase range.
+        \brief Iterates over all samples of this wave buffer within the specified time range.
         \param[in] iterator Specifies the sample iteration callback function. This function will be used to modify each sample.
-        \param[in] phaseBegin Specifies the phase beginning (in seconds). This will be clamped to [0, +inf).
-        \param[in] phaseEnd Specifies the phase ending (in seconds). This will be clamped to [phaseBegin, +inf).
-        The ending is inclusive, i.e. the iteration range is [phaseBegin, phaseEnd].
+        \param[in] timeBegin Specifies the beginning time point (in seconds). This will be clamped to [0, +inf).
+        \param[in] timeEnd Specifies the ending time point (in seconds). This will be clamped to [timeBegin, +inf).
+        The ending is inclusive, i.e. the iteration range is [timeBegin, timeEnd].
         \see SampleIterationFunction
         */
-        void ForEachSample(const SampleIterationFunction& iterator, double phaseBegin, double phaseEnd);
+        void ForEachSample(const SampleIterationFunction& iterator, double timeBegin, double timeEnd);
 
         /**
         \brief Iterates over all samples of this wave buffer.

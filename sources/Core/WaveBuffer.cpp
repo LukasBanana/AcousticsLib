@@ -103,30 +103,30 @@ void WaveBuffer::WriteSample(std::size_t index, unsigned short channel, double s
     }
 }
 
-double WaveBuffer::ReadSample(double phase, unsigned short channel) const
+double WaveBuffer::ReadSample(double timePoint, unsigned short channel) const
 {
-    return ReadSample(GetIndexFromPhase(phase), channel);
+    return ReadSample(GetIndexFromTimePoint(timePoint), channel);
 }
 
-void WaveBuffer::WriteSample(double phase, unsigned short channel, double sample)
+void WaveBuffer::WriteSample(double timePoint, unsigned short channel, double sample)
 {
-    WriteSample(GetIndexFromPhase(phase), channel, sample);
+    WriteSample(GetIndexFromTimePoint(timePoint), channel, sample);
 }
 
-std::size_t WaveBuffer::GetIndexFromPhase(double phase) const
+std::size_t WaveBuffer::GetIndexFromTimePoint(double timePoint) const
 {
-    /* Clamp phase to range [0, GetTotalTime()) */
+    /* Clamp time point to range [0, GetTotalTime()) */
     auto sampleCount = GetSampleCount();
     if (sampleCount > 0)
     {
-        phase       = std::max(0.0, std::min(phase, GetTotalTime()));
-        auto index  = (static_cast<std::size_t>(phase * static_cast<double>(format_.sampleRate)));
+        timePoint   = std::max(0.0, std::min(timePoint, GetTotalTime()));
+        auto index  = (static_cast<std::size_t>(timePoint * static_cast<double>(format_.sampleRate)));
         return std::min(index, sampleCount - 1);
     }
     return 0;
 }
 
-double WaveBuffer::GetPhaseFromIndex(std::size_t index) const
+double WaveBuffer::GetTimePointFromIndex(std::size_t index) const
 {
     auto sampleCount = GetSampleCount();
     if (sampleCount > 0)
@@ -154,13 +154,13 @@ void WaveBuffer::SetFormat(const WaveBufferFormat& format)
 
             /* Copy samples from current buffer to temporary buffer */
             tempBuffer.ForEachSample(
-                [&](double& sample, unsigned short channel, std::size_t index, double phase)
+                [&](double& sample, unsigned short channel, std::size_t index, double timePoint)
                 {
                     channel = std::min(channel, maxChannels);
                     if (format_.sampleRate == format.sampleRate)
                         sample = ReadSample(index, channel);
                     else
-                        sample = ReadSample(phase, channel);
+                        sample = ReadSample(timePoint, channel);
                 }
             );
 
@@ -192,8 +192,8 @@ void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, std::siz
     auto channels   = format_.channels;
     auto rate       = format_.sampleRate;
 
-    auto phase      = GetPhaseFromIndex(indexBegin);
-    auto phaseStep  = (1.0 / static_cast<double>(rate));
+    auto timePoint  = GetTimePointFromIndex(indexBegin);
+    auto timeStep   = (1.0 / static_cast<double>(rate));
 
     for (std::size_t i = indexBegin; i <= indexEnd; ++i)
     {
@@ -201,18 +201,18 @@ void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, std::siz
         {
             /* Read sample, modify sample with generator callback, and write sample back to buffer */
             auto sample = ReadSample(i, chn);
-            iterator(sample, chn, i, phase);
+            iterator(sample, chn, i, timePoint);
             WriteSample(i, chn, sample);
         }
 
-        /* Increase phase */
-        phase += phaseStep;
+        /* Increase time point */
+        timePoint += timeStep;
     }
 }
 
-void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, double phaseBegin, double phaseEnd)
+void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, double timeBegin, double timeEnd)
 {
-    ForEachSample(iterator, GetIndexFromPhase(phaseBegin), GetIndexFromPhase(phaseEnd));
+    ForEachSample(iterator, GetIndexFromTimePoint(timeBegin), GetIndexFromTimePoint(timeEnd));
 }
 
 void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator)

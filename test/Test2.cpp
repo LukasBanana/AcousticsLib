@@ -12,7 +12,7 @@
 #define TEST_MODE_NOISE     2
 #define TEST_MODE_LOAD      3
 
-#define TEST_MODE           TEST_MODE_LOAD
+#define TEST_MODE           TEST_MODE_SYNTH
 
 #define TEST_WRITE_OUTPUT   1
 
@@ -74,7 +74,7 @@ int main()
                 auto noteIdx = phaseIdx % notes.size();
 
                 auto freq = Ac::Synthesizer::GetNoteFrequency(notes[noteIdx].n, notes[noteIdx].i);
-                auto sineWaveGen = Ac::Synthesizer::SineWaveGenerator(0.3, 0.0, freq);
+                auto sineWaveGen = Ac::Synthesizer::SineGenerator(0.3, 0.0, freq);
 
                 sineWaveGen(sample, channel, index, phase);
 
