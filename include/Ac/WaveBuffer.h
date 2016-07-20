@@ -168,6 +168,15 @@ class AC_EXPORT WaveBuffer
         */
         void ForEachSample(const SampleIterationFunction& iterator);
 
+        /**
+        \brief Appends the specified wave buffer to this buffer.
+        \param[in] buffer Specifies the new wave buffer which is to be appended to this buffer.
+        The format of the input buffer will be set to the format of this buffer (if they are unequal).
+        \remarks The input buffer must not be the same as this buffer, i.e. 'buffer.Append(buffer)' is an invalid operation and the behavior is undefined!
+        \see SetFormat
+        */
+        void Append(const WaveBuffer& other);
+
         //! Returns the actual PCM buffer size (in bytes).
         inline std::size_t BufferSize() const
         {

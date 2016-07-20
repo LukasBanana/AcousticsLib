@@ -91,6 +91,8 @@ int main()
 
         outputBuffer = buffer;
 
+        //outputBuffer.Append(buffer);
+
         #elif TEST_MODE == TEST_MODE_NOISE
 
         outputBuffer.SetTotalTime(1.0);

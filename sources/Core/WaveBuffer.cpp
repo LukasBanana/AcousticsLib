@@ -222,6 +222,28 @@ void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator)
         ForEachSample(iterator, 0, sampleCount - 1);
 }
 
+void WaveBuffer::Append(const WaveBuffer& other)
+{
+    if (other.GetFormat() != GetFormat())
+    {
+        /* Adapt format of new buffer (create copy) */
+        auto otherCopy = other;
+        otherCopy.SetFormat(GetFormat());
+
+        /* Resize this buffer and copy new buffer into this buffer */
+        auto prevSize = buffer_.size();
+        buffer_.resize(buffer_.size() + otherCopy.buffer_.size());
+        std::copy(otherCopy.buffer_.begin(), otherCopy.buffer_.end(), &buffer_[prevSize]);
+    }
+    else
+    {
+        /* Resize this buffer and copy new buffer into this buffer */
+        auto prevSize = buffer_.size();
+        buffer_.resize(buffer_.size() + other.buffer_.size());
+        std::copy(other.buffer_.begin(), other.buffer_.end(), &buffer_[prevSize]);
+    }
+}
+
 
 /*
  * ======= Private: =======
