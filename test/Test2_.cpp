@@ -5,15 +5,7 @@
  * See "LICENSE.txt" for license information.
  */
 
-#include <Ac/AcLib.h>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <thread>
-#include <cmath>
-#include <array>
-#include <iomanip>
+#include "TestUtil.h"
 
 
 #define TEST_MODE_SYNTH     1
@@ -156,9 +148,7 @@ int main()
             while (sound->IsPlaying())
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
-                //std::cout << "playing: " << sound->GetSeek() << " / " << sound->TotalTime() << std::endl;
-                std::cout << "playing: " << sound->GetSeek() << " / " << sound->TotalTime() << '\r';
-                std::flush(std::cout);
+                std::cout << "playing: " << ToStr(sound->GetSeek()) << " / " << ToStr(sound->TotalTime()) << "  " << GetTimeline(*sound) << "\r";
             }
             
             std::cout << std::endl;
