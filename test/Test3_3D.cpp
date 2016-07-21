@@ -1,5 +1,5 @@
 /*
- * test3_3d.cpp
+ * Test3_3D.cpp
  *
  * This file is part of the "AcousticsLib" project (Copyright (c) 2016 by Lukas Hermanns)
  * See "LICENSE.txt" for license information.

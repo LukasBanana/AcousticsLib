@@ -1,5 +1,5 @@
 /*
- * test2.cpp
+ * Test2.cpp
  *
  * This file is part of the "AcousticsLib" project (Copyright (c) 2016 by Lukas Hermanns)
  * See "LICENSE.txt" for license information.

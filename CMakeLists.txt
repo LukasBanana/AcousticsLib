@@ -68,6 +68,7 @@ set(FilesTest1 ${PROJECT_SOURCE_DIR}/test/Test1.cpp)
 set(FilesTest2 ${PROJECT_SOURCE_DIR}/test/Test2.cpp)
 set(FilesTest3 ${PROJECT_SOURCE_DIR}/test/Test3_3D.cpp)
 set(FilesTest4 ${PROJECT_SOURCE_DIR}/test/Test4_Stream.cpp)
+set(FilesTest5 ${PROJECT_SOURCE_DIR}/test/Test5_Mic.cpp)
 
 
 # === Source group folders ===
@@ -150,5 +151,6 @@ ADD_TEST_PROJECT(Test1 ${FilesTest1})
 ADD_TEST_PROJECT(Test2 ${FilesTest2})
 ADD_TEST_PROJECT(Test3_3D ${FilesTest3})
 ADD_TEST_PROJECT(Test4_Stream ${FilesTest4})
+ADD_TEST_PROJECT(Test5_Mic ${FilesTest5})
 
 
