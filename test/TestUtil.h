@@ -41,7 +41,7 @@ static std::string GetTimeline(const Ac::Sound& snd, std::size_t len = 40)
 
 static void PrintTimeline(const Ac::Sound& snd, std::size_t len = 40)
 {
-    std::cout << "playing: " << ToStr(snd.GetSeek()) << "s / " << ToStr(snd.TotalTime()) << "s  " << GetTimeline(snd) << "\r";
+    std::cout << "\rplaying: " << ToStr(snd.GetSeek()) << "s / " << ToStr(snd.TotalTime()) << "s  " << GetTimeline(snd);
     std::flush(std::cout);
 }
 
