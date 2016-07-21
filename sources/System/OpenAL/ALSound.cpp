@@ -108,7 +108,17 @@ double ALSound::TotalTime() const
 
 void ALSound::AttachBuffer(const WaveBuffer& waveBuffer)
 {
-    bufferObj_ = std::make_shared<ALBufferObj>(waveBuffer);
+    /* Stop palyback and detach previous buffer object */
+    Stop();
+    sourceObj_.DetachBuffer();
+
+    /* Create new buffer object or fill previous one */
+    if (!bufferObj_)
+        bufferObj_ = std::make_shared<ALBufferObj>(waveBuffer);
+    else
+        bufferObj_->BufferData(waveBuffer);
+
+    /* Attach buffer object to source */
     sourceObj_.AttachBuffer(*bufferObj_);
 }
 
