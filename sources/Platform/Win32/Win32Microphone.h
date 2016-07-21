@@ -12,6 +12,8 @@
 #include <Ac/Microphone.h>
 #include <Windows.h>
 #include <vector>
+#include <memory>
+#include <mutex>
 
 
 namespace Ac
@@ -30,21 +32,29 @@ class Win32Microphone : public Microphone
         Win32Microphone(const Win32Microphone&) = delete;
         Win32Microphone& operator = (const Win32Microphone&) = delete;
 
-        bool ProcessInput(WaveBuffer& waveBuffer) override;
+        std::unique_ptr<WaveBuffer> ReceivedInput() override;
 
-        inline WAVEHDR* GetWaveHdr()
-        {
-            return (&waveHdr_);
-        }
+        void Start() override;
+        void Stop() override;
+
+        bool IsRecording() const override;
+
+        void OnSync(DWORD bytesRecorded);
 
     private:
 
         void OpenWaveInput();
         void CloseWaveInput();
 
-        HWAVEIN             waveIn_ = nullptr;
-        WAVEHDR             waveHdr_;
-        std::vector<char>   buffer_;
+        HWAVEIN                     waveIn_     = nullptr;
+        WAVEHDR                     waveHdr_;
+        std::vector<char>           buffer_;    //!< To this buffer will be written from another thread (by the WinAPI)
+
+        bool                        recording_  = false;
+
+        std::unique_ptr<WaveBuffer> recvBuffer_;
+        WaveBufferFormat            recvBufferFormat_;
+        std::mutex                  recvBufferMutex_;
 
 };
 

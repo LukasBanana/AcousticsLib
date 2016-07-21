@@ -20,8 +20,32 @@ int main()
         {
             std::cout << "microphone found" << std::endl;
 
+            std::cout << "start recording" << std::endl;
+            mic->Start();
 
+            auto startTime = std::chrono::system_clock::now();
 
+            auto sound = audioSystem->CreateSound();
+
+            while (mic->IsRecording())
+            {
+                auto buffer = mic->ReceivedInput();
+                if (buffer)
+                {
+                    std::cout << "received buffer: length = " << buffer->GetTotalTime() << std::endl;
+                    sound->AttachBuffer(*buffer);
+                    sound->Play();
+                }
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+                auto now = std::chrono::system_clock::now();
+                if (std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count() > 5000)
+                {
+                    std::cout << "stop recording" << std::endl;
+                    mic->Stop();
+                }
+            }
         }
     }
     catch (const std::exception& e)

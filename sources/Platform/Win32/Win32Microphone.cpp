@@ -26,12 +26,53 @@ Win32Microphone::~Win32Microphone()
     CloseWaveInput();
 }
 
-bool Win32Microphone::ProcessInput(WaveBuffer& waveBuffer)
+std::unique_ptr<WaveBuffer> Win32Microphone::ReceivedInput()
 {
-    
+    if (recording_)
+    {
+        /* The receiver buffer will be filled from another thread, so we need a lock guard here */
+        std::lock_guard<std::mutex> lock(recvBufferMutex_);
+        return std::move(recvBuffer_);
+    }
+    return nullptr;
+}
 
+void Win32Microphone::Start()
+{
+    if (!recording_)
+    {
+        waveInAddBuffer(waveIn_, &waveHdr_, sizeof(WAVEHDR));
+        waveInStart(waveIn_);
+        recording_ = true;
+    }
+}
 
-    return false;
+void Win32Microphone::Stop()
+{
+    if (recording_)
+    {
+        waveInStop(waveIn_);
+        recording_ = false;
+    }
+}
+
+bool Win32Microphone::IsRecording() const
+{
+    return recording_;
+}
+
+void Win32Microphone::OnSync(DWORD bytesRecorded)
+{
+    /* This function is called from another thread, so we need to have a lock guard for the receiver buffer */
+    std::lock_guard<std::mutex> lock(recvBufferMutex_);
+
+    /* Create new receiver buffer (if previous buffer was moved to user) */
+    if (!recvBuffer_)
+        recvBuffer_ = std::unique_ptr<WaveBuffer>(new WaveBuffer(recvBufferFormat_));
+
+    /* Copy input buffer to receiver buffer */
+    recvBuffer_->SetSampleCount(buffer_.size() / recvBufferFormat_.BlockAlign());
+    std::copy(buffer_.begin(), buffer_.end(), recvBuffer_->Data());
 }
 
 
@@ -47,9 +88,9 @@ void Win32Microphone::OpenWaveInput()
     waveFormat.wFormatTag      = WAVE_FORMAT_PCM;
     waveFormat.nChannels       = 1;
     waveFormat.nSamplesPerSec  = 11025;
-    waveFormat.nAvgBytesPerSec = 11025;
-    waveFormat.nBlockAlign     = 1;
-    waveFormat.wBitsPerSample  = 8;
+    waveFormat.nAvgBytesPerSec = 11025*2;
+    waveFormat.nBlockAlign     = 2; // 1 for 8-bit
+    waveFormat.wBitsPerSample  = 16; // 8 for 8-bit
     waveFormat.cbSize          = 0; // must be 0 due to WAVE_FORMAT_PCM tag
     
     auto result = waveInOpen(
@@ -78,6 +119,11 @@ void Win32Microphone::OpenWaveInput()
 
     if (result != MMSYSERR_NOERROR)
         throw std::runtime_error("waveInPrepareHeader: " + MMErrorToString(result));
+
+    /* Setup receiver buffer format */
+    recvBufferFormat_.sampleRate    = 11025;
+    recvBufferFormat_.bitsPerSample = 16;
+    recvBufferFormat_.channels      = 1;
 }
 
 void Win32Microphone::CloseWaveInput()
