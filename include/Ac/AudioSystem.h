@@ -34,6 +34,24 @@ struct AC_EXPORT ListenerOrientation
     Gs::Vector3f upVector;
 };
 
+//! Loading sound flags enumeration.
+struct SoundFlags
+{
+    using BitMask = unsigned int;
+    enum
+    {
+        //! Indicates that "LoadSound" shall always return a valid Sound object, even if the sound file could not be loaded.
+        AlwaysCreateSound   = (1 << 0),
+
+        /**
+        \brief Indicates that "LoadSound" shall return a Sound object which is prepared for the 3D sound features.
+        \see Sound::Enable3D
+        */
+        Enable3D            = (1 << 1),
+    };
+};
+
+
 /**
 \brief Audio system interface.
 \remarsk All coordinates or 3D sounds are meant to be in a left-handed coordinates system,
@@ -98,10 +116,11 @@ class AC_EXPORT AudioSystem
 
         /**
         \brief Loads the specified sound from file.
-        \param[in] alwaysCreateSound Specifies whether to always create a sound or to
-        return a null pointer if the file could not be found. By default false.
+        \param[in] flags Specifies the bit mask flags.
+        This can be a bitwas OR combination of the values of the "SoundFlags" enumeration. By default 0.
+        \see SoundFlags
         */
-        std::unique_ptr<Sound> LoadSound(const std::string& filename, bool alwaysCreateSound = false);
+        std::unique_ptr<Sound> LoadSound(const std::string& filename, const SoundFlags::BitMask flags = 0);
 
         /**
         \brief Play specified sound file.
@@ -191,7 +210,7 @@ class AC_EXPORT AudioSystem
 
     private:
 
-        bool LoadSoundFromFile(Sound& sound, const std::string& filename, bool alwaysCreateSound);
+        bool IsFileAudioStream(const std::string& filename) const;
 
         std::string name_;
 

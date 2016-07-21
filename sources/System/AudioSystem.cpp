@@ -109,10 +109,32 @@ std::unique_ptr<Sound> AudioSystem::CreateSound(const WaveBuffer& waveBuffer)
     return sound;
 }
 
-std::unique_ptr<Sound> AudioSystem::LoadSound(const std::string& filename, bool alwaysCreateSound)
+std::unique_ptr<Sound> AudioSystem::LoadSound(const std::string& filename, const SoundFlags::BitMask flags)
 {
     auto sound = CreateSound();
-    return (LoadSoundFromFile(*sound, filename, alwaysCreateSound) ? std::move(sound) : nullptr);
+
+    if (IsFileAudioStream(filename))
+    {
+        auto audioStream = OpenAudioStream(filename);
+        sound->SetStreamSource(std::move(audioStream));
+    }
+    else
+    {
+        auto waveBuffer = ReadAudioBuffer(filename);
+        if (waveBuffer)
+        {
+            if ((flags & SoundFlags::Enable3D) != 0)
+                waveBuffer->SetChannels(1);
+            sound->AttachBuffer(*waveBuffer);
+        }
+        else if ((flags & SoundFlags::AlwaysCreateSound) == 0)
+            return nullptr;
+    }
+
+    if ((flags & SoundFlags::Enable3D) != 0)
+        sound->Enable3D();
+
+    return std::move(sound);
 }
 
 void AudioSystem::Play(const std::string& filename, float volume, std::size_t repetitions, const std::function<bool(Sound&)> waitCallback)
@@ -239,28 +261,10 @@ std::unique_ptr<Microphone> AudioSystem::QueryMicrophone()
  * ======= Private: =======
  */
 
-static bool IsFileAudioStream(const std::string& filename)
+bool AudioSystem::IsFileAudioStream(const std::string& filename) const
 {
     //TODO -> perform magic number analysis of file!!!
     return (filename.size() >= 4 ? filename.substr(filename.size() - 4) == ".ogg" : false);
-}
-
-bool AudioSystem::LoadSoundFromFile(Sound& sound, const std::string& filename, bool alwaysCreateSound)
-{
-    if (IsFileAudioStream(filename))
-    {
-        auto audioStream = OpenAudioStream(filename);
-        sound.SetStreamSource(std::move(audioStream));
-    }
-    else
-    {
-        auto waveBuffer = ReadAudioBuffer(filename);
-        if (waveBuffer)
-            sound.AttachBuffer(*waveBuffer);
-        else if (!alwaysCreateSound)
-            return false;
-    }
-    return true;
 }
 
 

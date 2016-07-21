@@ -12,7 +12,7 @@ int main()
 {
     auto audioSystem = Ac::AudioSystem::Load();
 
-    auto sound = audioSystem->LoadSound("in/shutter.wav");
+    auto sound = audioSystem->LoadSound("in/shutter.wav", Ac::SoundFlags::Enable3D);
     if (sound)
     {
         sound->Enable3D();
