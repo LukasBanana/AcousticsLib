@@ -35,6 +35,9 @@ class ALSound : public Sound
         void Pause() override;
         void Stop() override;
 
+        void SetLooping(bool enable) override;
+        bool GetLooping() const override;
+
         void SetVolume(float volume) override;
         float GetVolume() const override;
 

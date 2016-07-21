@@ -42,6 +42,16 @@ void ALSound::Stop()
     alSourceStop(sourceObj_.Get());
 }
 
+void ALSound::SetLooping(bool enable)
+{
+    sourceObj_.SetInt(AL_LOOPING, (enable ? AL_TRUE : AL_FALSE));
+}
+
+bool ALSound::GetLooping() const
+{
+    return (sourceObj_.GetInt(AL_LOOPING)) != AL_FALSE;
+}
+
 void ALSound::SetVolume(float volume)
 {
     sourceObj_.SetFloat(AL_GAIN, volume);

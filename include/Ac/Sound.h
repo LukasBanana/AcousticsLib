@@ -44,6 +44,14 @@ class AC_EXPORT Sound
         //! Stops the sound playback.
         virtual void Stop() = 0;
 
+        /**
+        \brief Enables or disables sound looping.
+        \param[in] enable If true, the sound will be played from the beginning, after the end was reached. By default false.
+        */
+        virtual void SetLooping(bool enable) = 0;
+        //! Returns true if sound looping is enabled.
+        virtual bool GetLooping() const = 0;
+
         //! Sets the sound volume in the range [0, +inf). By default 1.
         virtual void SetVolume(float volume) = 0;
         //! Returns the sound volume.
