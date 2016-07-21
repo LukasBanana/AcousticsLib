@@ -15,6 +15,11 @@
 #include <array>
 #include <fstream>
 
+//!!!TESTING!!!
+#ifdef _WIN32
+#include "../Platform/Win32/Win32Microphone.h"
+#endif
+
 
 namespace Ac
 {
@@ -110,7 +115,7 @@ std::unique_ptr<Sound> AudioSystem::LoadSound(const std::string& filename, bool 
     return (LoadSoundFromFile(*sound, filename, alwaysCreateSound) ? std::move(sound) : nullptr);
 }
 
-void AudioSystem::PlaySound(const std::string& filename, float volume, std::size_t repetitions, const std::function<bool(Sound&)> waitCallback)
+void AudioSystem::Play(const std::string& filename, float volume, std::size_t repetitions, const std::function<bool(Sound&)> waitCallback)
 {
     /* Load and play sounds */
     auto sound = LoadSound(filename);
@@ -222,6 +227,10 @@ void AudioSystem::WriteAudioBuffer(const AudioFormats format, std::ostream& stre
 
 std::unique_ptr<Microphone> AudioSystem::QueryMicrophone()
 {
+    //!!!TESTING!!!
+    #ifdef _WIN32
+    return std::unique_ptr<Microphone>(new Win32Microphone());
+    #endif
     return nullptr; //todo...
 }
 

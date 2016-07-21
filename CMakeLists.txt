@@ -108,7 +108,9 @@ add_library(AcLib SHARED ${FilesAll})
 set_target_properties(AcLib PROPERTIES LINKER_LANGUAGE CXX DEBUG_POSTFIX "D")
 target_compile_features(AcLib PRIVATE cxx_range_for)
 
-if(UNIX)
+if(WIN32)
+	target_link_libraries(AcLib Winmm)
+elseif(UNIX)
 	target_link_libraries(AcLib dl)
 endif()
 

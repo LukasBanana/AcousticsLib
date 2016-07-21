@@ -112,7 +112,7 @@ class AC_EXPORT AudioSystem
         The callback can be used to cancel the waiting process. By default null.
         \remarks This is a 'very high level' function and is commonly used for tests only, to reduce the code to a minimum.
         */
-        void PlaySound(
+        void Play(
             const std::string& filename,
             float volume = 1.0f,
             std::size_t repetitions = 0,

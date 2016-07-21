@@ -23,6 +23,8 @@ class AC_EXPORT Microphone
 
     public:
 
+        Microphone() = default;
+
         Microphone(const Microphone&) = delete;
         Microphone& operator = (const Microphone&) = delete;
 
