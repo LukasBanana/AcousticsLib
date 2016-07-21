@@ -21,7 +21,7 @@ int main()
             std::cout << "microphone found" << std::endl;
 
             std::cout << "start recording" << std::endl;
-            mic->Start();
+            mic->Start(Ac::WaveBufferFormat(Ac::Synthesizer::sampleRate44kHz, 16, 2), 0.25);
 
             auto startTime = std::chrono::system_clock::now();
 
@@ -32,7 +32,7 @@ int main()
                 auto buffer = mic->ReceivedInput();
                 if (buffer)
                 {
-                    std::cout << "received buffer: length = " << buffer->GetTotalTime() << std::endl;
+                    std::cout << "received buffer: samples = " << buffer->GetSampleCount() << ", duration = " << buffer->GetTotalTime() << "s" << std::endl;
                     sound->AttachBuffer(*buffer);
                     sound->Play();
                 }

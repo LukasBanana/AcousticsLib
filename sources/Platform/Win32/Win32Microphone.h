@@ -34,7 +34,9 @@ class Win32Microphone : public Microphone
 
         std::unique_ptr<WaveBuffer> ReceivedInput() override;
 
-        void Start() override;
+        void Start(const WaveBufferFormat& waveFormat, std::size_t sampleCount) override;
+        void Start(const WaveBufferFormat& waveFormat, double duration) override;
+
         void Stop() override;
 
         bool IsRecording() const override;
@@ -43,7 +45,7 @@ class Win32Microphone : public Microphone
 
     private:
 
-        void OpenWaveInput();
+        void OpenWaveInput(std::size_t sampleCount);
         void CloseWaveInput();
 
         HWAVEIN                     waveIn_     = nullptr;

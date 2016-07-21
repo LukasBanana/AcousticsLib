@@ -13,17 +13,12 @@ namespace Ac
 {
 
 
-static const std::size_t initialBufferSize = 16384u;
-
-Win32Microphone::Win32Microphone() :
-    buffer_( initialBufferSize, 0 )
+Win32Microphone::Win32Microphone()
 {
-    OpenWaveInput();
 }
 
 Win32Microphone::~Win32Microphone()
 {
-    CloseWaveInput();
 }
 
 std::unique_ptr<WaveBuffer> Win32Microphone::ReceivedInput()
@@ -37,21 +32,38 @@ std::unique_ptr<WaveBuffer> Win32Microphone::ReceivedInput()
     return nullptr;
 }
 
-void Win32Microphone::Start()
+void Win32Microphone::Start(const WaveBufferFormat& waveFormat, std::size_t sampleCount)
 {
     if (!recording_)
     {
+        /* Store recording wave format */
+        recvBufferFormat_ = waveFormat;
+
+        /* Start recording process */
+        OpenWaveInput(sampleCount);
+
         waveInAddBuffer(waveIn_, &waveHdr_, sizeof(WAVEHDR));
         waveInStart(waveIn_);
+
         recording_ = true;
     }
+}
+
+void Win32Microphone::Start(const WaveBufferFormat& waveFormat, double duration)
+{
+    Start(
+        waveFormat,
+        static_cast<std::size_t>(duration * static_cast<double>(waveFormat.sampleRate))
+    );
 }
 
 void Win32Microphone::Stop()
 {
     if (recording_)
     {
+        /* Stop recording process */
         waveInStop(waveIn_);
+        CloseWaveInput();
         recording_ = false;
     }
 }
@@ -80,17 +92,20 @@ void Win32Microphone::OnSync(DWORD bytesRecorded)
  * ======= Private: =======
  */
 
-void Win32Microphone::OpenWaveInput()
+void Win32Microphone::OpenWaveInput(std::size_t sampleCount)
 {
+    /* Resize output buffer first (to avoid race condition with thread of the recording callback) */
+    buffer_.resize(sampleCount * recvBufferFormat_.BlockAlign());
+
     /* Open wave input device */
     WAVEFORMATEX waveFormat;
 
     waveFormat.wFormatTag      = WAVE_FORMAT_PCM;
-    waveFormat.nChannels       = 1;
-    waveFormat.nSamplesPerSec  = 11025;
-    waveFormat.nAvgBytesPerSec = 11025*2;
-    waveFormat.nBlockAlign     = 2; // 1 for 8-bit
-    waveFormat.wBitsPerSample  = 16; // 8 for 8-bit
+    waveFormat.nChannels       = recvBufferFormat_.channels;
+    waveFormat.nSamplesPerSec  = recvBufferFormat_.sampleRate;
+    waveFormat.nAvgBytesPerSec = recvBufferFormat_.BytesPerSecond();
+    waveFormat.nBlockAlign     = static_cast<WORD>(recvBufferFormat_.BlockAlign());
+    waveFormat.wBitsPerSample  = recvBufferFormat_.bitsPerSample;
     waveFormat.cbSize          = 0; // must be 0 due to WAVE_FORMAT_PCM tag
     
     auto result = waveInOpen(
@@ -119,11 +134,6 @@ void Win32Microphone::OpenWaveInput()
 
     if (result != MMSYSERR_NOERROR)
         throw std::runtime_error("waveInPrepareHeader: " + MMErrorToString(result));
-
-    /* Setup receiver buffer format */
-    recvBufferFormat_.sampleRate    = 11025;
-    recvBufferFormat_.bitsPerSample = 16;
-    recvBufferFormat_.channels      = 1;
 }
 
 void Win32Microphone::CloseWaveInput()

@@ -69,20 +69,13 @@ void CALLBACK Win32MicrophoneCallback(HWAVEIN waveIn, UINT msg, DWORD instance, 
 
     switch (msg)
     {
-        case WIM_OPEN:
+        /*case WIM_OPEN:
         {
-            #ifdef _DEBUG
-            std::cout << "WIM_OPEN" << std::endl;
-            #endif
         }
-        break;
+        break;*/
 
         case WIM_DATA:
         {
-            #ifdef _DEBUG
-            std::cout << "WIM_DATA" << std::endl;
-            #endif
-
             /* Synchronize input wave buffer with microphone interface */
             auto waveHdr    = ((PWAVEHDR)wParam);
             auto bytes      = waveHdr->dwBytesRecorded;
@@ -94,15 +87,10 @@ void CALLBACK Win32MicrophoneCallback(HWAVEIN waveIn, UINT msg, DWORD instance, 
         }
         break;
 
-        case WIM_CLOSE:
+        /*case WIM_CLOSE:
         {
-            #ifdef _DEBUG
-            std::cout << "WIM_CLOSE" << std::endl;
-            #endif
-
-            waveInStop(waveIn);
         }
-        break;
+        break;*/
     }
 }
 

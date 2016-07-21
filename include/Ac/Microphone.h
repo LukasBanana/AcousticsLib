@@ -57,8 +57,25 @@ class AC_EXPORT Microphone
         */
         virtual std::unique_ptr<WaveBuffer> ReceivedInput() = 0;
 
-        //! Starts the recording process.
-        virtual void Start() = 0;
+        /**
+        \brief Starts the recording process.
+        \param[in] waveFormat Specifies the wave buffer format which is to be used for
+        the receiver buffer, which can be acquired with the "ReceivedInput" function.
+        \param[in] sampleCount Specifies how many samples shall be received at once
+        (independently of the number of channels). The larger this value, the larger the latency.
+        \remarks Before a new recording process can be started, the previous one must be stopped.
+        \see Stop
+        \see IsRecording
+        */
+        virtual void Start(const WaveBufferFormat& waveFormat, std::size_t sampleCount) = 0;
+
+        /**
+        \brief Starts the recording process.
+        \remarks Same as the other "Start" function but here the duration (in seconds) specifies the latency instead of the sample count.
+        \see Start(const WaveBufferFormat&, std::size_t)
+        */
+        virtual void Start(const WaveBufferFormat& waveFormat, double duration) = 0;
+
         //! Stops the recording process.
         virtual void Stop() = 0;
 
