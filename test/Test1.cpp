@@ -5,12 +5,7 @@
  * See "LICENSE.txt" for license information.
  */
 
-#include <Ac/AcLib.h>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <thread>
-#include <cmath>
+#include "TestUtil.h"
 
 
 int main()
@@ -35,8 +30,11 @@ int main()
 
                 while (sound->IsPlaying())
                 {
-                    //std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                    PrintTimeline(*sound);
                 }
+                
+                std::cout << std::endl;
             }
             else
                 std::cerr << "failed to load sound: \"" << soundFile << '\"' << std::endl;

@@ -150,7 +150,7 @@ int main()
             while (sound->IsPlaying())
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
-                std::cout << "playing: " << ToStr(sound->GetSeek()) << " / " << ToStr(sound->TotalTime()) << "  " << GetTimeline(*sound) << "\r";
+                PrintTimeline(*sound);
             }
             
             std::cout << std::endl;

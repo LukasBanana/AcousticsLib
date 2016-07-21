@@ -5,12 +5,7 @@
  * See "LICENSE.txt" for license information.
  */
 
-#include <Ac/AcLib.h>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <thread>
-#include <cmath>
+#include "TestUtil.h"
 
 
 int main()
@@ -35,10 +30,15 @@ int main()
             // Set sound position and velocity
             sound->SetPosition(pos);
             sound->SetVelocity(deltaPos);
-
+            
             // Wait a moment
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            
+            // Print playing status
+            PrintTimeline(*sound);
         }
+        
+        std::cout << std::endl;
     }
     else
         std::cerr << "failed to load sound" << std::endl;

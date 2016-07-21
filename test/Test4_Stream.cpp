@@ -74,10 +74,11 @@ int main()
                             sound->QueueBuffer(buffer);
                         }
                     }
-
+                    
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    
                     std::cout << "  " << GetTimeline(*sound, 30) << "  " << blocks << " blocks and " << bytesRead << " bytes read\r";
                     std::flush(std::cout);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 }
 
                 std::cout << std::endl;
