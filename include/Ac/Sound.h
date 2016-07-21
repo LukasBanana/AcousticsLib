@@ -13,6 +13,7 @@
 #include "WaveBuffer.h"
 #include "AudioStream.h"
 
+#include <Gauss/Vector3.h>
 #include <string>
 #include <memory>
 
@@ -33,6 +34,8 @@ class AC_EXPORT Sound
         virtual ~Sound()
         {
         }
+
+        /* ----- Playback ----- */
 
         //! Starts the sound playback.
         virtual void Play() = 0;
@@ -63,6 +66,8 @@ class AC_EXPORT Sound
 
         //! Returns the total time (in seconds) this sound takes to be played.
         virtual double TotalTime() const = 0;
+
+        /* ----- Buffers and streaming ----- */
 
         /**
         \brief Attaches the specified wave buffer to this sound.
@@ -123,6 +128,36 @@ class AC_EXPORT Sound
         {
             return streamSource_;
         }
+
+        /* ----- 3D sound ----- */
+
+        /**
+        \brief Enables or disables the 3D sound feature. By default disabled.
+        \remarks All 3D sound functions (for position, velocity, and relative space)
+        have no effect until this sound was enabled to be a 3D sound.
+        Moveover, all 3D attributes (position, velocity, and relative space) are reset whenever this function is called!
+        \see SetPosition
+        \see SetVelocity
+        \see SetSpaceRelative
+        */
+        virtual void Enable3D(bool enable = true) = 0;
+        //! Returns true if 3D sound effect is enbaled.
+        virtual bool Is3DEnabled() const = 0;
+
+        //! Sets the world position of this 3D sound. By default (0, 0, 0).
+        virtual void SetPosition(const Gs::Vector3f& position) = 0;
+        //! Returns the world position of this 3D sound.
+        virtual Gs::Vector3f GetPosition() const = 0;
+
+        //! Sets the world velocity of this 3D sound. The velocity is used for the "Doppler"-effect. By default (0, 0, 0).
+        virtual void SetVelocity(const Gs::Vector3f& velocity) = 0;
+        //! Returns the world velocity of this 3D sound.
+        virtual Gs::Vector3f GetVelocity() const = 0;
+
+        //! Specifies whether to make the coordinate space of this sound relative to the listener or not. By default false.
+        virtual void SetSpaceRelative(bool enable) = 0;
+        //! Returns true if the coordinate space of this sound is relative to the listener or not.
+        virtual bool GetSpaceRelative() const = 0;
 
     protected:
 

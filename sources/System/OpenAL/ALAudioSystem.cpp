@@ -8,7 +8,6 @@
 #include "ALAudioSystem.h"
 #include "../../FileHandler/WAVReader.h"
 #include "ALSound.h"
-#include "ALSound3D.h"
 
 #include <fstream>
 #include <cstring>
@@ -58,11 +57,6 @@ std::string ALAudioSystem::GetVersion() const
 std::unique_ptr<Sound> ALAudioSystem::CreateSound()
 {
     return std::unique_ptr<ALSound>(new ALSound());
-}
-
-std::unique_ptr<Sound3D> ALAudioSystem::CreateSound3D()
-{
-    return std::unique_ptr<ALSound3D>(new ALSound3D());
 }
 
 /* ----- Listener ----- */

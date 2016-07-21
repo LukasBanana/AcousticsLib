@@ -12,9 +12,11 @@ int main()
 {
     auto audioSystem = Ac::AudioSystem::Load();
 
-    auto sound = audioSystem->LoadSound3D("in/shutter.wav");
+    auto sound = audioSystem->LoadSound("in/shutter.wav");
     if (sound)
     {
+        sound->Enable3D();
+
         Gs::Vector3f pos(10, 0, 1), prevPos, deltaPos;
         sound->SetPosition(pos);
 

@@ -29,6 +29,8 @@ class ALSound : public Sound
         ALSound();
         ~ALSound();
 
+        /* ----- Playback ----- */
+
         void Play() override;
         void Pause() override;
         void Stop() override;
@@ -47,17 +49,35 @@ class ALSound : public Sound
 
         double TotalTime() const override;
 
+        /* ----- Buffers and streaming ----- */
+
         void AttachBuffer(const WaveBuffer& waveBuffer) override;
         void QueueBuffer(const WaveBuffer& waveBuffer) override;
 
         std::size_t GetQueueSize() const override;
         std::size_t GetProcessedQueueSize() const override;
 
+        /* ----- 3D sound ----- */
+
+        void Enable3D(bool enable = true) override;
+        bool Is3DEnabled() const override;
+
+        void SetPosition(const Gs::Vector3f& position) override;
+        Gs::Vector3f GetPosition() const override;
+
+        void SetVelocity(const Gs::Vector3f& velocity) override;
+        Gs::Vector3f GetVelocity() const override;
+
+        void SetSpaceRelative(bool enable) override;
+        bool GetSpaceRelative() const override;
+
     private:
 
         ALSourceObj                         sourceObj_;
         std::shared_ptr<ALBufferObj>        bufferObj_;
         std::unique_ptr<ALBufferObjQueue>   bufferObjQueue_;
+
+        bool                                enabled3D_ = false;
 
 };
 

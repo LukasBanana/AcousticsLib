@@ -11,7 +11,6 @@
 
 #include "Export.h"
 #include "Sound.h"
-#include "Sound3D.h"
 #include "AudioStream.h"
 #include "AudioFormats.h"
 #include "Microphone.h"
@@ -94,14 +93,8 @@ class AC_EXPORT AudioSystem
         //! Creates an empty sound which can later be filled with a wave buffer.
         virtual std::unique_ptr<Sound> CreateSound() = 0;
 
-        //! Creates an empty 3D sound which can later be filled with a wave buffer.
-        virtual std::unique_ptr<Sound3D> CreateSound3D() = 0;
-    
         //! Creates a sound initialized with specified wave buffer.
         std::unique_ptr<Sound> CreateSound(const WaveBuffer& waveBuffer);
-
-        //! Creates a 3D sound initialized with specified wave buffer.
-        std::unique_ptr<Sound3D> CreateSound3D(const WaveBuffer& waveBuffer);
 
         /**
         \brief Loads the specified sound from file.
@@ -109,12 +102,6 @@ class AC_EXPORT AudioSystem
         return a null pointer if the file could not be found. By default false.
         */
         std::unique_ptr<Sound> LoadSound(const std::string& filename, bool alwaysCreateSound = false);
-
-        /**
-        \brief Loads the specified sound from file and returns it as a 3D sound.
-        \see LoadSound
-        */
-        std::unique_ptr<Sound3D> LoadSound3D(const std::string& filename, bool alwaysCreateSound = false);
 
         /**
         \brief Play specified sound file.

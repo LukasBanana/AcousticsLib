@@ -25,6 +25,8 @@ ALSound::~ALSound()
 {
 }
 
+/* ----- Playback ----- */
+
 void ALSound::Play()
 {
     alSourcePlay(sourceObj_.Get());
@@ -92,6 +94,8 @@ double ALSound::TotalTime() const
     return 0.0;
 }
 
+/* ----- Buffers and streaming ----- */
+
 void ALSound::AttachBuffer(const WaveBuffer& waveBuffer)
 {
     bufferObj_ = std::make_shared<ALBufferObj>(waveBuffer);
@@ -123,6 +127,54 @@ std::size_t ALSound::GetQueueSize() const
 std::size_t ALSound::GetProcessedQueueSize() const
 {
     return static_cast<std::size_t>(sourceObj_.GetInt(AL_BUFFERS_PROCESSED));
+}
+
+/* ----- 3D sound ----- */
+
+void ALSound::Enable3D(bool enable)
+{
+    enabled3D_ = enable;
+    sourceObj_.SetVector3(AL_POSITION, { 0.0f, 0.0f, 0.0f });
+    sourceObj_.SetVector3(AL_VELOCITY, { 0.0f, 0.0f, 0.0f });
+    sourceObj_.SetInt(AL_SOURCE_RELATIVE, (enable ? AL_FALSE : AL_TRUE));
+}
+
+bool ALSound::Is3DEnabled() const
+{
+    return enabled3D_;
+}
+
+void ALSound::SetPosition(const Gs::Vector3f& position)
+{
+    if (enabled3D_)
+        sourceObj_.SetVector3(AL_POSITION, position);
+}
+
+Gs::Vector3f ALSound::GetPosition() const
+{
+    return sourceObj_.GetVector3(AL_POSITION);
+}
+
+void ALSound::SetVelocity(const Gs::Vector3f& velocity)
+{
+    if (enabled3D_)
+        sourceObj_.SetVector3(AL_VELOCITY, velocity);
+}
+
+Gs::Vector3f ALSound::GetVelocity() const
+{
+    return sourceObj_.GetVector3(AL_VELOCITY);
+}
+
+void ALSound::SetSpaceRelative(bool enable)
+{
+    if (enabled3D_)
+        sourceObj_.SetInt(AL_SOURCE_RELATIVE, (enable ? AL_TRUE : AL_FALSE));
+}
+
+bool ALSound::GetSpaceRelative() const
+{
+    return (sourceObj_.GetInt(AL_SOURCE_RELATIVE) != AL_FALSE);
 }
 
 
