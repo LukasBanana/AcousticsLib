@@ -33,6 +33,7 @@ int main()
                 if (buffer)
                 {
                     std::cout << "received buffer: samples = " << buffer->GetSampleCount() << ", duration = " << buffer->GetTotalTime() << "s" << std::endl;
+                    Ac::Synthesizer::BlurWaveBuffer(*buffer, 0.1, 1.0, 15);
                     sound->AttachBuffer(*buffer);
                     sound->Play();
                 }
