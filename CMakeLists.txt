@@ -69,6 +69,7 @@ set(FilesTest2 ${PROJECT_SOURCE_DIR}/test/Test2.cpp)
 set(FilesTest3 ${PROJECT_SOURCE_DIR}/test/Test3_3D.cpp)
 set(FilesTest4 ${PROJECT_SOURCE_DIR}/test/Test4_Stream.cpp)
 set(FilesTest5 ${PROJECT_SOURCE_DIR}/test/Test5_Mic.cpp)
+set(FilesTest6 ${PROJECT_SOURCE_DIR}/test/Test6_Vis.cpp)
 
 
 # === Source group folders ===
@@ -152,5 +153,16 @@ ADD_TEST_PROJECT(Test2 ${FilesTest2})
 ADD_TEST_PROJECT(Test3_3D ${FilesTest3})
 ADD_TEST_PROJECT(Test4_Stream ${FilesTest4})
 ADD_TEST_PROJECT(Test5_Mic ${FilesTest5})
+
+# Library: OpenGL & GLUT (for Test6)
+find_package(OpenGL)
+find_package(GLUT)
+if(OpenGL_FOUND AND GLUT_FOUND)
+	message("Found OpenGL and GLUT -> Test6_Vis project included")
+	ADD_TEST_PROJECT(Test6_Vis ${FilesTest6})
+	target_link_libraries(Test6_Vis ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+else()
+	message("Missing OpenGL and/or GLUT -> Test6_Vis will be excluded from project")
+endif()
 
 
