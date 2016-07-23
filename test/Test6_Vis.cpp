@@ -23,9 +23,10 @@
 
 Gs::Vector2i resolution(640, 480);
 
-std::shared_ptr<Ac::AudioSystem> audioSys;
-std::unique_ptr<Ac::WaveBuffer> waveBuffer;
-std::unique_ptr<Ac::Renderer> renderer;
+std::shared_ptr<Ac::AudioSystem>    audioSys;
+std::unique_ptr<Ac::WaveBuffer>     waveBuffer;
+std::unique_ptr<Ac::Renderer>       renderer;
+std::unique_ptr<Ac::Sound>          sound;
 
 
 // ----- CLASSES -----
@@ -42,12 +43,12 @@ public:
     {
     }
     
-    void DrawLineList(const std::vector<Gs::Vector2i>& vertices)
+    void DrawLineList(const std::vector<Gs::Vector2i>& vertices) override
     {
         glBegin(GL_LINES);
         
         for (const auto& v : vertices)
-            glVertex2i(v.x, v.y);
+            glVertex2i(v.x, v.y + resolution.y/4);
         
         glEnd();
     }
@@ -70,20 +71,22 @@ public:
 void initGL()
 {
     // setup GL configuration
-    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
     glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_CULL_FACE);
 
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void initAudio()
 {
     // load audio system and wave buffer
     audioSys = Ac::AudioSystem::Load();
-    waveBuffer = audioSys->ReadAudioBuffer("in/lighter.wav");
+    waveBuffer = audioSys->ReadAudioBuffer("in/thorndike.wav");
     renderer = std::unique_ptr<Renderer>(new Renderer());
+    sound = audioSys->CreateSound(*waveBuffer);
+    if (sound)
+        sound->SetVolume(0.25f);
 }
 
 void drawScene2D()
@@ -98,7 +101,24 @@ void drawScene2D()
     glLoadIdentity();
 
     // draw wave buffer
-    //Ac::Visualizer::DrawWaveBuffer(renderer, buffer, 0, resolution.Cast<unsigned int>());
+    glColor4f(0.3f, 0.5f, 1.0f, 1.0f);
+    Ac::Visualizer::DrawWaveBuffer(*renderer, *waveBuffer, 0, { resolution.x, resolution.y/2 });
+    
+    //glColor4f(0.4f, 1.0f, 0.3f, 1.0f);
+    //Ac::Visualizer::DrawWaveBuffer(*renderer, *waveBuffer, 1, { resolution.x, resolution.y/2 });
+    
+    // draw playback line
+    if (sound)
+    {
+        glColor4f(1, 1, 1, 1);
+        glBegin(GL_LINES);
+        {
+            auto x = static_cast<int>((sound->GetSeek() / sound->TotalTime()) * resolution.x);
+            glVertex2i(x, 0);
+            glVertex2i(x, resolution.y);
+        }
+        glEnd();
+    }
 }
 
 void displayCallback()
@@ -121,7 +141,7 @@ void reshapeCallback(GLsizei w, GLsizei h)
     resolution.x = w;
     resolution.y = h;
 
-    glViewport(0, 0, w, h);
+    glViewport(0, 0, resolution.x, resolution.y);
 
     displayCallback();
 }
@@ -132,6 +152,16 @@ void keyboardCallback(unsigned char key, int x, int y)
     {
         case 27: // ESC
             exit(0);
+            break;
+            
+        case '\r':
+            if (sound)
+            {
+                if (sound->IsPlaying())
+                    sound->Pause();
+                else
+                    sound->Play();
+            }
             break;
     }
 }
@@ -150,15 +180,10 @@ void specialCallback(int key, int x, int y)
 
 int main(int argc, char* argv[])
 {
-    std::cout << "Press 1 to show 3D scene" << std::endl;
-    std::cout << "Press 2 to show 2D scene" << std::endl;
-    std::cout << "Press Enter to switch between perspective and orthographic view" << std::endl;
-    std::cout << "Press Tab to switch between solid and wireframe mode" << std::endl;
-
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
-    glutInitWindowSize(800, 600);
+    glutInitWindowSize(resolution.x, resolution.y);
     glutInitWindowPosition(350, 250);
     glutCreateWindow("GeometronLib Test 2 (OpenGL, GLUT)");
 

@@ -60,6 +60,11 @@ AC_EXPORT void DrawWaveBuffer(
         
         a.y = halfHeight + halfHeight*ampMin;
         b.y = halfHeight + halfHeight*ampMax;
+        
+        if (b.y == a.y)
+            ++b.y;
+        
+        time += timeStep;
     }
     
     // Draw wave buffer
