@@ -7,7 +7,7 @@
 
 #include "MODStream.h"
 #include "MODFileFormat.h"
-#include "Endianness.h"
+#include "FormatAuxiliary.h"
 #include <algorithm>
 
 #include <iostream>//FOR DEBUGGING!!!
@@ -25,15 +25,18 @@ MODStream::MODStream(std::unique_ptr<std::istream>&& stream) :
 
     /* Read header */
     MODHeader header;
-    stream_->read(reinterpret_cast<char*>(&header), sizeof(header));
+    Read(*stream, header);
 
     /* Swap word to Motorola byte order (big endian) */
     for (unsigned i = 0; i < 31; ++i)
     {
         auto& rec = header.records[i];
-        rec.length      = 2 * SwapEndian(rec.length);
-        rec.loopStart   = 2 * SwapEndian(rec.loopStart);
-        rec.loopLength  = 2 * SwapEndian(rec.loopLength);
+        SwapEndian(rec.length);
+        SwapEndian(rec.loopStart);
+        SwapEndian(rec.loopLength);
+        rec.length      *= 2;
+        rec.loopStart   *= 2;
+        rec.loopLength  *= 2;
     }
 
     /* Get number of patterns by the highest number stored in the pattern list */
@@ -82,7 +85,7 @@ std::size_t MODStream::StreamWaveBuffer(WaveBuffer& buffer)
 
     /* Read next data chunk */
     std::size_t bytes = 0;
-    std::size_t size = buffer.BufferSize();
+    //std::size_t size = buffer.BufferSize();
 
     //todo...
 

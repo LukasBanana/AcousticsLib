@@ -8,6 +8,7 @@
 #include "../Platform/Module.h"
 #include "../FileHandler/WAVReader.h"
 #include "../FileHandler/WAVWriter.h"
+#include "../FileHandler/AIFFReader.h"
 #include "../FileHandler/OGGStream.h"
 #include "../FileHandler/MODStream.h"
 
@@ -176,6 +177,9 @@ std::unique_ptr<WaveBuffer> AudioSystem::ReadAudioBuffer(const std::string& file
         /* Determine audio file type */
         AudioFormats format = AudioFormats::WAVE;
 
+        if (filename.size() > 5 && filename.substr(filename.size() - 5) == ".aiff")
+            format = AudioFormats::AIFF;
+        
         //TODO... (right now only WAV supported) !!!
 
         /* Read audio buffer from stream */
@@ -193,9 +197,18 @@ void AudioSystem::ReadAudioBuffer(const AudioFormats format, std::istream& strea
     switch (format)
     {
         case AudioFormats::WAVE:
+        {
             WAVReader reader;
             reader.ReadWaveBuffer(stream, waveBuffer);
-            break;
+        }
+        break;
+        
+        case AudioFormats::AIFF:
+        {
+            AIFFReader reader;
+            reader.ReadWaveBuffer(stream, waveBuffer);
+        }
+        break;
     }
 }
 
@@ -239,9 +252,14 @@ void AudioSystem::WriteAudioBuffer(const AudioFormats format, std::ostream& stre
     switch (format)
     {
         case AudioFormats::WAVE:
+        {
             WAVWriter writer;
             writer.WriteWaveBuffer(stream, waveBuffer);
-            break;
+        }
+        break;
+            
+        default:
+        break;
     }
 }
 

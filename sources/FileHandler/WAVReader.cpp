@@ -20,13 +20,7 @@ static WaveBufferFormat GetBufferFormat(const RIFFWAVEFormat& fmt)
     return WaveBufferFormat(fmt.sampleRate, fmt.bitsPerSample, fmt.channels);
 }
 
-template <typename T>
-static void Read(std::istream& stream, T& buffer)
-{
-    stream.read(reinterpret_cast<char*>(&buffer), sizeof(T));
-}
-
-static void WAVReadRIFFWAVEHeader(std::istream& stream, std::uint32_t& fileSize)
+static void WAVReadHeader(std::istream& stream, std::uint32_t& fileSize)
 {
     /* Read magic number 'RIFF' */
     std::uint32_t magicNumber = 0;
@@ -127,7 +121,7 @@ void WAVReader::ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer)
 
     /* Read RIFF WAVE header */
     std::uint32_t streamSize = 0;
-    WAVReadRIFFWAVEHeader(stream, streamSize);
+    WAVReadHeader(stream, streamSize);
 
     /* Fill wave buffer by reading chunks "fmt " and "data" */
     WAVReadChunks(stream, streamSize, buffer);

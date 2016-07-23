@@ -9,14 +9,11 @@
 #define __AC_WAV_FILE_FORMAT_H__
 
 
-#include <cstdint>
+#include "FormatAuxiliary.h"
 
 
 namespace Ac
 {
-
-
-#define UINT32_FROM_STRING(s) (*reinterpret_cast<const std::uint32_t*>(s))
 
 
 #include <Ac/PackPush.h>

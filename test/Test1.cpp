@@ -20,7 +20,10 @@ int main()
             std::cout << "Audio System: " << audioSystem->GetName() << "; Version: " << audioSystem->GetVersion() << std::endl;
 
             // Play sound
-            auto soundFile = "in/lighter.wav";
+            auto soundFile = (
+                //"in/lighter.wav"
+                "in/Blow.aiff"
+            );
             auto sound = audioSystem->LoadSound(soundFile);
 
             if (sound)
