@@ -5,6 +5,7 @@
  * See "LICENSE.txt" for license information.
  */
 
+#include "../Core/WindowFunctions.h"
 #include <Ac/Visualizer.h>
 #include <limits>
 
@@ -34,7 +35,8 @@ static void GetAmplitudeRange(
 }
 
 AC_EXPORT void DrawWaveBuffer(
-    Renderer& renderer, const WaveBuffer& buffer, unsigned short channel, const Gs::Vector2ui& size)//, const WaveBufferRange& range)
+    Renderer& renderer, const WaveBuffer& buffer, unsigned short channel,
+    const Gs::Vector2i& position, const Gs::Vector2i& size, double timeBegin, double timeEnd, bool smoothWave)
 {
     if (channel >= buffer.GetFormat().channels)
         return;
@@ -42,8 +44,8 @@ AC_EXPORT void DrawWaveBuffer(
     // Generate all lines to draw for the horizontal axis
     std::vector<Gs::Vector2i> verts(size.x * 2u, Gs::Vector2i());
     
-    double time         = 0.0;
-    double timeStep     = buffer.GetTotalTime() / static_cast<double>(size.x);
+    double time         = timeBegin;
+    double timeStep     = (timeEnd - timeBegin) / static_cast<double>(size.x);
     double halfHeight   = static_cast<double>(size.y)*0.5;
     
     for (std::size_t x = 0; x < size.x; ++x)
@@ -55,11 +57,19 @@ AC_EXPORT void DrawWaveBuffer(
         double ampMin = 0.0, ampMax = 0.0;
         GetAmplitudeRange(buffer, channel, time, time + timeStep, ampMin, ampMax);
         
-        /* Setup line vertices */
-        a.x = b.x = static_cast<int>(x);
+        if (smoothWave)
+        {
+            /* Window function modulation */
+            auto scale = WindowFunctions::BlackmanWindow<double>(x, size.x);
+            ampMin *= scale;
+            ampMax *= scale;
+        }
         
-        a.y = halfHeight + halfHeight*ampMin;
-        b.y = halfHeight + halfHeight*ampMax;
+        /* Setup line vertices */
+        a.x = b.x = static_cast<int>(x) + position.x;
+        
+        a.y = static_cast<int>(halfHeight + halfHeight*ampMin) + position.y;
+        b.y = static_cast<int>(halfHeight + halfHeight*ampMax) + position.y;
         
         if (b.y == a.y)
             ++b.y;
@@ -71,6 +81,13 @@ AC_EXPORT void DrawWaveBuffer(
     renderer.BeginDrawing(size);
     renderer.DrawLineList(verts);
     renderer.EndDrawing();
+}
+
+AC_EXPORT void DrawWaveBuffer(
+    Renderer& renderer, const WaveBuffer& buffer, unsigned short channel,
+    const Gs::Vector2i& position, const Gs::Vector2i& size, bool smoothWave)
+{
+    DrawWaveBuffer(renderer, buffer, channel, position, size, 0.0, buffer.GetTotalTime(), smoothWave);
 }
 
 

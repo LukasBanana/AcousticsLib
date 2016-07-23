@@ -25,8 +25,20 @@ AC_EXPORT void DrawWaveBuffer(
     Renderer& renderer,
     const WaveBuffer& buffer,
     unsigned short channel,
-    const Gs::Vector2ui& size
-    //,const WaveBufferRange& range
+    const Gs::Vector2i& position,
+    const Gs::Vector2i& size,
+    bool smoothWave = false
+);
+
+AC_EXPORT void DrawWaveBuffer(
+    Renderer& renderer,
+    const WaveBuffer& buffer,
+    unsigned short channel,
+    const Gs::Vector2i& position,
+    const Gs::Vector2i& size,
+    double timeBegin,
+    double timeEnd,
+    bool smoothWave = false
 );
     
     

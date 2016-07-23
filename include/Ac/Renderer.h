@@ -32,7 +32,7 @@ class AC_EXPORT Renderer
         {
         }
     
-        virtual void BeginDrawing(const Gs::Vector2ui& size) = 0;
+        virtual void BeginDrawing(const Gs::Vector2i& size) = 0;
         virtual void EndDrawing() = 0;
     
         virtual void DrawLineList(const std::vector<Gs::Vector2i>& vertices) = 0;

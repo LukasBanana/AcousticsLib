@@ -179,6 +179,8 @@ void WaveBuffer::SetChannels(unsigned short channels)
     SetFormat(format);
 }
 
+/* ----- Sample iteration ----- */
+
 //TODO: abstract this function!!!
 void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, std::size_t indexBegin, std::size_t indexEnd)
 {

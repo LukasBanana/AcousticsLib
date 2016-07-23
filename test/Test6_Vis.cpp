@@ -35,7 +35,7 @@ class Renderer : public Ac::Renderer
 {
 public:
     
-    void BeginDrawing(const Gs::Vector2ui& size) override
+    void BeginDrawing(const Gs::Vector2i& size) override
     {
     }
     
@@ -71,7 +71,6 @@ public:
 void initGL()
 {
     // setup GL configuration
-    //glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
     glEnable(GL_COLOR_MATERIAL);
 
@@ -82,9 +81,16 @@ void initAudio()
 {
     // load audio system and wave buffer
     audioSys = Ac::AudioSystem::Load();
-    waveBuffer = audioSys->ReadAudioBuffer("in/thorndike.wav");
+    
+    waveBuffer = audioSys->ReadAudioBuffer(
+        "in/thorndike.wav"
+        //"in/shutter.wav"
+    );
+    
     renderer = std::unique_ptr<Renderer>(new Renderer());
+    
     sound = audioSys->CreateSound(*waveBuffer);
+    
     if (sound)
         sound->SetVolume(0.25f);
 }
@@ -102,10 +108,13 @@ void drawScene2D()
 
     // draw wave buffer
     glColor4f(0.3f, 0.5f, 1.0f, 1.0f);
-    Ac::Visualizer::DrawWaveBuffer(*renderer, *waveBuffer, 0, { resolution.x, resolution.y/2 });
-    
-    //glColor4f(0.4f, 1.0f, 0.3f, 1.0f);
-    //Ac::Visualizer::DrawWaveBuffer(*renderer, *waveBuffer, 1, { resolution.x, resolution.y/2 });
+    Ac::Visualizer::DrawWaveBuffer(
+        *renderer, *waveBuffer, 0,
+        { 0, 0 }, { resolution.x, resolution.y/2 },
+        sound->GetSeek(),
+        sound->GetSeek() + 0.05,
+        true
+    );
     
     // draw playback line
     if (sound)

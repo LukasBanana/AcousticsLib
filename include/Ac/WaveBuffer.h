@@ -152,6 +152,8 @@ class AC_EXPORT WaveBuffer
         \see SetFormat
         */
         void SetChannels(unsigned short channels);
+    
+        /* ----- Sample iteration ----- */
         
         /**
         \brief Iterates over all samples of this wave buffer within the specified range.
