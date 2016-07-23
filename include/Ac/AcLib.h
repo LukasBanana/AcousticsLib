@@ -13,6 +13,7 @@
 #include "WaveBuffer.h"
 #include "Synthesizer.h"
 #include "ChannelTypes.h"
+#include "Visualizer.h"
 
 
 #endif

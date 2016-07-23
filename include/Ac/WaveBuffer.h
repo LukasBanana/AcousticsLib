@@ -26,15 +26,26 @@ namespace Ac
 using PCMBuffer = std::vector<char>;
 
 /**
-\brief Sample iteration callback function interface.
+\brief Interface of the iteration callback function to iterate over wave buffer samples.
 \param[in,out] sample Specifies the current sample which is to be modified. Each sample will be clamped to the range [-1, 1].
 \param[in] channel Specifies the current channel to which the sample belongs.
 \param[in] index Specifies the current sample index.
 \param[in] timePoint Specifies the current timePoint within the entire wave buffer (in seconds).
-\remarks This function interface is used for the 'GenerateWave' function.
-\see GenerateWave
+\remarks This function interface is used for the 'ForEachSample' function.
+\see WaveBuffer::ForEachSample
 */
 using SampleIterationFunction = std::function<void(double& sample, unsigned short channel, std::size_t index, double timePoint)>;
+
+/**
+\brief Interface of the constant iteration callback function to iterate over wave buffer samples.
+\param[in] sample Specifies the current sample which is to be read.
+\param[in] channel Specifies the current channel to which the sample belongs.
+\param[in] index Specifies the current sample index.
+\param[in] timePoint Specifies the current timePoint within the entire wave buffer (in seconds).
+\remarks This function interface is used for the 'ForEachSample' function.
+\see WaveBuffer::ForEachSample
+*/
+using SampleConstIterationFunction = std::function<void(double sample, unsigned short channel, std::size_t index, double timePoint)>;
 
 
 /**
@@ -167,6 +178,32 @@ class AC_EXPORT WaveBuffer
         \see SampleIterationFunction
         */
         void ForEachSample(const SampleIterationFunction& iterator);
+    
+        /**
+        \brief Iterates over all samples of this wave buffer within the specified range with a constant iterator.
+        \param[in] iterator Specifies the sample iteration callback function. This function will be used to modify each sample.
+        \param[in] indexBegin Specifies the first sample index.
+        \param[in] indexEnd Specifies the last sample index. The ending is inclusive, i.e. the iteration range is [indexBegin, indexEnd].
+        \see SampleIterationFunction
+        */
+        void ForEachSample(const SampleConstIterationFunction& iterator, std::size_t indexBegin, std::size_t indexEnd) const;
+    
+        /**
+        \brief Iterates over all samples of this wave buffer within the specified time range with a constant iterator.
+        \param[in] iterator Specifies the sample iteration callback function. This function will be used to modify each sample.
+        \param[in] timeBegin Specifies the beginning time point (in seconds). This will be clamped to [0, +inf).
+        \param[in] timeEnd Specifies the ending time point (in seconds). This will be clamped to [timeBegin, +inf).
+        The ending is inclusive, i.e. the iteration range is [timeBegin, timeEnd].
+        \see SampleIterationFunction
+        */
+        void ForEachSample(const SampleConstIterationFunction& iterator, double timeBegin, double timeEnd) const;
+    
+        /**
+        \brief Iterates over all samples of this wave buffer with a constant iterator.
+        \param[in] iterator Specifies the sample iteration callback function. This function will be used to modify each sample.
+        \see SampleIterationFunction
+        */
+        void ForEachSample(const SampleConstIterationFunction& iterator) const;
 
         /**
         \brief Appends the specified wave buffer to this buffer.
@@ -176,6 +213,8 @@ class AC_EXPORT WaveBuffer
         \see SetFormat
         */
         void Append(const WaveBuffer& other);
+    
+        /* ----- Raw buffer access ----- */
 
         //! Returns the actual PCM buffer size (in bytes).
         inline std::size_t BufferSize() const

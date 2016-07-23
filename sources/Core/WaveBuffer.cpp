@@ -179,6 +179,7 @@ void WaveBuffer::SetChannels(unsigned short channels)
     SetFormat(format);
 }
 
+//TODO: abstract this function!!!
 void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, std::size_t indexBegin, std::size_t indexEnd)
 {
     /* Validate parameters and clamp range to [0, bufferSize) */
@@ -195,7 +196,7 @@ void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, std::siz
     auto timePoint  = GetTimePointFromIndex(indexBegin);
     auto timeStep   = (1.0 / static_cast<double>(rate));
 
-    for (std::size_t i = indexBegin; i <= indexEnd; ++i)
+    for (auto i = indexBegin; i <= indexEnd; ++i)
     {
         for (unsigned short chn = 0; chn < channels; ++chn)
         {
@@ -216,6 +217,48 @@ void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, double t
 }
 
 void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator)
+{
+    auto sampleCount = GetSampleCount();
+    if (sampleCount > 0)
+        ForEachSample(iterator, 0, sampleCount - 1);
+}
+
+//TODO: abstract this function!!!
+void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator, std::size_t indexBegin, std::size_t indexEnd) const
+{
+    /* Validate parameters and clamp range to [0, bufferSize) */
+    auto sampleCount = GetSampleCount();
+    if (sampleCount == 0 || !iterator)
+        return;
+    
+    indexBegin  = std::max(std::size_t(0u), std::min(indexBegin, sampleCount - 1u));
+    indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleCount - 1u));
+    
+    auto channels   = format_.channels;
+    auto rate       = format_.sampleRate;
+    
+    auto timePoint  = GetTimePointFromIndex(indexBegin);
+    auto timeStep   = (1.0 / static_cast<double>(rate));
+    
+    for (auto i = indexBegin; i <= indexEnd; ++i)
+    {
+        for (unsigned short chn = 0; chn < channels; ++chn)
+        {
+            /* Read sample and pass to constant iterator */
+            iterator(ReadSample(i, chn), chn, i, timePoint);
+        }
+        
+        /* Increase time point */
+        timePoint += timeStep;
+    }
+}
+
+void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator, double timeBegin, double timeEnd) const
+{
+    ForEachSample(iterator, GetIndexFromTimePoint(timeBegin), GetIndexFromTimePoint(timeEnd));
+}
+
+void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator) const
 {
     auto sampleCount = GetSampleCount();
     if (sampleCount > 0)
