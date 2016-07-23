@@ -51,7 +51,7 @@ int main()
 	auto audioSystem = Ac::AudioSystem::Load();
 	
 	// Play sound with 100% volume
-	audioSystem->PlaySound("mySound.wav");
+	audioSystem->Play("mySound.wav");
 	
 	// Wait for user input
 	int i = 0;
