@@ -13,28 +13,36 @@ namespace Ac
 {
 
 
+//! Audio formats enumeration.
 enum class AudioFormats
 {
     /**
-    \brief Waveform audio format (WAV).
+    \brief Waveform Audio File Format (.wav, .wave).
     \see http://soundfile.sapp.org/doc/WaveFormat/
     */
-    WAV,
+    WAVE,
+    
+    /**
+    \brief Audio Interface File Format (.aiff, .aif, .aifc).
+    \see http://www-mmsp.ece.mcgill.ca/documents/audioformats/aiff/aiff.html
+    */
+    AIFF,
 };
 
+//! Audio stream formats enumeration.
 enum class AudioStreamFormats
 {
     /**
-    \brief Ogg-Vorbis audio stream format (OGG).
+    \brief Ogg-Vorbis audio stream format (.ogg).
     \see http://vorbis.com/
     */
-    OGG,
+    OggVorbis,
 
     /**
-    \breif Module autio stream format (MOD).
+    \breif Amiga module autio stream format (.mod).
     \see http://www.fileformat.info/format/mod/corion.htm
     */
-    MOD,
+    AmigaModule,
 };
 
 

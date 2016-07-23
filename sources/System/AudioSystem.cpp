@@ -134,7 +134,7 @@ std::unique_ptr<Sound> AudioSystem::LoadSound(const std::string& filename, const
     if ((flags & SoundFlags::Enable3D) != 0)
         sound->Enable3D();
 
-    return std::move(sound);
+    return sound;
 }
 
 void AudioSystem::Play(const std::string& filename, float volume, std::size_t repetitions, const std::function<bool(Sound&)> waitCallback)
@@ -174,7 +174,7 @@ std::unique_ptr<WaveBuffer> AudioSystem::ReadAudioBuffer(const std::string& file
     if (file.good())
     {
         /* Determine audio file type */
-        AudioFormats format = AudioFormats::WAV;
+        AudioFormats format = AudioFormats::WAVE;
 
         //TODO... (right now only WAV supported) !!!
 
@@ -192,7 +192,7 @@ void AudioSystem::ReadAudioBuffer(const AudioFormats format, std::istream& strea
 {
     switch (format)
     {
-        case AudioFormats::WAV:
+        case AudioFormats::WAVE:
             WAVReader reader;
             reader.ReadWaveBuffer(stream, waveBuffer);
             break;
@@ -207,7 +207,7 @@ std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(const std::string& fil
     if (file->good())
     {
         /* Determine audio file type */
-        auto format = AudioStreamFormats::OGG;
+        auto format = AudioStreamFormats::OggVorbis;
 
         //TODO... (right now only OGG supported) !!!
 
@@ -222,12 +222,12 @@ std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(const AudioStreamForma
 {
     switch (format)
     {
-        case AudioStreamFormats::OGG:
+        case AudioStreamFormats::OggVorbis:
             #ifdef AC_PLUGIN_OGGVORBIS
             return std::unique_ptr<AudioStream>(new OGGStream(std::move(stream)));
             #endif
             break;
-        case AudioStreamFormats::MOD:
+        case AudioStreamFormats::AmigaModule:
             return std::unique_ptr<AudioStream>(new MODStream(std::move(stream)));
             break;
     }
@@ -238,7 +238,7 @@ void AudioSystem::WriteAudioBuffer(const AudioFormats format, std::ostream& stre
 {
     switch (format)
     {
-        case AudioFormats::WAV:
+        case AudioFormats::WAVE:
             WAVWriter writer;
             writer.WriteWaveBuffer(stream, waveBuffer);
             break;

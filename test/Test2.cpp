@@ -136,7 +136,7 @@ int main()
         std::cout << "write sound file: \"" << outputFilename << '\"' << std::endl;
         
         std::ofstream outputFile(outputFilename, std::ios_base::binary);
-        audioSystem->WriteAudioBuffer(Ac::AudioFormats::WAV, outputFile, outputBuffer);
+        audioSystem->WriteAudioBuffer(Ac::AudioFormats::WAVE, outputFile, outputBuffer);
 
         #endif
 
