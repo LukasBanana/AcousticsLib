@@ -71,7 +71,8 @@ double ReadFloat80(const std::int8_t (&value)[10])
             /* Too large to represent; Translate as infinite */
             d[7] |= 0x7F;
             d[6]  = 0xF0;
-            memset(d, 0x00, 6);
+            for (int i = 0; i < 6; ++i)
+                d[i] = 0;
             return result;
         }
         else

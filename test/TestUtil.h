@@ -45,4 +45,9 @@ static void PrintTimeline(const Ac::Sound& snd, std::size_t len = 40)
     std::flush(std::cout);
 }
 
+static void SleepFor(unsigned long milliSecs = 50)
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliSecs));
+}
+
 

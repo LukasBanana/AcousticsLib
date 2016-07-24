@@ -28,30 +28,42 @@ int main()
 
             if (sound)
             {
-                sound->SetPitch(0.25f);
-                sound->SetLooping(true);
+                //sound->SetPitch(0.25f);
+                //sound->SetLooping(true);
+                sound->SetVolume(0.1f);
                 sound->Play();
 
-                bool checkRep = false;
-                int repetions = 0;
-
-                while (sound->IsPlaying() && repetions < 3)
+                if (sound->GetLooping())
                 {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-                    PrintTimeline(*sound);
+                    bool checkRep = false;
+                    int repetions = 0;
 
-                    if (sound->GetSeek() > sound->TotalTime()/2)
+                    while (sound->IsPlaying() && repetions < 3)
                     {
-                        if (checkRep)
+                        SleepFor();
+                        PrintTimeline(*sound);
+
+                        if (sound->GetSeek() > sound->TotalTime()/2)
                         {
-                            ++repetions;
-                            checkRep = false;
+                            if (checkRep)
+                            {
+                                ++repetions;
+                                checkRep = false;
+                            }
                         }
+                        else
+                            checkRep = true;
                     }
-                    else
-                        checkRep = true;
                 }
-                
+                else
+                {
+                    while (sound->IsPlaying())
+                    {
+                        SleepFor();
+                        PrintTimeline(*sound);
+                    }
+                }
+
                 std::cout << std::endl;
             }
             else
