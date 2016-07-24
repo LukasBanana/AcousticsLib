@@ -41,13 +41,15 @@ static void AIFFReadChunk(std::istream& stream, AIFFChunk& chunk, const char* ch
         SwapEndian(chunk.size);
 
         if (chunk.id != UINT32_FROM_STRING(chunkId))
+        {
             stream.seekg(chunk.size, std::ios_base::cur);
+
+            if (chunk.size == 0 || stream.fail())
+                throw std::runtime_error("failed to find '" + std::string(chunkId) + "' chunk in AIFF/AIFF-C stream");
+        }
         else
             break;
     }
-
-    //if (chunkId != nullptr && chunk.id != UINT32_FROM_STRING(chunkId))
-    //    throw std::runtime_error("expected chunk ID '" + std::string(chunkId) + "' in AIFF/AIFF-C stream, but got '" + GetStrinFromUINT32(chunk.id) + "'");
 }
 
 static void AIFFReadCommonChunk(std::istream& stream, AIFFCommonChunk& chunk)
@@ -60,12 +62,38 @@ static void AIFFReadCommonChunk(std::istream& stream, AIFFCommonChunk& chunk)
     SwapEndian(chunk.sampleRate);
 }
 
-/*static void AIFCReadCommonChunk(std::istream& stream, AIFCCommonChunk& chunk)
+static std::string AIFCReadPString(std::istream& stream)
+{
+    /* Read length and fill string */
+    std::uint8_t length = 0;
+    Read(stream, length);
+
+    std::string s;
+    s.resize(length);
+
+    stream.read(&s[0], length);
+
+    /* Ignore pad byte when the number of text bytes is even (number of text bytes + length byte must be even) */
+    if (length % 2 == 0)
+        stream.seekg(1, std::ios_base::cur);
+
+    return s;
+}
+
+static void AIFCReadCommonChunk(std::istream& stream, AIFCCommonChunk& chunk)
 {
     Read(stream, chunk);
 
-    SwapEndian(chunk.compressionType);
-}*/
+    auto compressionName = AIFCReadPString(stream);
+
+    if (chunk.compressionType != UINT32_FROM_STRING("NONE"))
+    {
+        throw std::runtime_error(
+            "unsupported compression type '" + GetStrinFromUINT32(chunk.compressionType) +
+            "' (" + compressionName + ") in AIFF/AIFF-C stream"
+        );
+    }
+}
 
 static void AIFFReadSoundChunk(std::istream& stream, AIFFSoundChunk& chunk)
 {
@@ -91,9 +119,9 @@ void AIFFReader::ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer)
     AIFFCommonChunk commChunk;
     AIFFReadCommonChunk(stream, commChunk);
     
-    /*AIFCCommonChunk commChunkEx;
+    AIFCCommonChunk commChunkEx;
     if (header.formType == UINT32_FROM_STRING("AIFC"))
-        AIFCReadCommonChunk(stream, commChunkEx);*/
+        AIFCReadCommonChunk(stream, commChunkEx);
 
     /* Read SSND chunk */
     AIFFChunk ssndChunkHdr;

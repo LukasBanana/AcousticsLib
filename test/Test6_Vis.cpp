@@ -82,11 +82,13 @@ void initAudio()
     // load audio system and wave buffer
     audioSys = Ac::AudioSystem::Load();
     
-    #if 0
+    #if 1
 
     waveBuffer = audioSys->ReadAudioBuffer(
-        "in/thorndike.wav"
+        //"in/thorndike.wav"
         //"in/shutter.wav"
+        "in/Blow.aiff"
+        //"in/M1F1-AlawC-AFsp.aif"
     );
 
     #else
@@ -225,26 +227,36 @@ void specialCallback(int key, int x, int y)
 
 int main(int argc, char* argv[])
 {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+    try
+    {
+        glutInit(&argc, argv);
+        glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
-    auto sx = glutGet(GLUT_SCREEN_WIDTH);
-    auto sy = glutGet(GLUT_SCREEN_HEIGHT);
+        auto sx = glutGet(GLUT_SCREEN_WIDTH);
+        auto sy = glutGet(GLUT_SCREEN_HEIGHT);
 
-    glutInitWindowSize(resolution.x, resolution.y);
-    glutInitWindowPosition(sx/2 - resolution.x/2, sy/2 - resolution.y/2);
-    glutCreateWindow("GeometronLib Test 2 (OpenGL, GLUT)");
+        glutInitWindowSize(resolution.x, resolution.y);
+        glutInitWindowPosition(sx/2 - resolution.x/2, sy/2 - resolution.y/2);
+        glutCreateWindow("GeometronLib Test 2 (OpenGL, GLUT)");
 
-    glutDisplayFunc(displayCallback);
-    glutReshapeFunc(reshapeCallback);
-    glutIdleFunc(idleCallback);
-    glutSpecialFunc(specialCallback);
-    glutKeyboardFunc(keyboardCallback);
+        glutDisplayFunc(displayCallback);
+        glutReshapeFunc(reshapeCallback);
+        glutIdleFunc(idleCallback);
+        glutSpecialFunc(specialCallback);
+        glutKeyboardFunc(keyboardCallback);
 
-    initGL();
-    initAudio();
+        initGL();
+        initAudio();
 
-    glutMainLoop();
+        glutMainLoop();
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+        #ifdef _WIN32
+        system("pause");
+        #endif
+    }
 
     return 0;
 }

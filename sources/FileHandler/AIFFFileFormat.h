@@ -67,7 +67,7 @@ struct AIFCCommonChunk
   /*std::uint32_t   sampleFrames;       //!< Sample frames = samples / channel. */
   /*std::int16_t    bitsPerSample;      //!< Bits per sample (e.g. 8, 16). */
   /*Extended80Bit   sampleRate;         //!< Sample frames / second. */
-    std::int32_t    compressionType;    //!< Compression type ID code.
+    std::uint32_t   compressionType;    //!< Compression type ID code.
   /*pstrig          compressionName;    //!< Human-readable compression type name (in Pascal-style string format). */
 }
 AC_PACK_STRUCT;

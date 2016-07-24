@@ -177,8 +177,11 @@ std::unique_ptr<WaveBuffer> AudioSystem::ReadAudioBuffer(const std::string& file
         /* Determine audio file type */
         AudioFormats format = AudioFormats::WAVE;
 
-        if (filename.size() > 5 && filename.substr(filename.size() - 5) == ".aiff")
+        if ( ( filename.size() > 5 && filename.substr(filename.size() - 5) == ".aiff" ) ||
+             ( filename.size() > 4 && filename.substr(filename.size() - 4) == ".aif" ) )
+        {
             format = AudioFormats::AIFF;
+        }
         
         //TODO... (right now only WAV supported) !!!
 
