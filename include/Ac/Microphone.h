@@ -11,10 +11,20 @@
 
 #include "Export.h"
 #include "WaveBuffer.h"
+#include <string>
+#include <vector>
 
 
 namespace Ac
 {
+
+
+//! Microphone device descriptor structure.
+struct MicrophoneDevice
+{
+    std::string                     name;       //!< Name of the microphone device.
+    std::vector<WaveBufferFormat>   formats;    //!< List of all supported standard formats.
+};
 
 
 //! Microphone interface.
@@ -22,6 +32,9 @@ class AC_EXPORT Microphone
 {
 
     public:
+
+        //! Standard audio input device index.
+        static const std::size_t standardDeviceIndex = std::size_t(-1);
 
         Microphone() = default;
 
@@ -31,6 +44,9 @@ class AC_EXPORT Microphone
         virtual ~Microphone()
         {
         }
+
+        //! Returns a list of all available microphone devices.
+        virtual std::vector<MicrophoneDevice> QueryDevices() const = 0;
 
         /**
         \brief Returns the received audio input from this microphone.
@@ -63,18 +79,20 @@ class AC_EXPORT Microphone
         the receiver buffer, which can be acquired with the "ReceivedInput" function.
         \param[in] sampleCount Specifies how many samples shall be received at once
         (independently of the number of channels). The larger this value, the larger the latency.
+        \param[in] deviceIndex Specifies the input device index (beginning with 0). By default the standard device is used.
         \remarks Before a new recording process can be started, the previous one must be stopped.
+        To select an appropriate device index, use the "QueryDevices" function, to query all available input devices.
         \see Stop
         \see IsRecording
         */
-        virtual void Start(const WaveBufferFormat& waveFormat, std::size_t sampleCount) = 0;
+        virtual void Start(const WaveBufferFormat& waveFormat, std::size_t sampleCount, std::size_t deviceIndex = standardDeviceIndex) = 0;
 
         /**
         \brief Starts the recording process.
         \remarks Same as the other "Start" function but here the duration (in seconds) specifies the latency instead of the sample count.
         \see Start(const WaveBufferFormat&, std::size_t)
         */
-        virtual void Start(const WaveBufferFormat& waveFormat, double duration) = 0;
+        virtual void Start(const WaveBufferFormat& waveFormat, double duration, std::size_t deviceIndex = standardDeviceIndex) = 0;
 
         //! Stops the recording process.
         virtual void Stop() = 0;

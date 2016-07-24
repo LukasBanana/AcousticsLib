@@ -26,16 +26,17 @@ class Win32Microphone : public Microphone
 
     public:
 
-        Win32Microphone();
-        ~Win32Microphone();
+        Win32Microphone() = default;
 
         Win32Microphone(const Win32Microphone&) = delete;
         Win32Microphone& operator = (const Win32Microphone&) = delete;
 
+        std::vector<MicrophoneDevice> QueryDevices() const override;
+
         std::unique_ptr<WaveBuffer> ReceivedInput() override;
 
-        void Start(const WaveBufferFormat& waveFormat, std::size_t sampleCount) override;
-        void Start(const WaveBufferFormat& waveFormat, double duration) override;
+        void Start(const WaveBufferFormat& waveFormat, std::size_t sampleCount, std::size_t deviceIndex) override;
+        void Start(const WaveBufferFormat& waveFormat, double duration, std::size_t deviceIndex) override;
 
         void Stop() override;
 
@@ -45,7 +46,9 @@ class Win32Microphone : public Microphone
 
     private:
 
-        void OpenWaveInput(std::size_t sampleCount);
+        UINT GetDeviceID(std::size_t deviceIndex) const;
+
+        void OpenWaveInput(std::size_t sampleCount, UINT deviceID);
         void CloseWaveInput();
 
         HWAVEIN                     waveIn_     = nullptr;

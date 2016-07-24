@@ -23,20 +23,6 @@ namespace Synthesizer
 {
 
 
-/* ----- Constants ----- */
-
-//! 44.1 kHz sample rate.
-static const unsigned int sampleRate44kHz   = 44100;
-
-//! 22.05 kHz sample rate.
-static const unsigned int sampleRate22kHz   = 22050;
-
-//! 11.025 kHz sample rate.
-static const unsigned int sampleRate11kHz   = 11025;
-
-//! 8 kHz sample rate.
-static const unsigned int sampleRate8kHz    = 8000;
-
 /* ----- Wave generators ----- */
 
 /**

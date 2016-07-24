@@ -18,6 +18,31 @@ namespace Ac
 {
 
 
+//! 96 kHz sample rate.
+static const unsigned int sampleRate96kHz   = 96000;
+
+//! 48 kHz sample rate (used for DVDs).
+static const unsigned int sampleRate48kHz   = 48000;
+
+//! 44.1 kHz sample rate.
+static const unsigned int sampleRate44kHz   = 44100;
+
+//! 32 kHz sample rate.
+static const unsigned int sampleRate32kHz   = 32000;
+
+//! 22.05 kHz sample rate.
+static const unsigned int sampleRate22kHz   = 22050;
+
+//! 16 kHz sample rate.
+static const unsigned int sampleRate16kHz   = 16000;
+
+//! 11.025 kHz sample rate.
+static const unsigned int sampleRate11kHz   = 11025;
+
+//! 8 kHz sample rate.
+static const unsigned int sampleRate8kHz    = 8000;
+
+
 //! Wave buffer format descriptor structure.
 struct AC_EXPORT WaveBufferFormat
 {

@@ -13,12 +13,65 @@ namespace Ac
 {
 
 
-Win32Microphone::Win32Microphone()
+struct BufferFormatFlags
 {
-}
+    DWORD           flag;
+    unsigned int    sampleRate;
+    unsigned short  bitsPerSample;
+    unsigned short  channels;
+};
 
-Win32Microphone::~Win32Microphone()
+std::vector<MicrophoneDevice> Win32Microphone::QueryDevices() const
 {
+    std::vector<MicrophoneDevice> devices;
+
+    /* Iterate over all wave-in device s */
+    auto numDevs = waveInGetNumDevs();
+
+    for (decltype(numDevs) i = 0; i < numDevs; ++i)
+    {
+        /* Query wave-in device capabilities */
+        WAVEINCAPS caps;
+        auto result = waveInGetDevCaps(i, &caps, sizeof(WAVEINCAPS));
+
+        if (result != MMSYSERR_NOERROR)
+            continue;
+
+        /* Setup device descriptor */
+        MicrophoneDevice dev;
+
+        dev.name = std::string(caps.szPname);
+
+        std::vector<BufferFormatFlags> settings
+        {
+            { WAVE_FORMAT_1M08 , sampleRate11kHz,  8, 1 },
+            { WAVE_FORMAT_1M16 , sampleRate11kHz, 16, 1 },
+            { WAVE_FORMAT_1S08 , sampleRate11kHz,  8, 2 },
+            { WAVE_FORMAT_1S16 , sampleRate11kHz, 16, 2 },
+            { WAVE_FORMAT_2M08 , sampleRate22kHz,  8, 1 },
+            { WAVE_FORMAT_2M16 , sampleRate22kHz, 16, 1 },
+            { WAVE_FORMAT_2S08 , sampleRate22kHz,  8, 2 },
+            { WAVE_FORMAT_2S16 , sampleRate22kHz, 16, 2 },
+            { WAVE_FORMAT_4M08 , sampleRate44kHz,  8, 1 },
+            { WAVE_FORMAT_4M16 , sampleRate44kHz, 16, 1 },
+            { WAVE_FORMAT_4S08 , sampleRate44kHz,  8, 2 },
+            { WAVE_FORMAT_4S16 , sampleRate44kHz, 16, 2 },
+            { WAVE_FORMAT_96M08, sampleRate96kHz,  8, 1 },
+            { WAVE_FORMAT_96M16, sampleRate96kHz, 16, 1 },
+            { WAVE_FORMAT_96S08, sampleRate96kHz,  8, 2 },
+            { WAVE_FORMAT_96S16, sampleRate96kHz, 16, 2 },
+        };
+
+        for (const auto& stng : settings)
+        {
+            if ((caps.dwFormats & stng.flag) != 0)
+                dev.formats.push_back(WaveBufferFormat(stng.sampleRate, stng.bitsPerSample, stng.channels));
+        }
+
+        devices.push_back(dev);
+    }
+
+    return devices;
 }
 
 std::unique_ptr<WaveBuffer> Win32Microphone::ReceivedInput()
@@ -32,7 +85,7 @@ std::unique_ptr<WaveBuffer> Win32Microphone::ReceivedInput()
     return nullptr;
 }
 
-void Win32Microphone::Start(const WaveBufferFormat& waveFormat, std::size_t sampleCount)
+void Win32Microphone::Start(const WaveBufferFormat& waveFormat, std::size_t sampleCount, std::size_t deviceIndex)
 {
     if (!recording_)
     {
@@ -40,7 +93,7 @@ void Win32Microphone::Start(const WaveBufferFormat& waveFormat, std::size_t samp
         recvBufferFormat_ = waveFormat;
 
         /* Start recording process */
-        OpenWaveInput(sampleCount);
+        OpenWaveInput(sampleCount, GetDeviceID(deviceIndex));
 
         waveInAddBuffer(waveIn_, &waveHdr_, sizeof(WAVEHDR));
         waveInStart(waveIn_);
@@ -49,11 +102,12 @@ void Win32Microphone::Start(const WaveBufferFormat& waveFormat, std::size_t samp
     }
 }
 
-void Win32Microphone::Start(const WaveBufferFormat& waveFormat, double duration)
+void Win32Microphone::Start(const WaveBufferFormat& waveFormat, double duration, std::size_t deviceIndex)
 {
     Start(
         waveFormat,
-        static_cast<std::size_t>(duration * static_cast<double>(waveFormat.sampleRate))
+        static_cast<std::size_t>(duration * static_cast<double>(waveFormat.sampleRate)),
+        deviceIndex
     );
 }
 
@@ -92,7 +146,18 @@ void Win32Microphone::OnSync(DWORD bytesRecorded)
  * ======= Private: =======
  */
 
-void Win32Microphone::OpenWaveInput(std::size_t sampleCount)
+UINT Win32Microphone::GetDeviceID(std::size_t deviceIndex) const
+{
+    if (deviceIndex != standardDeviceIndex)
+    {
+        auto idx = static_cast<UINT>(deviceIndex);
+        if (idx < waveInGetNumDevs())
+            return idx;
+    }
+    return WAVE_MAPPER;
+}
+
+void Win32Microphone::OpenWaveInput(std::size_t sampleCount, UINT deviceID)
 {
     /* Resize output buffer first (to avoid race condition with thread of the recording callback) */
     buffer_.resize(sampleCount * recvBufferFormat_.BlockAlign());
@@ -110,7 +175,7 @@ void Win32Microphone::OpenWaveInput(std::size_t sampleCount)
     
     auto result = waveInOpen(
         &waveIn_,
-        WAVE_MAPPER,
+        deviceID,
         &waveFormat,
         reinterpret_cast<DWORD_PTR>(Win32MicrophoneCallback),
         reinterpret_cast<DWORD_PTR>(this),

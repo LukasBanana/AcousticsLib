@@ -24,7 +24,7 @@ int main()
         
         #if 1
 
-        Ac::WaveBuffer buffer(Ac::WaveBufferFormat(Ac::Synthesizer::sampleRate44kHz, 16, 1)), outputBuffer;
+        Ac::WaveBuffer buffer(Ac::WaveBufferFormat(Ac::sampleRate44kHz, 16, 1)), outputBuffer;
 
         #if TEST_MODE == TEST_MODE_SYNTH
 

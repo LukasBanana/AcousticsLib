@@ -20,8 +20,11 @@ int main()
         {
             std::cout << "microphone found" << std::endl;
 
+            for (const auto& dev : mic->QueryDevices())
+                std::cout << "  device: \"" << dev.name << '\"' << std::endl;
+
             std::cout << "start recording" << std::endl;
-            mic->Start(Ac::WaveBufferFormat(Ac::Synthesizer::sampleRate44kHz, 16, 2), 0.25);
+            mic->Start(Ac::WaveBufferFormat(Ac::sampleRate44kHz, 16, 2), 0.1);//0.25);
 
             auto startTime = std::chrono::system_clock::now();
 
@@ -32,13 +35,16 @@ int main()
                 auto buffer = mic->ReceivedInput();
                 if (buffer)
                 {
-                    std::cout << "received buffer: samples = " << buffer->GetSampleCount() << ", duration = " << buffer->GetTotalTime() << "s" << std::endl;
-                    Ac::Synthesizer::BlurWaveBuffer(*buffer, 0.1, 1.0, 15);
-                    sound->AttachBuffer(*buffer);
-                    sound->Play();
+                    std::cout
+                        << "received buffer: samples = " << buffer->GetSampleCount()
+                        << ", duration = " << buffer->GetTotalTime() << "s, queue size = " << sound->GetQueueSize() << std::endl;
+                    //Ac::Synthesizer::BlurWaveBuffer(*buffer, 0.1, 1.0, 15);
+                    sound->QueueBuffer(*buffer);
+                    if (sound->GetQueueSize() == 2)
+                        sound->Play();
                 }
 
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                SleepFor();
 
                 auto now = std::chrono::system_clock::now();
                 if (std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count() > 5000)
