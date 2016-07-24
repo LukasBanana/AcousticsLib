@@ -21,14 +21,17 @@ namespace Visualizer
 {
 
 
-AC_EXPORT void DrawWaveBuffer(
-    Renderer& renderer,
-    const WaveBuffer& buffer,
-    unsigned short channel,
-    const Gs::Vector2i& position,
-    const Gs::Vector2i& size
-);
-
+/**
+\brief Draws the specified wave buffer for within a given time window.
+\param[in,out] renderer Specifies the renderer which is used to draw the audio signal.
+This must be an instance of a class which implements the "Renderer" interface.
+\param[in] channel Specifies which audio channel to draw.
+\param[in] position Specifies the position where to start with drawing.
+\param[in] size Specifies the size of the wave buffer on the render context.
+\param[in] timeBegin Specifies the beginning of the wave buffer to draw (in seconds).
+\param[in] timeEnd Specifies the end of the wave buffer to draw (in seconds).
+\see Renderer
+*/
 AC_EXPORT void DrawWaveBuffer(
     Renderer& renderer,
     const WaveBuffer& buffer,
@@ -39,6 +42,18 @@ AC_EXPORT void DrawWaveBuffer(
     double timeEnd
 );
     
+/**
+\brief Draws the specified wave buffer entirely.
+\see DrawWaveBuffer(Renderer&, const WaveBuffer&, unsigned short, const Gs::Vector2i&, const Gs::Vector2i&, double, double)
+*/
+AC_EXPORT void DrawWaveBuffer(
+    Renderer& renderer,
+    const WaveBuffer& buffer,
+    unsigned short channel,
+    const Gs::Vector2i& position,
+    const Gs::Vector2i& size
+);
+
     
 } // /namesapce Visualizer
 

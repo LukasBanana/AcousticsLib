@@ -92,7 +92,10 @@ void initAudio()
     sound = audioSys->CreateSound(*waveBuffer);
     
     if (sound)
+    {
         sound->SetVolume(0.25f);
+        //sound->SetPitch(1.5f);
+    }
 }
 
 void drawScene2D()
@@ -107,12 +110,15 @@ void drawScene2D()
     glLoadIdentity();
 
     // draw wave buffer
+    double seek = (sound != nullptr ? sound->GetSeek() : 0.0);
+
     glColor4f(0.3f, 0.5f, 1.0f, 1.0f);
     Ac::Visualizer::DrawWaveBuffer(
         *renderer, *waveBuffer, 0,
-        { 0, 0 }, { resolution.x, resolution.y/2 },
-        sound->GetSeek() + 0.1,
-        sound->GetSeek() + 0.05
+        { 0, 0 }, { resolution.x, resolution.y/2 }
+        #if 1
+        , seek, seek + 0.05
+        #endif
     );
     
     // draw playback line
