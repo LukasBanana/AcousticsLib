@@ -30,7 +30,6 @@ int main()
             {
                 //sound->SetPitch(0.25f);
                 //sound->SetLooping(true);
-                sound->SetVolume(0.1f);
                 sound->Play();
 
                 if (sound->GetLooping())

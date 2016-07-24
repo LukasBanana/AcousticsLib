@@ -8,6 +8,7 @@
 #include "MODStream.h"
 #include "MODFileFormat.h"
 #include "FormatAuxiliary.h"
+#include "../Core/Endianness.h"
 #include <algorithm>
 
 #include <iostream>//FOR DEBUGGING!!!

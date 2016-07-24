@@ -6,6 +6,7 @@
  */
 
 #include "PCMData.h"
+#include "Endianness.h"
 
 #include <Ac/WaveBuffer.h>
 #include <algorithm>
@@ -177,6 +178,23 @@ void WaveBuffer::SetChannels(unsigned short channels)
     auto format = GetFormat();
     format.channels = channels;
     SetFormat(format);
+}
+
+template <typename T>
+void SwapBufferEndianness(T* buffer, std::size_t n)
+{
+    while (n-- > 0)
+        SwapEndian(buffer[n]);
+}
+
+void WaveBuffer::SwapEndianness()
+{
+    switch (format_.bitsPerSample)
+    {
+        case 16:
+            SwapBufferEndianness(reinterpret_cast<std::int16_t*>(buffer_.data()), buffer_.size()/2);
+            break;
+    }
 }
 
 /* ----- Sample iteration ----- */

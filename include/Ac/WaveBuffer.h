@@ -152,7 +152,15 @@ class AC_EXPORT WaveBuffer
         \see SetFormat
         */
         void SetChannels(unsigned short channels);
-    
+
+        /**
+        \brief Swaps the endianness (byte order) of each sample between little-endian and big-endian.
+        \remarks Per default, all data is read in little endian format on an x86 (IA-32) and x64 (AMD64) processor.
+        Therefore, calling this function swaps the byte order to big-endian. This is used for the AIFF reader for instance.
+        If the bits per sample is 8 (or lower), then this function has no effect, since byte order does not matter for a single byte.
+        */
+        void SwapEndianness();
+
         /* ----- Sample iteration ----- */
         
         /**

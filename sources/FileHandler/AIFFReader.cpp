@@ -7,6 +7,7 @@
 
 #include "AIFFReader.h"
 #include "AIFFFileFormat.h"
+#include "../Core/Endianness.h"
 
 
 namespace Ac
@@ -112,6 +113,8 @@ void AIFFReader::ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer)
         throw std::runtime_error("inconsistent sizes of sound data buffers in AIFF/AIFF-C stream");
 
     stream.read(buffer.Data(), buffer.BufferSize());
+
+    buffer.SwapEndianness();
 }
 
 

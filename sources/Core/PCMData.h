@@ -41,7 +41,7 @@ struct PCMLimits
 };
 
 template <typename T>
-inline PCMLimits GetPCMLimits()
+PCMLimits GetPCMLimits()
 {
     PCMLimits limits;
 
@@ -55,7 +55,7 @@ inline PCMLimits GetPCMLimits()
 }
 
 template <typename T>
-inline void PCMDataToSample(double& sample, const T data)
+void PCMDataToSample(double& sample, const T data)
 {
     /* Scale data (no need to clamp into range [-1, 1] due to data limits) */
     const auto limits = GetPCMLimits<T>();
@@ -65,7 +65,7 @@ inline void PCMDataToSample(double& sample, const T data)
 }
 
 template <typename T>
-inline void SampleToPCMData(T& data, double sample)
+void SampleToPCMData(T& data, double sample)
 {
     /* Scale sample and clamp into range [min, max] */
     const auto limits = GetPCMLimits<T>();
