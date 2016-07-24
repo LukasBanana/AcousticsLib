@@ -239,6 +239,9 @@ static std::unique_ptr<AudioReader> QueryReader(const AudioFormats format)
         case AudioFormats::AmigaModule:
             throw std::runtime_error("can not read entire wave buffer from audio stream");
             break;
+            
+        default:
+            break;
     }
     return nullptr;
 }
@@ -263,15 +266,16 @@ std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(std::unique_ptr<std::i
     {
         switch (Ac::DetermineAudioFormat(*stream))
         {
+            #ifdef AC_PLUGIN_OGGVORBIS
             case AudioFormats::OggVorbis:
-                #ifdef AC_PLUGIN_OGGVORBIS
                 return std::unique_ptr<AudioStream>(new OGGStream(std::move(stream)));
-                #else
-                break;
-                #endif
+            #endif
 
             case AudioFormats::AmigaModule:
                 return std::unique_ptr<AudioStream>(new MODStream(std::move(stream)));
+                
+            default:
+                break;
         }
     }
     return nullptr;
@@ -283,8 +287,9 @@ static std::unique_ptr<AudioWriter> QueryWriter(const AudioFormats format)
     {
         case AudioFormats::WAVE:
             return std::unique_ptr<AudioWriter>(new WAVWriter());
+        default:
+            return nullptr;
     }
-    return nullptr;
 }
 
 bool AudioSystem::WriteAudioBuffer(const AudioFormats format, std::ostream& stream, const WaveBuffer& waveBuffer)
