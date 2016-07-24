@@ -12,6 +12,18 @@ namespace Ac
 {
 
 
+std::string GetStrinFromUINT32(std::uint32_t i)
+{
+    std::string s(4, ' ');
+    *reinterpret_cast<std::uint32_t*>(&s[0]) = i;
+    return s;
+}
+
+void Ignore(std::istream& stream, std::streampos count)
+{
+    stream.seekg(count, std::ios_base::cur);
+}
+
 // see http://stackoverflow.com/questions/2963055/msvc-win32-convert-extended-precision-float-80-bit-to-double-64-bit
 double ReadFloat80(const std::int8_t (&value)[10])
 {

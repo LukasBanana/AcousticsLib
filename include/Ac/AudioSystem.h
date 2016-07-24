@@ -161,6 +161,15 @@ class AC_EXPORT AudioSystem
         /* ----- Audio data access ------ */
 
         /**
+        \brief Determines the audio format of the specified stream.
+        \param[in,out] stream Specifies the input stream where the audio format is to be determined from.
+        \remarks This function will jump to the beginning of the input stream to read the magic number
+        and then sets the reading position back to the previous position.
+        \return Determined audio format or AudioFormats::Unknown if the audio format is not supported.
+        */
+        static AudioFormats DetermineAudioFormat(std::istream& stream);
+
+        /**
         \brief Reads the audio data from the specified file and stores it in the output wave buffer.
         \param[in] filename Specifies the filename of the input file stream.
         \see ReadAudioBuffer(const AudioFormats, std::istream&, WaveBuffer&)
@@ -169,17 +178,16 @@ class AC_EXPORT AudioSystem
 
         /**
         \brief Reads the audio data from the specified stream and stores it in the output wave buffer.
-        \param[in] format Specifies the file audio format.
         \param[in,out] stream Specifies the input stream to read from. This stream must be opened in binary mode!
         \param[out] waveBuffer Specifies the output wave buffer.
         \throws std::runtime_exception If something went wrong while reading.
         */
-        void ReadAudioBuffer(const AudioFormats format, std::istream& stream, WaveBuffer& waveBuffer);
+        void ReadAudioBuffer(std::istream& stream, WaveBuffer& waveBuffer);
 
         /**
         \brief Opens a new audio stream form the specified file.
         \param[in] filename Specifies the filename of the input file stream.
-        \see OpenAudioStream(const AudioStreamFormats, std::istream&)
+        \see OpenAudioStream(std::istream&)
         */
         std::unique_ptr<AudioStream> OpenAudioStream(const std::string& filename);
 
@@ -190,15 +198,16 @@ class AC_EXPORT AudioSystem
         \remarks The input stream must be a unique pointer, so that the returned audio stream object can take care of the input stream to read from.
         \throws std::runtime_exception If something went wrong while opening the stream.
         */
-        std::unique_ptr<AudioStream> OpenAudioStream(const AudioStreamFormats format, std::unique_ptr<std::istream>&& stream);
+        std::unique_ptr<AudioStream> OpenAudioStream(std::unique_ptr<std::istream>&& stream);
 
         /**
         \brief Writes the audio data to the specified stream.
         \param[in,out] stream Specifies the output stream to write to. This stream must be opened in binary mode!
         \param[out] waveBuffer Specifies the input wave buffer.
+        \return True if the stream has been written successfully.
         \throws std::runtime_exception If something went wrong while writing.
         */
-        void WriteAudioBuffer(const AudioFormats format, std::ostream& stream, const WaveBuffer& waveBuffer);
+        bool WriteAudioBuffer(const AudioFormats format, std::ostream& stream, const WaveBuffer& waveBuffer);
 
         /* ----- Microphone ----- */
 

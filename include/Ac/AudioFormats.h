@@ -16,22 +16,31 @@ namespace Ac
 //! Audio formats enumeration.
 enum class AudioFormats
 {
+    //! Unknown audio format.
+    Unknown,
+
+    /* ----- Buffers ----- */
+
     /**
-    \brief Waveform Audio File Format (.wav, .wave).
+    \brief Waveform Audio File Format (RIFF WAVE) (.wav, .wave).
     \see http://soundfile.sapp.org/doc/WaveFormat/
     */
     WAVE,
     
     /**
-    \brief Audio Interface File Format (.aiff, .aif, .aifc).
+    \brief Audio Interface File Format (AIFF) (.aiff, .aif, .aifc).
     \see http://www-mmsp.ece.mcgill.ca/documents/audioformats/aiff/aiff.html
     */
     AIFF,
-};
 
-//! Audio stream formats enumeration.
-enum class AudioStreamFormats
-{
+    /**
+    \brief Audio Interface File Format (AIFF-C) (.aiff, .aif, .aifc).
+    \see http://www-mmsp.ece.mcgill.ca/documents/audioformats/aiff/aiff.html
+    */
+    AIFC,
+
+    /* ----- Streams ----- */
+
     /**
     \brief Ogg-Vorbis audio stream format (.ogg).
     \see http://vorbis.com/

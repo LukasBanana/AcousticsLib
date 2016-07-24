@@ -39,7 +39,6 @@ struct MODHeader
     std::uint8_t    restart;                //!< Restart byte for song looping
     std::uint8_t    patternSequences[128];
     char            id[4];                  //!< "M.K.", "4CHN", "6CHN", "8CHN", "4FLT", "8FLT"
-
 }
 AC_PACK_STRUCT;
 

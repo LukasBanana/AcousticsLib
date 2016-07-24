@@ -21,8 +21,8 @@ int main()
 
             // Play sound
             auto soundFile = (
-                //"in/lighter.wav"
-                "in/Blow.aiff"
+                "in/lighter.wav"
+                //"in/Blow.aiff"
             );
             auto sound = audioSystem->LoadSound(soundFile);
 

@@ -11,10 +11,12 @@
 #include "../FileHandler/AIFFReader.h"
 #include "../FileHandler/OGGStream.h"
 #include "../FileHandler/MODStream.h"
+#include "../FileHandler/FileType.h"
 
 #include <Ac/AudioSystem.h>
 #include <array>
 #include <fstream>
+#include <cstdint>
 
 //!!!TESTING!!!
 #ifdef _WIN32
@@ -167,6 +169,11 @@ void AudioSystem::Play(const std::string& filename, float volume, std::size_t re
 
 /* ----- Audio data access ------ */
 
+AudioFormats AudioSystem::DetermineAudioFormat(std::istream& stream)
+{
+    return Ac::DetermineAudioFormat(stream);
+}
+
 std::unique_ptr<WaveBuffer> AudioSystem::ReadAudioBuffer(const std::string& filename)
 {
     /* Open file stream in binary mode */
@@ -174,96 +181,87 @@ std::unique_ptr<WaveBuffer> AudioSystem::ReadAudioBuffer(const std::string& file
 
     if (file.good())
     {
-        /* Determine audio file type */
-        AudioFormats format = AudioFormats::WAVE;
-
-        if ( ( filename.size() > 5 && filename.substr(filename.size() - 5) == ".aiff" ) ||
-             ( filename.size() > 4 && filename.substr(filename.size() - 4) == ".aif" ) )
-        {
-            format = AudioFormats::AIFF;
-        }
-        
-        //TODO... (right now only WAV supported) !!!
-
         /* Read audio buffer from stream */
         auto waveBuffer = std::unique_ptr<WaveBuffer>(new WaveBuffer());
-        ReadAudioBuffer(format, file, *waveBuffer);
-
+        ReadAudioBuffer(file, *waveBuffer);
         return waveBuffer;
     }
 
     return nullptr;
 }
 
-void AudioSystem::ReadAudioBuffer(const AudioFormats format, std::istream& stream, WaveBuffer& waveBuffer)
+static std::unique_ptr<AudioReader> QueryReader(const AudioFormats format)
 {
     switch (format)
     {
         case AudioFormats::WAVE:
-        {
-            WAVReader reader;
-            reader.ReadWaveBuffer(stream, waveBuffer);
-        }
-        break;
-        
+            return std::unique_ptr<AudioReader>(new WAVReader());
+
         case AudioFormats::AIFF:
-        {
-            AIFFReader reader;
-            reader.ReadWaveBuffer(stream, waveBuffer);
-        }
-        break;
+        case AudioFormats::AIFC:
+            return std::unique_ptr<AudioReader>(new AIFFReader());
+
+        case AudioFormats::OggVorbis:
+        case AudioFormats::AmigaModule:
+            throw std::runtime_error("can not read entire wave buffer from audio stream");
+            break;
     }
+    return nullptr;
+}
+
+void AudioSystem::ReadAudioBuffer(std::istream& stream, WaveBuffer& waveBuffer)
+{
+    auto reader = QueryReader(Ac::DetermineAudioFormat(stream));
+    if (reader)
+        reader->ReadWaveBuffer(stream, waveBuffer);
 }
 
 std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(const std::string& filename)
 {
     /* Open file stream in binary mode */
     auto file = std::unique_ptr<std::ifstream>(new std::ifstream(filename, std::ios_base::binary));
-
-    if (file->good())
-    {
-        /* Determine audio file type */
-        auto format = AudioStreamFormats::OggVorbis;
-
-        //TODO... (right now only OGG supported) !!!
-
-        /* Open audio stream from input stream */
-        return OpenAudioStream(format, std::move(file));
-    }
-
-    return nullptr;
+    return (file->good() ? OpenAudioStream(std::move(file)) : nullptr);
 }
 
-std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(const AudioStreamFormats format, std::unique_ptr<std::istream>&& stream)
+std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(std::unique_ptr<std::istream>&& stream)
 {
-    switch (format)
+    if (stream)
     {
-        case AudioStreamFormats::OggVorbis:
-            #ifdef AC_PLUGIN_OGGVORBIS
-            return std::unique_ptr<AudioStream>(new OGGStream(std::move(stream)));
-            #endif
-            break;
-        case AudioStreamFormats::AmigaModule:
-            return std::unique_ptr<AudioStream>(new MODStream(std::move(stream)));
-            break;
+        switch (Ac::DetermineAudioFormat(*stream))
+        {
+            case AudioFormats::OggVorbis:
+                #ifdef AC_PLUGIN_OGGVORBIS
+                return std::unique_ptr<AudioStream>(new OGGStream(std::move(stream)));
+                #else
+                break;
+                #endif
+
+            case AudioFormats::AmigaModule:
+                return std::unique_ptr<AudioStream>(new MODStream(std::move(stream)));
+        }
     }
     return nullptr;
 }
 
-void AudioSystem::WriteAudioBuffer(const AudioFormats format, std::ostream& stream, const WaveBuffer& waveBuffer)
+static std::unique_ptr<AudioWriter> QueryWriter(const AudioFormats format)
 {
     switch (format)
     {
         case AudioFormats::WAVE:
-        {
-            WAVWriter writer;
-            writer.WriteWaveBuffer(stream, waveBuffer);
-        }
-        break;
-            
-        default:
-        break;
+            return std::unique_ptr<AudioWriter>(new WAVWriter());
     }
+    return nullptr;
+}
+
+bool AudioSystem::WriteAudioBuffer(const AudioFormats format, std::ostream& stream, const WaveBuffer& waveBuffer)
+{
+    auto writer = QueryWriter(format);
+    if (writer)
+    {
+        writer->WriteWaveBuffer(stream, waveBuffer);
+        return true;
+    }
+    return false;
 }
 
 /* ----- Microphone ----- */
