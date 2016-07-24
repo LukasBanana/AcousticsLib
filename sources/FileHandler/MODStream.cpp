@@ -32,9 +32,9 @@ MODStream::MODStream(std::unique_ptr<std::istream>&& stream) :
     for (unsigned i = 0; i < 31; ++i)
     {
         auto& rec = header.records[i];
-        SwapEndian(rec.length);
-        SwapEndian(rec.loopStart);
-        SwapEndian(rec.loopLength);
+        rec.length      = SwapEndian(rec.length);
+        rec.loopStart   = SwapEndian(rec.loopStart);
+        rec.loopLength  = SwapEndian(rec.loopLength);
         rec.length      *= 2;
         rec.loopStart   *= 2;
         rec.loopLength  *= 2;

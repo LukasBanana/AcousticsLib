@@ -24,7 +24,7 @@ static void AIFFReadHeader(std::istream& stream, AIFFHeader& header)
     if (header.formType != UINT32_FROM_STRING("AIFF") && header.formType != UINT32_FROM_STRING("AIFC"))
         throw std::runtime_error("invalid form type in AIFF/AIFF-C stream (must be either 'AIFF' or 'AIFC')");
     
-    SwapEndian(header.size);
+    header.size = SwapEndian(header.size);
 }
 
 static void AIFFReadChunk(std::istream& stream, AIFFChunk& chunk, const char* chunkId)
@@ -38,7 +38,7 @@ static void AIFFReadChunk(std::istream& stream, AIFFChunk& chunk, const char* ch
             throw std::runtime_error("missing chunk ID '" + std::string(chunkId) + "' in AIFF/AIFF-C stream");
 
         Read(stream, chunk);
-        SwapEndian(chunk.size);
+        chunk.size = SwapEndian(chunk.size);
 
         if (chunk.id != UINT32_FROM_STRING(chunkId))
         {
@@ -56,9 +56,10 @@ static void AIFFReadCommonChunk(std::istream& stream, AIFFCommonChunk& chunk)
 {
     Read(stream, chunk);
     
-    SwapEndian(chunk.channels);
-    SwapEndian(chunk.sampleFrames);
-    SwapEndian(chunk.bitsPerSample);
+    chunk.channels      = SwapEndian(chunk.channels);
+    chunk.sampleFrames  = SwapEndian(chunk.sampleFrames);
+    chunk.bitsPerSample = SwapEndian(chunk.bitsPerSample);
+
     SwapEndian(chunk.sampleRate);
 }
 
@@ -99,8 +100,8 @@ static void AIFFReadSoundChunk(std::istream& stream, AIFFSoundChunk& chunk)
 {
     Read(stream, chunk);
 
-    SwapEndian(chunk.offset);
-    SwapEndian(chunk.blockSize);
+    chunk.offset    = SwapEndian(chunk.offset);
+    chunk.blockSize = SwapEndian(chunk.blockSize);
 }
 
 void AIFFReader::ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer)

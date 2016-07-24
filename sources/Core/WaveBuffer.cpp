@@ -184,7 +184,7 @@ template <typename T>
 void SwapBufferEndianness(T* buffer, std::size_t n)
 {
     while (n-- > 0)
-        SwapEndian(buffer[n]);
+        buffer[n] = SwapEndian(buffer[n]);
 }
 
 void WaveBuffer::SwapEndianness()

@@ -19,7 +19,7 @@ namespace Ac
 
 //! Swap endianness of common type (both integral and floating-points).
 template <typename T>
-void SwapEndian(T& value)
+T SwapEndian(T value)
 {
     union
     {
@@ -33,7 +33,7 @@ void SwapEndian(T& value)
     for (std::size_t i = 0; i < sizeof(T); ++i)
         dest.bytes[i] = source.bytes[sizeof(T) - i - 1u];
 
-    value = dest.value;
+    return dest.value;
 }
 
 //! Swap endianness of array type.
