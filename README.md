@@ -24,8 +24,9 @@ Platform Support
 File Format Support
 ----------------
 
-* **WAV** *(Wave)* Read/Write
-* **OGG** *(Ogg Vorbis)* Read
+* **WAV** *(Waveform Audio File Format)* Read/Write
+* **AIFF** *(Audio Interchange File Format)* Read
+* **OGG** *(Ogg-Vorbis)* Read
 * more coming ...
 
 
@@ -33,7 +34,6 @@ Audio Engines
 -------------
 
 * **OpenAL** *(in progress)*
-* **XAudio2** *(planned, but not started yet)*
 * more coming ...
 
 
@@ -66,6 +66,8 @@ Play a sound by choosing a module:
 ```cpp
 #include <Ac/AcLib.h>
 #include <iostream>
+#include <thread>
+#include <chrono>
 
 int main()
 {
@@ -94,6 +96,9 @@ int main()
 				{
 					// Wait while sound is playing and show current seek position
 					std::cout << "Playing: " << sound->GetSeek() << std::end;
+					
+					// Wait a moment
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
 				}
 			}
 			
