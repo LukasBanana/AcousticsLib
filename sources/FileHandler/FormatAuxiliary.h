@@ -65,75 +65,8 @@ static void Read(std::istream& stream, T& buffer)
     stream.read(reinterpret_cast<char*>(&buffer), sizeof(T));
 }
 
-#if 0
-
-//! Extract integral and fractional part from extended floating-point (N must be at least 1).
-template <std::size_t N>
-void GetIntAndFract(std::int8_t (&value)[N], long long& intPart, unsigned long long& fractPart, std::size_t expSize)
-{
-    static_assert(N >= 1, "GetIntAndFract does not allow floating-points with less than 8 bits");
-    
-    // Returns true if the bit in 'value' at the specified is 1
-    auto IsBit = [&](std::size_t pos) -> bool
-    {
-        return ((value[pos / 8] & (0x80 >> (pos % 8))) != 0);
-    };
-    
-    // Returns the bit mask of 'value' in the range [begin, end)
-    auto GetBitMask = [&](std::size_t begin, std::size_t end) -> unsigned long long
-    {
-        unsigned long long mask = 0;
-        
-        for (; begin < end; ++begin)
-        {
-            if (IsBit(begin))
-                mask |= static_cast<unsigned long long>(-1);
-            mask >>= 1;
-        }
-        
-        return mask;
-    };
-    
-    /* Extract sign (from first bit), exponent, and mantissa */
-    bool sign   = ((value[0] & 0x80) != 0);
-    auto exp    = GetBitMask(1u, 1u + expSize);
-    bool intBit = (GetBitMask(1u + expSize, 1u + expSize) != 0);
-    auto mnt    = GetBitMask(2u + expSize, N*8);
-    
-    /* Construct integral and fractional part */
-    intPart     = 0;
-    fractPart   = 0;
-    
-    if (exp == 0)
-    {
-        if (intBit)
-        {
-            
-        }
-        else if (mnt != 0)
-        {
-            // Result is (-1)^sign * mnt * 2^(-16382)
-            std::stringstream s;
-            s << (intBit ? '1' : '0') << '.' << mnt;
-            auto ss = s.str();
-            double m = std::stod(s.str().c_str());
-            double d = m * std::pow(2.0, -16382.0);
-            double di = 0.0;
-            double df = std::modf(d, &di);
-            intPart = static_cast<long long>(di);
-            fractPart = static_cast<unsigned long long>(df);
-        }
-    }
-    else
-    {
-        
-    }
-    
-    if (sign)
-        intPart = -intPart;
-}
-
-#endif
+//! Converts the specified 80-bit IEEE 754 extended precision floating-point into a 64-bit double precision floating point.
+double ReadFloat80(const std::int8_t (&value)[10]);
 
 
 } // /namespace Ac

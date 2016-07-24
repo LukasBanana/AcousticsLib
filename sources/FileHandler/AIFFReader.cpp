@@ -45,9 +45,7 @@ static void AIFFReadCommonChunk(std::istream& stream, AIFFCommonChunk& chunk)
     SwapEndian(chunk.bitsPerSample);
     SwapEndian(chunk.sampleRate);
     
-    //long long intPart = 0;
-    //unsigned long long fractPart = 0;
-    //GetIntAndFract(chunk.sampleRate, intPart, fractPart, 15u);
+    auto rate = ReadFloat80(chunk.sampleRate);
 }
 
 void AIFFReader::ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer)

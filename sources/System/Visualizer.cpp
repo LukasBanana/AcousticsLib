@@ -5,7 +5,6 @@
  * See "LICENSE.txt" for license information.
  */
 
-#include "../Core/WindowFunctions.h"
 #include <Ac/Visualizer.h>
 #include <limits>
 

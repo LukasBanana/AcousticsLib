@@ -82,10 +82,41 @@ void initAudio()
     // load audio system and wave buffer
     audioSys = Ac::AudioSystem::Load();
     
+    #if 0
+
     waveBuffer = audioSys->ReadAudioBuffer(
         "in/thorndike.wav"
         //"in/shutter.wav"
     );
+
+    #else
+
+    waveBuffer = std::unique_ptr<Ac::WaveBuffer>(new Ac::WaveBuffer());
+    waveBuffer->SetTotalTime(3.0);
+
+    waveBuffer->ForEachSample(
+        [](double& sample, unsigned short channel, std::size_t index, double timePoint)
+        {
+            auto f = 200.0*timePoint;
+            auto a1 = 0.5;
+            auto a2 = 0.2;
+            auto a3 = 0.08;
+            auto a4 = 0.1;
+            auto a5 = 0.1;
+            auto a6 = 0.15;
+
+            sample = (
+                a1*std::sin(2.0*M_PI*f) +
+                a2*std::sin(2.0*M_PI*f*2.0) +
+                a3*std::sin(2.0*M_PI*f*3.0) +
+                a4*std::sin(2.0*M_PI*f*4.0) +
+                a5*std::sin(2.0*M_PI*f*5.0) +
+                a6*std::sin(2.0*M_PI*f*6.0)
+            );
+        }
+    );
+
+    #endif
     
     renderer = std::unique_ptr<Renderer>(new Renderer());
     
@@ -197,8 +228,11 @@ int main(int argc, char* argv[])
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
+    auto sx = glutGet(GLUT_SCREEN_WIDTH);
+    auto sy = glutGet(GLUT_SCREEN_HEIGHT);
+
     glutInitWindowSize(resolution.x, resolution.y);
-    glutInitWindowPosition(350, 250);
+    glutInitWindowPosition(sx/2 - resolution.x/2, sy/2 - resolution.y/2);
     glutCreateWindow("GeometronLib Test 2 (OpenGL, GLUT)");
 
     glutDisplayFunc(displayCallback);
