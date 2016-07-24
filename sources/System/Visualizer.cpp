@@ -23,6 +23,9 @@ static void GetAmplitudeRange(
     auto indexBegin = buffer.GetIndexFromTimePoint(timeBegin);
     auto indexEnd   = buffer.GetIndexFromTimePoint(timeEnd);
     
+    if (indexBegin > indexEnd)
+        std::swap(indexBegin, indexEnd);
+
     ampMin = std::numeric_limits<double>::max();
     ampMax = std::numeric_limits<double>::lowest();
     
@@ -36,9 +39,9 @@ static void GetAmplitudeRange(
 
 AC_EXPORT void DrawWaveBuffer(
     Renderer& renderer, const WaveBuffer& buffer, unsigned short channel,
-    const Gs::Vector2i& position, const Gs::Vector2i& size, double timeBegin, double timeEnd, bool smoothWave)
+    const Gs::Vector2i& position, const Gs::Vector2i& size, double timeBegin, double timeEnd)
 {
-    if (channel >= buffer.GetFormat().channels)
+    if (channel >= buffer.GetFormat().channels || size.x <= 0 || size.y <= 0)
         return;
     
     // Generate all lines to draw for the horizontal axis
@@ -48,7 +51,7 @@ AC_EXPORT void DrawWaveBuffer(
     double timeStep     = (timeEnd - timeBegin) / static_cast<double>(size.x);
     double halfHeight   = static_cast<double>(size.y)*0.5;
     
-    for (std::size_t x = 0; x < size.x; ++x)
+    for (decltype(size.x) x = 0; x < size.x; ++x)
     {
         auto& a = verts[x*2];
         auto& b = verts[x*2 + 1];
@@ -56,14 +59,6 @@ AC_EXPORT void DrawWaveBuffer(
         /* Get amplitude range for the current time window */
         double ampMin = 0.0, ampMax = 0.0;
         GetAmplitudeRange(buffer, channel, time, time + timeStep, ampMin, ampMax);
-        
-        if (smoothWave)
-        {
-            /* Window function modulation */
-            auto scale = WindowFunctions::BlackmanWindow<double>(x, size.x);
-            ampMin *= scale;
-            ampMax *= scale;
-        }
         
         /* Setup line vertices */
         a.x = b.x = static_cast<int>(x) + position.x;
@@ -84,10 +79,9 @@ AC_EXPORT void DrawWaveBuffer(
 }
 
 AC_EXPORT void DrawWaveBuffer(
-    Renderer& renderer, const WaveBuffer& buffer, unsigned short channel,
-    const Gs::Vector2i& position, const Gs::Vector2i& size, bool smoothWave)
+    Renderer& renderer, const WaveBuffer& buffer, unsigned short channel, const Gs::Vector2i& position, const Gs::Vector2i& size)
 {
-    DrawWaveBuffer(renderer, buffer, channel, position, size, 0.0, buffer.GetTotalTime(), smoothWave);
+    DrawWaveBuffer(renderer, buffer, channel, position, size, 0.0, buffer.GetTotalTime());
 }
 
 

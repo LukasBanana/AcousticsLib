@@ -181,7 +181,6 @@ void WaveBuffer::SetChannels(unsigned short channels)
 
 /* ----- Sample iteration ----- */
 
-//TODO: abstract this function!!!
 void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, std::size_t indexBegin, std::size_t indexEnd)
 {
     /* Validate parameters and clamp range to [0, bufferSize) */
@@ -192,15 +191,15 @@ void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, std::siz
     indexBegin  = std::max(std::size_t(0u), std::min(indexBegin, sampleCount - 1u));
     indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleCount - 1u));
 
-    auto channels   = format_.channels;
-    auto rate       = format_.sampleRate;
+    if (indexBegin > indexEnd)
+        std::swap(indexBegin, indexEnd);
 
     auto timePoint  = GetTimePointFromIndex(indexBegin);
-    auto timeStep   = (1.0 / static_cast<double>(rate));
+    auto timeStep   = (1.0 / static_cast<double>(format_.sampleRate));
 
     for (auto i = indexBegin; i <= indexEnd; ++i)
     {
-        for (unsigned short chn = 0; chn < channels; ++chn)
+        for (unsigned short chn = 0; chn < format_.channels; ++chn)
         {
             /* Read sample, modify sample with generator callback, and write sample back to buffer */
             auto sample = ReadSample(i, chn);
@@ -225,7 +224,6 @@ void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator)
         ForEachSample(iterator, 0, sampleCount - 1);
 }
 
-//TODO: abstract this function!!!
 void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator, std::size_t indexBegin, std::size_t indexEnd) const
 {
     /* Validate parameters and clamp range to [0, bufferSize) */
@@ -235,16 +233,16 @@ void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator, std
     
     indexBegin  = std::max(std::size_t(0u), std::min(indexBegin, sampleCount - 1u));
     indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleCount - 1u));
-    
-    auto channels   = format_.channels;
-    auto rate       = format_.sampleRate;
+
+    if (indexBegin > indexEnd)
+        std::swap(indexBegin, indexEnd);
     
     auto timePoint  = GetTimePointFromIndex(indexBegin);
-    auto timeStep   = (1.0 / static_cast<double>(rate));
+    auto timeStep   = (1.0 / static_cast<double>(format_.sampleRate));
     
     for (auto i = indexBegin; i <= indexEnd; ++i)
     {
-        for (unsigned short chn = 0; chn < channels; ++chn)
+        for (unsigned short chn = 0; chn < format_.channels; ++chn)
         {
             /* Read sample and pass to constant iterator */
             iterator(ReadSample(i, chn), chn, i, timePoint);

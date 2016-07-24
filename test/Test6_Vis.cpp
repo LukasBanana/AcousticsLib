@@ -111,9 +111,8 @@ void drawScene2D()
     Ac::Visualizer::DrawWaveBuffer(
         *renderer, *waveBuffer, 0,
         { 0, 0 }, { resolution.x, resolution.y/2 },
-        sound->GetSeek(),
-        sound->GetSeek() + 0.05,
-        true
+        sound->GetSeek() + 0.1,
+        sound->GetSeek() + 0.05
     );
     
     // draw playback line

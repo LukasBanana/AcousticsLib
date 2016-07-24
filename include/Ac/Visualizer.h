@@ -26,8 +26,7 @@ AC_EXPORT void DrawWaveBuffer(
     const WaveBuffer& buffer,
     unsigned short channel,
     const Gs::Vector2i& position,
-    const Gs::Vector2i& size,
-    bool smoothWave = false
+    const Gs::Vector2i& size
 );
 
 AC_EXPORT void DrawWaveBuffer(
@@ -37,8 +36,7 @@ AC_EXPORT void DrawWaveBuffer(
     const Gs::Vector2i& position,
     const Gs::Vector2i& size,
     double timeBegin,
-    double timeEnd,
-    bool smoothWave = false
+    double timeEnd
 );
     
     
