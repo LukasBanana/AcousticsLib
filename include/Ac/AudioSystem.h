@@ -138,6 +138,22 @@ class AC_EXPORT AudioSystem
             const std::function<bool(Sound&)> waitCallback = nullptr
         );
 
+        /**
+        \brief Performs the audio streaming process. This should be called once per frame in a real-time application.
+        \param[in,out] sound Specifies the sound for which the streaming is to be performed.
+        \param[in,out] waveBuffer Specifies the wave buffer for buffering during the streaming process.
+        If the buffer is empty, an appropriate buffer will be configured for streaming.
+        \remarks If the specified sound does not have a source stream, this function call has no effect.
+        \see Sound::SetSourceStream
+        */
+        void Streaming(Sound& sound, WaveBuffer& waveBuffer);
+
+        /**
+        \brief Performs the audio streaming process with a default wave buffer configuration.
+        \see Streaming(Sound&, WaveBuffer&)
+        */
+        void Streaming(Sound& sound);
+
         /* ----- Listener ----- */
 
         //! Sets the listener world position. By default (0, 0, 0).
@@ -219,11 +235,9 @@ class AC_EXPORT AudioSystem
 
     private:
 
-        bool IsFileAudioStream(const std::string& filename) const;
+        std::string                         name_;
 
-        std::string name_;
-
-        std::list<std::unique_ptr<Sound>> immediateSounds_;
+        std::list<std::unique_ptr<Sound>>   immediateSounds_;
 
 };
 

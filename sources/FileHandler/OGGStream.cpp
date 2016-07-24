@@ -137,13 +137,7 @@ OGGStream::~OGGStream()
 std::size_t OGGStream::StreamWaveBuffer(WaveBuffer& buffer)
 {
     /* Setup buffer format */
-    WaveBufferFormat format;
-
-    format.channels         = static_cast<std::uint16_t>(info_->channels);
-    format.sampleRate       = static_cast<std::uint32_t>(info_->rate);
-    format.bitsPerSample    = 16;
-
-    buffer.SetFormat(format);
+    buffer.SetFormat(GetFormat());
 
     /* Read next data chunk */
     std::size_t bytes = 0;
@@ -165,7 +159,7 @@ std::size_t OGGStream::StreamWaveBuffer(WaveBuffer& buffer)
             &bitStream                  // Current bit stream section
         );
 
-        /* Copy array into output buffer */
+        /* Track streaming state */
         if (result == 0)
             break;
         else if (result > 0)
@@ -196,6 +190,15 @@ double OGGStream::TotalTime() const
 std::vector<std::string> OGGStream::InfoComments() const
 {
     return comments_;
+}
+
+WaveBufferFormat OGGStream::GetFormat() const
+{
+    return WaveBufferFormat(
+        static_cast<unsigned int>(info_->rate),
+        16,
+        static_cast<unsigned short>(info_->channels)
+    );
 }
 
 

@@ -36,6 +36,8 @@ class AC_EXPORT OGGStream : public AudioStream
 
         std::vector<std::string> InfoComments() const override;
 
+        WaveBufferFormat GetFormat() const override;
+
     private:
 
         std::unique_ptr<std::istream>   stream_;

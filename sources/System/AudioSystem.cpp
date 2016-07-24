@@ -12,6 +12,7 @@
 #include "../FileHandler/OGGStream.h"
 #include "../FileHandler/MODStream.h"
 #include "../FileHandler/FileType.h"
+#include "../Core/Streaming.h"
 
 #include <Ac/AudioSystem.h>
 #include <array>
@@ -112,28 +113,51 @@ std::unique_ptr<Sound> AudioSystem::CreateSound(const WaveBuffer& waveBuffer)
     return sound;
 }
 
+static bool IsAudioStream(const AudioFormats format)
+{
+    switch (format)
+    {
+        case AudioFormats::OggVorbis:
+        case AudioFormats::AmigaModule:
+            return true;
+        default:
+            return false;
+    }
+}
+
 std::unique_ptr<Sound> AudioSystem::LoadSound(const std::string& filename, const SoundFlags::BitMask flags)
 {
     auto sound = CreateSound();
 
-    if (IsFileAudioStream(filename))
+    /* Open binary input file stream */
+    auto file = std::unique_ptr<std::ifstream>(new std::ifstream(filename, std::ios_base::binary));
+    if (file->good())
     {
-        auto audioStream = OpenAudioStream(filename);
-        sound->SetStreamSource(std::move(audioStream));
-    }
-    else
-    {
-        auto waveBuffer = ReadAudioBuffer(filename);
-        if (waveBuffer)
-        {
-            if ((flags & SoundFlags::Enable3D) != 0)
-                waveBuffer->SetChannels(1);
-            sound->AttachBuffer(*waveBuffer);
-        }
-        else if ((flags & SoundFlags::AlwaysCreateSound) == 0)
-            return nullptr;
-    }
+        /* Determine audio file format */
+        auto format = Ac::DetermineAudioFormat(*file);
 
+        if (IsAudioStream(format))
+        {
+            /* Load sound as audio stream */
+            auto audioStream = OpenAudioStream(std::move(file));
+            sound->SetStreamSource(std::move(audioStream));
+        }
+        else
+        {
+            /* Load sound as wave buffer */
+            WaveBuffer waveBuffer;
+            ReadAudioBuffer(*file, waveBuffer);
+
+            if ((flags & SoundFlags::Enable3D) != 0)
+                waveBuffer.SetChannels(1);
+
+            sound->AttachBuffer(waveBuffer);
+        }
+    }
+    else if ((flags & SoundFlags::AlwaysCreateSound) == 0)
+        return nullptr;
+
+    /* Appply further flags */
     if ((flags & SoundFlags::Enable3D) != 0)
         sound->Enable3D();
 
@@ -165,6 +189,16 @@ void AudioSystem::Play(const std::string& filename, float volume, std::size_t re
         else
             immediateSounds_.push_back(std::move(sound));
     }
+}
+
+void AudioSystem::Streaming(Sound& sound, WaveBuffer& waveBuffer)
+{
+    Ac::Streaming(sound, waveBuffer);
+}
+
+void AudioSystem::Streaming(Sound& sound)
+{
+    Ac::Streaming(sound);
 }
 
 /* ----- Audio data access ------ */
@@ -273,17 +307,6 @@ std::unique_ptr<Microphone> AudioSystem::QueryMicrophone()
     return std::unique_ptr<Microphone>(new Win32Microphone());
     #endif
     return nullptr; //todo...
-}
-
-
-/*
- * ======= Private: =======
- */
-
-bool AudioSystem::IsFileAudioStream(const std::string& filename) const
-{
-    //TODO -> perform magic number analysis of file!!!
-    return (filename.size() >= 4 ? filename.substr(filename.size() - 4) == ".ogg" : false);
 }
 
 

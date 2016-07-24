@@ -80,7 +80,8 @@ class ALSound : public Sound
         std::shared_ptr<ALBufferObj>        bufferObj_;
         std::unique_ptr<ALBufferObjQueue>   bufferObjQueue_;
 
-        bool                                enabled3D_ = false;
+        bool                                enabled3D_  = false;
+        bool                                looping_    = false;
 
 };
 

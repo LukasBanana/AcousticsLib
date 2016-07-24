@@ -76,13 +76,7 @@ MODStream::~MODStream()
 std::size_t MODStream::StreamWaveBuffer(WaveBuffer& buffer)
 {
     /* Setup buffer format */
-    WaveBufferFormat format;
-
-    format.channels         = 1;
-    format.sampleRate       = 10000;
-    format.bitsPerSample    = 16;
-
-    buffer.SetFormat(format);
+    buffer.SetFormat(GetFormat());
 
     /* Read next data chunk */
     std::size_t bytes = 0;
@@ -106,6 +100,12 @@ double MODStream::TotalTime() const
 std::vector<std::string> MODStream::InfoComments() const
 {
     return {};
+}
+
+WaveBufferFormat MODStream::GetFormat() const
+{
+    //todo...
+    return WaveBufferFormat(10000, 16, 1);
 }
 
 

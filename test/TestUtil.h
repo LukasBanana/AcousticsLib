@@ -29,8 +29,8 @@ static std::string ToStr(T x, unsigned char decimals = 1)
 
 static std::string GetTimeline(double time, double totalTime, std::size_t len = 40)
 {
-    std::size_t lenFront = static_cast<std::size_t>((time/totalTime)*static_cast<float>(len));
-    std::size_t lenBack = len - lenFront;
+    std::size_t lenFront = static_cast<std::size_t>((time / totalTime) * static_cast<float>(len));
+    std::size_t lenBack = (lenFront <= len ? len - lenFront : 0);
     return '[' + std::string(lenFront, '_') + '|' + std::string(lenBack, '_') + ']';
 }
 

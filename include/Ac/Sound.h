@@ -33,6 +33,7 @@ class AC_EXPORT Sound
 
         virtual ~Sound()
         {
+            // dummy
         }
 
         /* ----- Playback ----- */
@@ -100,7 +101,7 @@ class AC_EXPORT Sound
 
         /**
         \brief Returns the number of the processed buffer in the queue.
-        \remarks This should be used for audio streaming. Example usage:
+        \remarks This can be used for manual audio streaming if the "AudioSystem::Streaming" function is not used. Example usage:
         \code
         // Initialize buffer queue with 10 buffers
         for (int i = 0; i < 10 && audioStream->StreamWaveBuffer(waveBuffer) > 0; ++i)
@@ -118,6 +119,7 @@ class AC_EXPORT Sound
             }
         }
         \endcode
+        \see AudioSystem::Streaming
         */
         virtual std::size_t GetProcessedQueueSize() const = 0;
 
@@ -126,13 +128,13 @@ class AC_EXPORT Sound
         \remarks This is used for the audio system, to perform continous streaming automatically.
         If you do the streaming manually, you don't necessarily need this function.
         */
-        virtual void SetStreamSource(const std::shared_ptr<AudioStream>& streamSource)
+        inline void SetStreamSource(const std::shared_ptr<AudioStream>& streamSource)
         {
             streamSource_ = streamSource;
         }
 
         //! Returns the previously connected stream source.
-        virtual const std::shared_ptr<AudioStream>& GetStreamSource() const
+        inline const std::shared_ptr<AudioStream>& GetStreamSource() const
         {
             return streamSource_;
         }

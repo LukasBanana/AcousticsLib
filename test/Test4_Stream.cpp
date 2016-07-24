@@ -8,6 +8,8 @@
 #include "TestUtil.h"
 
 
+//#define TEST_ENABLE_MANUAL_STREAMING
+
 int main()
 {
     try
@@ -16,8 +18,8 @@ int main()
 
         // Open audio stream
         const std::string filename = (
-            //"in/gong.ogg"
-            "in/chiptune_2.mod"
+            "in/gong.ogg"
+            //"in/chiptune_2.mod"
         );
 
         const std::string fileExt = filename.substr(filename.size() - 4);
@@ -40,21 +42,11 @@ int main()
                 Ac::WaveBuffer buffer;
                 buffer.SetTotalTime(0.2);
 
-                std::size_t bytesRead = 0, blocks = 0, bytes = 0;
+                #ifdef TEST_ENABLE_MANUAL_STREAMING
 
-                // Initialize buffer queue with 10 buffers
-                for (int i = 0; i < 10; ++i)
-                {
-                    ++blocks;
-                    bytes = stream->StreamWaveBuffer(buffer);
-                    if (bytes > 0)
-                    {
-                        sound->QueueBuffer(buffer);
-                        bytesRead += bytes;
-                    }
-                    else
-                        break;
-                }
+                std::size_t bytesRead = 0, blocks = 0, bytes = 1;
+
+                #endif
 
                 sound->SetVolume(0.5f);
                 sound->Play();
@@ -62,8 +54,10 @@ int main()
                 // Start continous streaming
                 while (sound->IsPlaying())
                 {
+                    #ifdef TEST_ENABLE_MANUAL_STREAMING
+
                     // Process next buffer
-                    while (sound->GetProcessedQueueSize() > 0 && bytes > 0)
+                    while (sound->GetProcessedQueueSize() > 0)
                     {
                         ++blocks;
                         bytes = stream->StreamWaveBuffer(buffer);
@@ -73,12 +67,29 @@ int main()
                             bytesRead += bytes;
                             sound->QueueBuffer(buffer);
                         }
+                        else
+                            break;
                     }
                     
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    SleepFor();
                     
-                    std::cout << "  " << GetTimeline(*sound, 30) << "  " << blocks << " blocks and " << bytesRead << " bytes read\r";
-                    std::flush(std::cout);
+                    if (sound->IsPlaying())
+                    {
+                        std::cout << "\r  " << GetTimeline(*sound, 30) << "  " << blocks << " blocks and " << bytesRead << " bytes read";
+                        std::flush(std::cout);
+                    }
+
+                    #else
+
+                    // Process audio streaming
+                    audioSystem->Streaming(*sound);
+                    
+                    SleepFor();
+                    
+                    if (sound->IsPlaying())
+                        PrintTimeline(*sound);
+
+                    #endif
                 }
 
                 std::cout << std::endl;

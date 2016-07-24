@@ -51,6 +51,9 @@ class AC_EXPORT AudioStream
         //! Returns an optional list of strings, containing informational commentaries such as "ARTIST=John Doe".
         virtual std::vector<std::string> InfoComments() const = 0;
 
+        //! Returns the native wave buffer format of this audio stream.
+        virtual WaveBufferFormat GetFormat() const = 0;
+
 };
 
 

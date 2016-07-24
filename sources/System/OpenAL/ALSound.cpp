@@ -6,6 +6,7 @@
  */
 
 #include "ALSound.h"
+#include "../../Core/Streaming.h"
 
 #include <cmath>
 #include <algorithm>
@@ -29,6 +30,11 @@ ALSound::~ALSound()
 
 void ALSound::Play()
 {
+    /* Initialize streaming */
+    if (GetStreamSource() && !IsPaused())
+        InitStreaming(*this);
+
+    /* Play sound source */
     alSourcePlay(sourceObj_.Get());
 }
 
@@ -44,12 +50,17 @@ void ALSound::Stop()
 
 void ALSound::SetLooping(bool enable)
 {
-    sourceObj_.SetInt(AL_LOOPING, (enable ? AL_TRUE : AL_FALSE));
+    if (looping_ != enable)
+    {
+        looping_ = enable;
+        if (!GetStreamSource())
+            sourceObj_.SetInt(AL_LOOPING, (looping_ ? AL_TRUE : AL_FALSE));
+    }
 }
 
 bool ALSound::GetLooping() const
 {
-    return (sourceObj_.GetInt(AL_LOOPING)) != AL_FALSE;
+    return looping_;
 }
 
 void ALSound::SetVolume(float volume)
@@ -108,6 +119,16 @@ double ALSound::TotalTime() const
 
 void ALSound::AttachBuffer(const WaveBuffer& waveBuffer)
 {
+    /* Reset possible buffer queue object */
+    if (bufferObjQueue_)
+    {
+        bufferObjQueue_.reset();
+
+        /* Reset OpenAL looping state (only a single buffer can make use of this state) */
+        if (looping_)
+            sourceObj_.SetInt(AL_LOOPING, AL_TRUE);
+    }
+
     /* Stop palyback and detach previous buffer object */
     Stop();
     sourceObj_.DetachBuffer();
@@ -129,6 +150,10 @@ void ALSound::QueueBuffer(const WaveBuffer& waveBuffer)
     {
         sourceObj_.DetachBuffer();
         bufferObj_.reset();
+
+        /* Remove OpenAL looping state (only a single buffer can make use of this state) */
+        if (looping_)
+            sourceObj_.SetInt(AL_LOOPING, AL_FALSE);
     }
 
     /* Initialize buffer object queue (if not done yet) */
