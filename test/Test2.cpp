@@ -146,11 +146,11 @@ int main()
         {
             sound->SetVolume(0.25f);
             sound->Play();
-        
+
             while (sound->IsPlaying())
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
                 PrintTimeline(*sound);
+                SleepFor();
             }
             
             std::cout << std::endl;

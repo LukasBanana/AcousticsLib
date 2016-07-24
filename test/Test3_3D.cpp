@@ -33,11 +33,9 @@ int main()
             sound->SetPosition(pos);
             sound->SetVelocity(deltaPos);
             
-            // Wait a moment
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            
             // Print playing status
             PrintTimeline(*sound);
+            SleepFor();
         }
         
         std::cout << std::endl;

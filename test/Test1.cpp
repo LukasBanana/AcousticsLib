@@ -39,8 +39,8 @@ int main()
 
                     while (sound->IsPlaying() && repetions < 3)
                     {
-                        SleepFor();
                         PrintTimeline(*sound);
+                        SleepFor();
 
                         if (sound->GetSeek() > sound->TotalTime()/2)
                         {
