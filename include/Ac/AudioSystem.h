@@ -128,7 +128,7 @@ class AC_EXPORT AudioSystem
         \brief Plays directly the specified sound file.
         \param[in] filename Specifies the sound file to play.
         \param[in] volume Specifies the volume. By default 1.
-        \param[in] repetitions Specifies the repetitions. By default 0.
+        \param[in] pitch Specifies the pitch (or frequency multiplier). By default 1.
         */
         void Play(const std::string& filename, float volume = 1.0f, float pitch = 1.0f);
 
