@@ -9,6 +9,13 @@ Overview
 * **Documentation**: [AcousticsLib Docu.pdf](https://github.com/LukasBanana/AcousticsLib/blob/master/docu/AcousticsLib%20Docu.pdf)
 
 
+Dependencies
+------------
+
+Using this library requires the [GaussianLib](https://github.com/LukasBanana/GaussianLib)
+Building this library requires the [OpenAL SDK](http://openal.org/), and optionally the [Ogg-Vorbis](http://www.vorbis.com/) libraries
+
+
 Platform Support
 ----------------
 
