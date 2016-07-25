@@ -122,7 +122,7 @@ class AC_EXPORT WaveBuffer
 
         /**
         \brief Determines the sample index for the specified time point (in seconds).
-        \see ReadSample(std::size_t, unsigned short)
+        \see ReadSample(std::size_t, unsigned short) const
         \see WriteSample(std::size_t, unsigned short, double)
         \see GetTimePointFromIndex
         */

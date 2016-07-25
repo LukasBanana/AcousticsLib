@@ -24,9 +24,9 @@
 Gs::Vector2i resolution(640, 480);
 
 std::shared_ptr<Ac::AudioSystem>    audioSys;
-std::unique_ptr<Ac::WaveBuffer>     waveBuffer;
 std::unique_ptr<Ac::Renderer>       renderer;
 std::unique_ptr<Ac::Sound>          sound;
+Ac::WaveBuffer                      waveBuffer;
 
 
 // ----- CLASSES -----
@@ -84,7 +84,7 @@ void initAudio()
     
     #if 1
 
-    waveBuffer = audioSys->ReadAudioBuffer(
+    waveBuffer = audioSys->ReadWaveBuffer(
         //"in/thorndike.wav"
         //"in/shutter.wav"
         "in/Blow.aiff"
@@ -93,10 +93,9 @@ void initAudio()
 
     #else
 
-    waveBuffer = std::unique_ptr<Ac::WaveBuffer>(new Ac::WaveBuffer());
-    waveBuffer->SetTotalTime(3.0);
+    waveBuffer.SetTotalTime(3.0);
 
-    waveBuffer->ForEachSample(
+    waveBuffer.ForEachSample(
         [](double& sample, unsigned short channel, std::size_t index, double timePoint)
         {
             auto f = 200.0*timePoint;
@@ -122,7 +121,7 @@ void initAudio()
     
     renderer = std::unique_ptr<Renderer>(new Renderer());
     
-    sound = audioSys->CreateSound(*waveBuffer);
+    sound = audioSys->CreateSound(waveBuffer);
     
     if (sound)
     {
@@ -147,7 +146,7 @@ void drawScene2D()
 
     glColor4f(0.3f, 0.5f, 1.0f, 1.0f);
     Ac::Visualizer::DrawWaveBuffer(
-        *renderer, *waveBuffer, 0,
+        *renderer, waveBuffer, 0,
         { 0, 0 }, { resolution.x, resolution.y/2 }
         #if 1
         , seek, seek + 0.05

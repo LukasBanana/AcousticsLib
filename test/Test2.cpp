@@ -12,7 +12,7 @@
 #define TEST_MODE_NOISE     2
 #define TEST_MODE_LOAD      3
 
-#define TEST_MODE           TEST_MODE_SYNTH
+#define TEST_MODE           TEST_MODE_LOAD
 
 #define TEST_WRITE_OUTPUT   1
 
@@ -106,8 +106,8 @@ int main()
         std::cout << "read sound file: \"" << inputFilename << '\"' << std::endl;
         
         std::ifstream inputFile(inputFilename, std::ios_base::binary);
-        audioSystem->ReadAudioBuffer(Ac::AudioFormats::WAV, inputFile, buffer);
-        
+        buffer = audioSystem->ReadWaveBuffer(inputFile);
+
         outputBuffer = buffer;
 
         /*outputBuffer.ForEachSample(

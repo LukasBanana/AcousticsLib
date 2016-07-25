@@ -145,8 +145,7 @@ std::unique_ptr<Sound> AudioSystem::LoadSound(const std::string& filename, const
         else
         {
             /* Load sound as wave buffer */
-            WaveBuffer waveBuffer;
-            ReadAudioBuffer(*file, waveBuffer);
+            auto waveBuffer = ReadWaveBuffer(*file);
 
             if ((flags & SoundFlags::Enable3D) != 0)
                 waveBuffer.SetChannels(1);
@@ -208,20 +207,11 @@ AudioFormats AudioSystem::DetermineAudioFormat(std::istream& stream)
     return Ac::DetermineAudioFormat(stream);
 }
 
-std::unique_ptr<WaveBuffer> AudioSystem::ReadAudioBuffer(const std::string& filename)
+WaveBuffer AudioSystem::ReadWaveBuffer(const std::string& filename)
 {
     /* Open file stream in binary mode */
     std::ifstream file(filename, std::ios_base::binary);
-
-    if (file.good())
-    {
-        /* Read audio buffer from stream */
-        auto waveBuffer = std::unique_ptr<WaveBuffer>(new WaveBuffer());
-        ReadAudioBuffer(file, *waveBuffer);
-        return waveBuffer;
-    }
-
-    return nullptr;
+    return (file.good() ? ReadWaveBuffer(file) : WaveBuffer());
 }
 
 static std::unique_ptr<AudioReader> QueryReader(const AudioFormats format)
@@ -246,11 +236,15 @@ static std::unique_ptr<AudioReader> QueryReader(const AudioFormats format)
     return nullptr;
 }
 
-void AudioSystem::ReadAudioBuffer(std::istream& stream, WaveBuffer& waveBuffer)
+WaveBuffer AudioSystem::ReadWaveBuffer(std::istream& stream)
 {
+    WaveBuffer waveBuffer;
+    
     auto reader = QueryReader(Ac::DetermineAudioFormat(stream));
     if (reader)
         reader->ReadWaveBuffer(stream, waveBuffer);
+
+    return waveBuffer;
 }
 
 std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(const std::string& filename)
