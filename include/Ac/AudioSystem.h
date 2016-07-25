@@ -21,6 +21,8 @@
 #include <vector>
 #include <list>
 #include <functional>
+#include <thread>
+#include <mutex>
 
 
 namespace Ac
@@ -123,20 +125,12 @@ class AC_EXPORT AudioSystem
         std::unique_ptr<Sound> LoadSound(const std::string& filename, const SoundFlags::BitMask flags = 0);
 
         /**
-        \brief Play specified sound file.
+        \brief Plays directly the specified sound file.
         \param[in] filename Specifies the sound file to play.
         \param[in] volume Specifies the volume. By default 1.
         \param[in] repetitions Specifies the repetitions. By default 0.
-        \param[in] waitCallback Specifies whether to wait until the sound has been played to the end.
-        The callback can be used to cancel the waiting process. By default null.
-        \remarks This is a 'very high level' function and is commonly used for tests only, to reduce the code to a minimum.
         */
-        void Play(
-            const std::string& filename,
-            float volume = 1.0f,
-            std::size_t repetitions = 0,
-            const std::function<bool(Sound&)> waitCallback = nullptr
-        );
+        void Play(const std::string& filename, float volume = 1.0f, float pitch = 1.0f);
 
         /**
         \brief Performs the audio streaming process. This should be called once per frame in a real-time application.
@@ -234,9 +228,21 @@ class AC_EXPORT AudioSystem
 
     private:
 
+        struct ImmediateSoundDesc
+        {
+            std::string filename;
+            float       volume;
+            float       pitch;
+        };
+
+        void SoundMngrThreadProc();
+
         std::string                         name_;
 
-        std::list<std::unique_ptr<Sound>>   immediateSounds_;
+        std::mutex                          soundMngrMutex_;
+        std::thread                         soundMngrThread_;
+
+        std::vector<ImmediateSoundDesc>     immediateSoundsQueue_;
 
 };
 

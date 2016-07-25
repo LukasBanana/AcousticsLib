@@ -6,6 +6,7 @@
  */
 
 #include "ALSourceObj.h"
+#include "ALFormat.h"
 
 
 namespace Ac
@@ -15,8 +16,10 @@ namespace Ac
 ALSourceObj::ALSourceObj()
 {
     alGenSources(1, &handle_);
-    if (alGetError() != AL_NO_ERROR)
-        throw std::runtime_error("failed to generate OpenAL source object");
+
+    auto err = alGetError();
+    if (err != AL_NO_ERROR)
+        throw std::runtime_error("failed to generate OpenAL source object (" + ALErrorToString(err) + ")");
 }
 
 ALSourceObj::~ALSourceObj()

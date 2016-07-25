@@ -20,7 +20,8 @@ ALBufferObjQueue::ALBufferObjQueue(ALuint sourceHandle) :
 
 ALBufferObjQueue::~ALBufferObjQueue()
 {
-    alDeleteBuffers(static_cast<ALsizei>(handles_.size()), handles_.data());
+    if (!handles_.empty())
+        alDeleteBuffers(static_cast<ALsizei>(handles_.size()), handles_.data());
 }
 
 void ALBufferObjQueue::Reset()
@@ -84,8 +85,10 @@ ALuint ALBufferObjQueue::AllocBuffer()
     ALuint handle = 0;
 
     alGenBuffers(1, &handle);
-    if (alGetError() != AL_NO_ERROR)
-        throw std::runtime_error("failed to generate OpenAL buffer object queue");
+
+    auto err = alGetError();
+    if (err != AL_NO_ERROR)
+        throw std::runtime_error("failed to generate OpenAL buffer object queue (" + ALErrorToString(err) + ")");
 
     handles_.push_back(handle);
     return handle;

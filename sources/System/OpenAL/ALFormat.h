@@ -12,6 +12,7 @@
 #include "OpenAL.h"
 
 #include <Ac/WaveBuffer.h>
+#include <string>
 
 
 namespace Ac
@@ -21,6 +22,8 @@ namespace Ac
 bool ALFormatFromWaveFormat(ALenum& outFormat, const WaveBufferFormat& inFormat);
 
 void WaveFormatFromALFormat(ALenum format, unsigned short& channels, unsigned short& bitsPerSample);
+
+std::string ALErrorToString(ALenum error);
 
 
 } // /namespace Ac

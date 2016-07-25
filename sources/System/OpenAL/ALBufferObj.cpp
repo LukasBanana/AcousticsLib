@@ -16,8 +16,10 @@ namespace Ac
 ALBufferObj::ALBufferObj()
 {
     alGenBuffers(1, &handle_);
-    if (alGetError() != AL_NO_ERROR)
-        throw std::runtime_error("failed to generate OpenAL buffer object");
+
+    auto err = alGetError();
+    if (err != AL_NO_ERROR)
+        throw std::runtime_error("failed to generate OpenAL buffer object (" + ALErrorToString(err) + ")");
 }
 
 ALBufferObj::ALBufferObj(const WaveBuffer& waveBuffer) :

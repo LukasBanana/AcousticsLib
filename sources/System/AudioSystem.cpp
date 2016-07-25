@@ -18,8 +18,10 @@
 #include <array>
 #include <fstream>
 #include <cstdint>
+#include <functional>
 
 //!!!TESTING!!!
+#include <iostream>
 #ifdef _WIN32
 #include "../Platform/Win32/Win32Microphone.h"
 #endif
@@ -36,6 +38,9 @@ static std::unique_ptr<Module>      g_audioSystemModule;
 
 AudioSystem::~AudioSystem()
 {
+    /* Detach immediate sound thread */
+    if (soundMngrThread_.joinable())
+        soundMngrThread_.detach();
 }
 
 std::vector<std::string> AudioSystem::FindModules()
@@ -163,31 +168,15 @@ std::unique_ptr<Sound> AudioSystem::LoadSound(const std::string& filename, const
     return sound;
 }
 
-void AudioSystem::Play(const std::string& filename, float volume, std::size_t repetitions, const std::function<bool(Sound&)> waitCallback)
+void AudioSystem::Play(const std::string& filename, float volume, float pitch)
 {
-    /* Load and play sounds */
-    auto sound = LoadSound(filename);
-    
-    if (sound)
-    {
-        sound->SetVolume(volume);
-        sound->Play();
-    
-        /* Wait or add sound to immediate sound list */
-        if (waitCallback)
-        {
-            while (sound->IsPlaying())
-            {
-                if (!waitCallback(*sound))
-                {
-                    immediateSounds_.push_back(std::move(sound));
-                    break;
-                }
-            }
-        }
-        else
-            immediateSounds_.push_back(std::move(sound));
-    }
+    /* Add descriptor to immediate sound queue */
+    std::lock_guard<std::mutex> lock(soundMngrMutex_);
+    immediateSoundsQueue_.push_back({ filename, volume, pitch });
+
+    /* Ensure thread is running */
+    if (!soundMngrThread_.joinable())
+        soundMngrThread_ = std::thread(std::bind(&AudioSystem::SoundMngrThreadProc, this));
 }
 
 void AudioSystem::Streaming(Sound& sound, WaveBuffer& waveBuffer)
@@ -306,6 +295,64 @@ std::unique_ptr<Microphone> AudioSystem::QueryMicrophone()
     return std::unique_ptr<Microphone>(new Win32Microphone());
     #endif
     return nullptr; //todo...
+}
+
+
+/*
+ * ======= Private: =======
+ */
+
+void AudioSystem::SoundMngrThreadProc()
+{
+    WaveBuffer streamingBuffer;
+
+    std::list<std::unique_ptr<Sound>> sounds;
+
+    while (true)
+    {
+        /* Remove unused immediate sounds from the list */
+        for (auto it = sounds.begin(); it != sounds.end();)
+        {
+            auto& snd = **it;
+            if (snd.IsPlaying())
+            {
+                /* Process streaming (if the sound has an audio stream) */
+                Ac::Streaming(snd, streamingBuffer);
+                ++it;
+            }
+            else
+                it = sounds.erase(it);
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(soundMngrMutex_);
+
+            /* Check if new sounds must be loaded */
+            for (const auto& desc : immediateSoundsQueue_)
+            {
+                auto sound = LoadSound(desc.filename);
+
+                sound->SetVolume(desc.volume);
+                sound->SetPitch(desc.pitch);
+                sound->Play();
+
+                sounds.push_back(std::move(sound));
+            }
+
+            immediateSoundsQueue_.clear();
+
+            /* Check if thread can be terminated */
+            if (sounds.empty())
+            {
+                if (soundMngrThread_.joinable())
+                    soundMngrThread_.detach();
+                return;
+            }
+        }
+
+        /* Wait a moment to give other processes time to run */
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
 }
 
 

@@ -19,6 +19,17 @@ int main()
 
             std::cout << "Audio System: " << audioSystem->GetName() << "; Version: " << audioSystem->GetVersion() << std::endl;
 
+            #if 1
+
+            audioSystem->Play("in/Blow.aiff");
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            audioSystem->Play("in/lighter.wav");
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            audioSystem->Play("in/Gong.ogg");
+            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+
+            #endif
+
             // Play sound
             auto soundFile = (
                 //"in/lighter.wav"

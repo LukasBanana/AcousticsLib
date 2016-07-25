@@ -76,9 +76,11 @@ class ALSound : public Sound
 
     private:
 
-        ALSourceObj                         sourceObj_;
         std::shared_ptr<ALBufferObj>        bufferObj_;
         std::unique_ptr<ALBufferObjQueue>   bufferObjQueue_;
+
+        // Desctructor of source object must be called before destructor of buffer object!
+        ALSourceObj                         sourceObj_;
 
         bool                                enabled3D_  = false;
         bool                                looping_    = false;
