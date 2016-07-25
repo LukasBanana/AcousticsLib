@@ -13,6 +13,7 @@ Dependencies
 ------------
 
 Using this library requires the [GaussianLib](https://github.com/LukasBanana/GaussianLib)
+
 Building this library requires the [OpenAL SDK](http://openal.org/), and optionally the [Ogg-Vorbis](http://www.vorbis.com/) libraries
 
 
