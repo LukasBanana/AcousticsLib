@@ -1,12 +1,15 @@
-AcousticsLib - Simple Cross Platform Audio Library
-==================================================
+AcousticsLib
+============
+
+This project provides a simple and cross-platform audio library for modern C++11.
+
 
 Overview
--------
+--------
 
-* **Version**: 1.00 Alpha
-* **License**: [3-Clause BSD License](https://github.com/LukasBanana/AcousticsLib/blob/master/LICENSE.txt)
-* **Documentation**: [AcousticsLib Docu.pdf](https://github.com/LukasBanana/AcousticsLib/blob/master/docu/AcousticsLib%20Docu.pdf)
+- **Version**: 1.00 Alpha
+- **License**: [3-Clause BSD License](https://github.com/LukasBanana/AcousticsLib/blob/master/LICENSE.txt)
+- **Documentation**: [AcousticsLib Docu.pdf](https://github.com/LukasBanana/AcousticsLib/blob/master/docu/AcousticsLib%20Docu.pdf)
 
 
 Dependencies
@@ -17,28 +20,26 @@ Using this library requires the [GaussianLib](https://github.com/LukasBanana/Gau
 Building this library requires the [OpenAL SDK](http://openal.org/), and optionally the [Ogg-Vorbis](http://www.vorbis.com/) libraries
 
 
-Platform Support
-----------------
+Supported Platforms
+-------------------
 
-* **Windows Vista/ 7/ 8/ 10**
-* **Mac OS X**
-* **Linux**
+- **Windows Vista/ 7/ 8/ 10**
+- **Mac OS X**
+- **Linux**
 
 
-File Format Support
-----------------
+Supported File Formats
+----------------------
 
-* **WAV** *(Waveform Audio File Format)* Read/Write
-* **AIFF** *(Audio Interchange File Format)* Read
-* **OGG** *(Ogg-Vorbis)* Read
-* more coming ...
+- **WAV** *(Waveform Audio File Format)* Read/Write
+- **AIFF** *(Audio Interchange File Format)* Read
+- **OGG** *(Ogg-Vorbis)* Read
 
 
 Audio Engines
 -------------
 
-* **OpenAL** *(in progress)*
-* more coming ...
+- **OpenAL** *(in progress)*
 
 
 Getting Started
