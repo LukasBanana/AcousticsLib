@@ -6,7 +6,7 @@ Overview
 
 * **Version**: 1.00 Alpha
 * **License**: [3-Clause BSD License](https://github.com/LukasBanana/AcousticsLib/blob/master/LICENSE.txt)
-* **Documentation**: [AcousticsLib 1.00 Alpha Docu.pdf](https://github.com/LukasBanana/AcousticsLib/blob/master/docu/AcousticsLib%201.00%20Alpha%20Docu.pdf)
+* **Documentation**: [AcousticsLib Docu.pdf](https://github.com/LukasBanana/AcousticsLib/blob/master/docu/AcousticsLib%20Docu.pdf)
 
 
 Platform Support
