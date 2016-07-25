@@ -113,7 +113,7 @@ target_compile_features(AcLib PRIVATE cxx_range_for)
 if(WIN32)
 	target_link_libraries(AcLib Winmm)
 elseif(UNIX)
-	target_link_libraries(AcLib dl)
+	target_link_libraries(AcLib dl pthread)
 endif()
 
 # Library: OggVorbis
