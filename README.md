@@ -1,16 +1,12 @@
 AcousticsLib - Simple Cross Platform Audio Library
 ==================================================
 
-License
+Overview
 -------
 
-[3-Clause BSD License](https://github.com/LukasBanana/AcousticsLib/blob/master/LICENSE.txt)
-
-
-Status
-------
-
-**Alpha**
+* Version: **1.00 Alpha**
+* License: [3-Clause BSD License](https://github.com/LukasBanana/AcousticsLib/blob/master/LICENSE.txt)
+* Documentation: [AcousticsLib 1.00 Alpha Docu.pdf](https://github.com/LukasBanana/AcousticsLib/blob/master/docu/AcousticsLib%201.00%20Alpha%20Docu.pdf)
 
 
 Platform Support
