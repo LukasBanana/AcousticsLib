@@ -110,7 +110,7 @@ static void WAVReadChunks(std::istream& stream, std::streamoff streamSize, WaveB
 
     /* Read PCM data */
     waveBuffer.SetFormat(GetBufferFormat(format));
-    waveBuffer.SetSampleCount(chunkDATA.size / waveBuffer.GetFormat().BlockAlign());
+    waveBuffer.SetSampleFrames(chunkDATA.size / waveBuffer.GetFormat().BytesPerFrame());
     stream.read(waveBuffer.Data(), chunkDATA.size);
 }
 

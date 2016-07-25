@@ -52,10 +52,10 @@ struct AC_EXPORT WaveBufferFormat
 
     WaveBufferFormat(unsigned int sampleRate, unsigned short bitsPerSample, unsigned short channels);
 
-    //! Returns the sample block alignment: (channels * bitsPerSample) / 8.
-    std::size_t BlockAlign() const;
+    //! Returns the size (in bytes) for each sample frame (or rather sample block alignment) which is computed as follows: (channels * bitsPerSample) / 8.
+    std::size_t BytesPerFrame() const;
 
-    //! Returns the number of bytes this buffer format requires for each second: sampleRate * BlockAlign().
+    //! Returns the number of bytes this buffer format requires for each second: sampleRate * BytesPerFrame().
     std::size_t BytesPerSecond() const;
 
     //! Returns the total time (in seconds) a PCM buffer with the specified size (in bytes) requires to play with this wave buffer format.

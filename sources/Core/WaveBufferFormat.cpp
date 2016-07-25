@@ -19,14 +19,14 @@ WaveBufferFormat::WaveBufferFormat(unsigned int sampleRate, unsigned short bitsP
 {
 }
 
-std::size_t WaveBufferFormat::BlockAlign() const
+std::size_t WaveBufferFormat::BytesPerFrame() const
 {
     return (channels * bitsPerSample) / 8;
 }
 
 std::size_t WaveBufferFormat::BytesPerSecond() const
 {
-    return (sampleRate * BlockAlign());
+    return (sampleRate * BytesPerFrame());
 }
 
 double WaveBufferFormat::TotalTime(std::size_t bufferSize) const

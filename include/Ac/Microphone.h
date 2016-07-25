@@ -77,15 +77,14 @@ class AC_EXPORT Microphone
         \brief Starts the recording process.
         \param[in] waveFormat Specifies the wave buffer format which is to be used for
         the receiver buffer, which can be acquired with the "ReceivedInput" function.
-        \param[in] sampleCount Specifies how many samples shall be received at once
-        (independently of the number of channels). The larger this value, the larger the latency.
+        \param[in] sampleFrames Specifies how many sample frames shall be received at once. The larger this value, the larger the latency.
         \param[in] deviceIndex Specifies the input device index (beginning with 0). By default the standard device is used.
         \remarks Before a new recording process can be started, the previous one must be stopped.
         To select an appropriate device index, use the "QueryDevices" function, to query all available input devices.
         \see Stop
         \see IsRecording
         */
-        virtual void Start(const WaveBufferFormat& waveFormat, std::size_t sampleCount, std::size_t deviceIndex = standardDeviceIndex) = 0;
+        virtual void Start(const WaveBufferFormat& waveFormat, std::size_t sampleFrames, std::size_t deviceIndex = standardDeviceIndex) = 0;
 
         /**
         \brief Starts the recording process.

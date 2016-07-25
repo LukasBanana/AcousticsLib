@@ -96,7 +96,7 @@ AC_EXPORT void ReverseWaveBuffer(WaveBuffer& buffer)
     buffer.ForEachSample(
         [&bufferCopy](double& sample, unsigned short channel, std::size_t index, double timePoint)
         {
-            sample = bufferCopy.ReadSample(bufferCopy.GetSampleCount() - index - 1u, channel);
+            sample = bufferCopy.ReadSample(bufferCopy.GetSampleFrames() - index - 1u, channel);
         }
     );
 }

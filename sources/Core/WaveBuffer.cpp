@@ -34,17 +34,16 @@ WaveBuffer& WaveBuffer::operator = (WaveBuffer&& other)
     return *this;
 }
 
-
-std::size_t WaveBuffer::GetSampleCount() const
+std::size_t WaveBuffer::GetSampleFrames() const
 {
-    auto blockAlign = format_.BlockAlign();
+    auto blockAlign = format_.BytesPerFrame();
     return (blockAlign > 0 ? BufferSize() / blockAlign : 0);
 }
 
-void WaveBuffer::SetSampleCount(std::size_t sampleCount)
+void WaveBuffer::SetSampleFrames(std::size_t sampleFrames)
 {
     /* Resize buffer and initialize with 0 for signed formats and with 127 for 8-bit unsigned format */
-    auto bufferSize = sampleCount * format_.BlockAlign();
+    auto bufferSize = sampleFrames * format_.BytesPerFrame();
     if (format_.IsSigned())
         buffer_.resize(bufferSize, 0);
     else
@@ -59,7 +58,7 @@ double WaveBuffer::GetTotalTime() const
 void WaveBuffer::SetTotalTime(double duration)
 {
     auto bufferSize = duration * format_.sampleRate;
-    SetSampleCount(static_cast<std::size_t>(bufferSize));
+    SetSampleFrames(static_cast<std::size_t>(bufferSize));
 }
 
 double WaveBuffer::ReadSample(std::size_t index, unsigned short channel) const
@@ -117,22 +116,22 @@ void WaveBuffer::WriteSample(double timePoint, unsigned short channel, double sa
 std::size_t WaveBuffer::GetIndexFromTimePoint(double timePoint) const
 {
     /* Clamp time point to range [0, GetTotalTime()) */
-    auto sampleCount = GetSampleCount();
-    if (sampleCount > 0)
+    auto sampleFrames = GetSampleFrames();
+    if (sampleFrames > 0)
     {
         timePoint   = std::max(0.0, std::min(timePoint, GetTotalTime()));
         auto index  = (static_cast<std::size_t>(timePoint * static_cast<double>(format_.sampleRate)));
-        return std::min(index, sampleCount - 1);
+        return std::min(index, sampleFrames - 1);
     }
     return 0;
 }
 
 double WaveBuffer::GetTimePointFromIndex(std::size_t index) const
 {
-    auto sampleCount = GetSampleCount();
-    if (sampleCount > 0)
+    auto sampleFrames = GetSampleFrames();
+    if (sampleFrames > 0)
     {
-        index = std::min(index, sampleCount - 1);
+        index = std::min(index, sampleFrames - 1);
         return (static_cast<double>(index) / static_cast<double>(format_.sampleRate));
     }
     return 0.0;
@@ -147,7 +146,7 @@ void WaveBuffer::SetFormat(const WaveBufferFormat& format)
             /* Configure temporary buffer with new format */
             WaveBuffer tempBuffer(format);
             if (format_.sampleRate == format.sampleRate)
-                tempBuffer.SetSampleCount(GetSampleCount());
+                tempBuffer.SetSampleFrames(GetSampleFrames());
             else
                 tempBuffer.SetTotalTime(GetTotalTime());
 
@@ -202,12 +201,12 @@ void WaveBuffer::SwapEndianness()
 void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, std::size_t indexBegin, std::size_t indexEnd)
 {
     /* Validate parameters and clamp range to [0, bufferSize) */
-    auto sampleCount = GetSampleCount();
-    if (sampleCount == 0 || !iterator)
+    auto sampleFrames = GetSampleFrames();
+    if (sampleFrames == 0 || !iterator)
         return;
 
-    indexBegin  = std::max(std::size_t(0u), std::min(indexBegin, sampleCount - 1u));
-    indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleCount - 1u));
+    indexBegin  = std::max(std::size_t(0u), std::min(indexBegin, sampleFrames - 1u));
+    indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleFrames - 1u));
 
     if (indexBegin > indexEnd)
         std::swap(indexBegin, indexEnd);
@@ -237,20 +236,20 @@ void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, double t
 
 void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator)
 {
-    auto sampleCount = GetSampleCount();
-    if (sampleCount > 0)
-        ForEachSample(iterator, 0, sampleCount - 1);
+    auto sampleFrames = GetSampleFrames();
+    if (sampleFrames > 0)
+        ForEachSample(iterator, 0, sampleFrames - 1);
 }
 
 void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator, std::size_t indexBegin, std::size_t indexEnd) const
 {
     /* Validate parameters and clamp range to [0, bufferSize) */
-    auto sampleCount = GetSampleCount();
-    if (sampleCount == 0 || !iterator)
+    auto sampleFrames = GetSampleFrames();
+    if (sampleFrames == 0 || !iterator)
         return;
     
-    indexBegin  = std::max(std::size_t(0u), std::min(indexBegin, sampleCount - 1u));
-    indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleCount - 1u));
+    indexBegin  = std::max(std::size_t(0u), std::min(indexBegin, sampleFrames - 1u));
+    indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleFrames - 1u));
 
     if (indexBegin > indexEnd)
         std::swap(indexBegin, indexEnd);
@@ -278,9 +277,9 @@ void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator, dou
 
 void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator) const
 {
-    auto sampleCount = GetSampleCount();
-    if (sampleCount > 0)
-        ForEachSample(iterator, 0, sampleCount - 1);
+    auto sampleFrames = GetSampleFrames();
+    if (sampleFrames > 0)
+        ForEachSample(iterator, 0, sampleFrames - 1);
 }
 
 void WaveBuffer::Append(const WaveBuffer& other)
@@ -314,7 +313,7 @@ std::size_t WaveBuffer::GetPCMBufferOffset(std::size_t index, unsigned short cha
 {
     /* Scale index by sample block alignment and append channel offset */
     auto channelOffset = (channel < format_.channels ? channel * format_.bitsPerSample / 8 : 0);
-    return (index * format_.BlockAlign() + channelOffset);
+    return (index * format_.BytesPerFrame() + channelOffset);
 }
 
 void* WaveBuffer::GetPCMOffsetPtr(std::size_t offset)

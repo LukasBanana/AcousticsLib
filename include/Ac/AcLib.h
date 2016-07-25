@@ -85,8 +85,10 @@ int main()
         // Load specific audio system. To find all available system, use "Ac::AudioSystem::FindModules()"
         auto audioSystem = Ac::AudioSystem::Load("OpenAL");
 
-        // Read wave buffer from file. The return type is "std::unique_ptr<Ac::WaveBuffer>".
+        // Read wave buffer from file. The return type is "Ac::WaveBuffer".
         auto waveBuffer = audioSystem->ReadWaveBuffer("MySound.wav");
+
+        // Modify the wave buffer 
 
         
     }

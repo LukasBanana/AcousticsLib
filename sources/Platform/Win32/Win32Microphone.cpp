@@ -85,7 +85,7 @@ std::unique_ptr<WaveBuffer> Win32Microphone::ReceivedInput()
     return nullptr;
 }
 
-void Win32Microphone::Start(const WaveBufferFormat& waveFormat, std::size_t sampleCount, std::size_t deviceIndex)
+void Win32Microphone::Start(const WaveBufferFormat& waveFormat, std::size_t sampleFrames, std::size_t deviceIndex)
 {
     if (!recording_)
     {
@@ -93,7 +93,7 @@ void Win32Microphone::Start(const WaveBufferFormat& waveFormat, std::size_t samp
         recvBufferFormat_ = waveFormat;
 
         /* Start recording process */
-        OpenWaveInput(sampleCount, GetDeviceID(deviceIndex));
+        OpenWaveInput(sampleFrames, GetDeviceID(deviceIndex));
 
         waveInAddBuffer(waveIn_, &waveHdr_, sizeof(WAVEHDR));
         waveInStart(waveIn_);
@@ -137,7 +137,7 @@ void Win32Microphone::OnSync(DWORD bytesRecorded)
         recvBuffer_ = std::unique_ptr<WaveBuffer>(new WaveBuffer(recvBufferFormat_));
 
     /* Copy input buffer to receiver buffer */
-    recvBuffer_->SetSampleCount(buffer_.size() / recvBufferFormat_.BlockAlign());
+    recvBuffer_->SetSampleFrames(buffer_.size() / recvBufferFormat_.BytesPerFrame());
     std::copy(buffer_.begin(), buffer_.end(), recvBuffer_->Data());
 }
 
@@ -157,10 +157,10 @@ UINT Win32Microphone::GetDeviceID(std::size_t deviceIndex) const
     return WAVE_MAPPER;
 }
 
-void Win32Microphone::OpenWaveInput(std::size_t sampleCount, UINT deviceID)
+void Win32Microphone::OpenWaveInput(std::size_t sampleFrames, UINT deviceID)
 {
     /* Resize output buffer first (to avoid race condition with thread of the recording callback) */
-    buffer_.resize(sampleCount * recvBufferFormat_.BlockAlign());
+    buffer_.resize(sampleFrames * recvBufferFormat_.BytesPerFrame());
 
     /* Open wave input device */
     WAVEFORMATEX waveFormat;
@@ -169,7 +169,7 @@ void Win32Microphone::OpenWaveInput(std::size_t sampleCount, UINT deviceID)
     waveFormat.nChannels       = recvBufferFormat_.channels;
     waveFormat.nSamplesPerSec  = recvBufferFormat_.sampleRate;
     waveFormat.nAvgBytesPerSec = recvBufferFormat_.BytesPerSecond();
-    waveFormat.nBlockAlign     = static_cast<WORD>(recvBufferFormat_.BlockAlign());
+    waveFormat.nBlockAlign     = static_cast<WORD>(recvBufferFormat_.BytesPerFrame());
     waveFormat.wBitsPerSample  = recvBufferFormat_.bitsPerSample;
     waveFormat.cbSize          = 0; // must be 0 due to WAVE_FORMAT_PCM tag
     

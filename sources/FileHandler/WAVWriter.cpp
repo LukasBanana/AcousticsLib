@@ -21,7 +21,7 @@ static void GetRIFFWAVEFormat(RIFFWAVEFormat& format, const WaveBufferFormat& fm
     format.channels         = fmt.channels;
     format.sampleRate       = fmt.sampleRate;
     format.bytesPerSecond   = fmt.BytesPerSecond();
-    format.blockAlign       = static_cast<std::uint16_t>(fmt.BlockAlign());
+    format.blockAlign       = static_cast<std::uint16_t>(fmt.BytesPerFrame());
     format.bitsPerSample    = fmt.bitsPerSample;
 }
 

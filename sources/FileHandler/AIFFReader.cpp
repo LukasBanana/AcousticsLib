@@ -136,7 +136,7 @@ void AIFFReader::ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer)
     auto soundDataSize = commChunk.sampleFrames * commChunk.channels * commChunk.bitsPerSample / 8;
 
     buffer.SetFormat(WaveBufferFormat(sampleRate, commChunk.bitsPerSample, commChunk.channels));
-    buffer.SetSampleCount(commChunk.sampleFrames);
+    buffer.SetSampleFrames(commChunk.sampleFrames);
 
     if (soundDataSize != buffer.BufferSize())
         throw std::runtime_error("inconsistent sizes of sound data buffers in AIFF/AIFF-C stream");

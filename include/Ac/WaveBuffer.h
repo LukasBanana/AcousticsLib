@@ -90,11 +90,11 @@ class AC_EXPORT WaveBuffer
         WaveBuffer(WaveBuffer&& other);
         WaveBuffer& operator = (WaveBuffer&& other);
 
-        //! Returns the number of samples (independently of the number of channels).
-        std::size_t GetSampleCount() const;
+        //! Returns the number of samples per channel.
+        std::size_t GetSampleFrames() const;
 
-        //! Sets the new number of samples (independently of the number of channels).
-        void SetSampleCount(std::size_t sampleCount);
+        //! Sets the new number of samples per channel.
+        void SetSampleFrames(std::size_t sampleFrames);
 
         //! Returns the total time (in seconds) which is required to play this entire wave buffer.
         double GetTotalTime() const;

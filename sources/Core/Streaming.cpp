@@ -17,7 +17,7 @@ static WaveBuffer g_commonStreamingBuffer;
 static void EnsureNonEmptyBuffer(WaveBuffer& waveBuffer, const WaveBufferFormat& format)
 {
     /* Allocate a default wave buffer if the input buffer is empty */
-    if (waveBuffer.GetSampleCount() == 0)
+    if (waveBuffer.GetSampleFrames() == 0)
     {
         waveBuffer.SetFormat(format);
         waveBuffer.SetTotalTime(0.25);
