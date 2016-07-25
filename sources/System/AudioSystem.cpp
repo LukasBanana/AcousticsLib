@@ -304,6 +304,7 @@ std::unique_ptr<Microphone> AudioSystem::QueryMicrophone()
 
 void AudioSystem::SoundMngrThreadProc()
 {
+    /* Use local buffer for audio streaming to avoid race conditions */
     WaveBuffer streamingBuffer;
 
     std::list<std::unique_ptr<Sound>> sounds;
@@ -331,12 +332,14 @@ void AudioSystem::SoundMngrThreadProc()
             for (const auto& desc : immediateSoundsQueue_)
             {
                 auto sound = LoadSound(desc.filename);
+                if (sound)
+                {
+                    sound->SetVolume(desc.volume);
+                    sound->SetPitch(desc.pitch);
+                    sound->Play();
 
-                sound->SetVolume(desc.volume);
-                sound->SetPitch(desc.pitch);
-                sound->Play();
-
-                sounds.push_back(std::move(sound));
+                    sounds.push_back(std::move(sound));
+                }
             }
 
             immediateSoundsQueue_.clear();
