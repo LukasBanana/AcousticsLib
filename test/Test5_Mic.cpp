@@ -38,7 +38,7 @@ int main()
                     std::cout
                         << "received buffer: samples = " << buffer->GetSampleFrames()
                         << ", duration = " << buffer->GetTotalTime() << "s, queue size = " << sound->GetQueueSize() << std::endl;
-                    //Ac::Synthesizer::BlurWaveBuffer(*buffer, 0.1, 1.0, 15);
+                    Ac::Synthesizer::BlurWaveBuffer(*buffer, 0.1, 1.0, 15);
                     sound->QueueBuffer(*buffer);
                     if (sound->GetQueueSize() == 2)
                         sound->Play();
