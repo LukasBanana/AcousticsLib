@@ -8,6 +8,7 @@
 #include "../Core/PCMData.h"
 
 #include <Ac/Synthesizer.h>
+#include <Gauss/Algebra.h>
 #include <cmath>
 
 
@@ -61,12 +62,35 @@ AC_EXPORT SampleIterationFunction Amplifier(double multiplicator)
     };
 }
 
-AC_EXPORT SampleIterationFunction NoiseGenerator(double amplitude)
+static double Random()
+{
+    return (static_cast<double>(rand()) / RAND_MAX);
+}
+
+static double Random(double a, double b)
+{
+    return (a + (b - a) * Random());
+}
+
+AC_EXPORT SampleIterationFunction WhiteNoiseGenerator(double amplitude)
 {
     return [amplitude](double& sample, unsigned short channel, std::size_t index, double timePoint)
     {
-        auto noise = static_cast<double>(rand()) / RAND_MAX;
-        sample += (noise*2.0 - 1.0) * amplitude;
+        sample += Random(-1.0, 1.0) * amplitude;
+    };
+}
+
+AC_EXPORT SampleIterationFunction BrownNoiseGenerator(double amplitude, double& point)
+{
+    return [amplitude, &point](double& sample, unsigned short channel, std::size_t index, double timePoint)
+    {
+        auto noiseLerp = (point + 1.0)*0.5;
+        auto noise = Random(
+            Gs::Lerp(0.0, -amplitude, noiseLerp),
+            Gs::Lerp(amplitude, 0.0, noiseLerp)
+        );
+        point += noise;
+        sample = point;
     };
 }
 

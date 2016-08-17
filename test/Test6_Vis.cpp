@@ -19,6 +19,11 @@
 #endif
 
 
+// ----- MACROS -----
+
+#define SHOW_WAVE_SECTION
+
+
 // ----- GLOBALS -----
 
 Gs::Vector2i resolution(640, 480);
@@ -82,7 +87,7 @@ void initAudio()
     // load audio system and wave buffer
     audioSys = Ac::AudioSystem::Load();
     
-    #if 1
+    #if 0
 
     waveBuffer = audioSys->ReadWaveBuffer(
         //"in/thorndike.wav"
@@ -91,7 +96,7 @@ void initAudio()
         //"in/M1F1-AlawC-AFsp.aif"
     );
 
-    #else
+    #elif 0
 
     waveBuffer.SetTotalTime(3.0);
 
@@ -117,6 +122,32 @@ void initAudio()
         }
     );
 
+    #elif 1
+
+    waveBuffer.SetTotalTime(3.0);
+
+    double point = 0.0;
+
+    waveBuffer.ForEachSample(
+        #if 1
+
+        [](double& sample, unsigned short channel, std::size_t index, double timePoint)
+        {
+            auto amplitude = 0.5;
+            auto pos = std::fmod(timePoint*100.0, 10.0);
+            auto height = 1.0 / (1.0 + std::pow(std::abs(pos - 2.0), 2.0)) - 0.1;
+            height = std::max(0.0, height);
+            sample = std::sin(timePoint*2000.0)*amplitude*height;
+        }
+
+        #else
+
+        //Ac::Synthesizer::WhiteNoiseGenerator(0.25)
+        Ac::Synthesizer::BrownNoiseGenerator(0.25, point)
+
+        #endif
+    );
+
     #endif
     
     renderer = std::unique_ptr<Renderer>(new Renderer());
@@ -134,7 +165,8 @@ void drawScene2D()
 {
     // setup projection
     glMatrixMode(GL_PROJECTION);
-    auto proj = Gs::ProjectionMatrix4::Planar(resolution.x, resolution.y);
+    auto res = resolution.Cast<float>();
+    auto proj = Gs::ProjectionMatrix4::Planar(res.x, res.y);
     glLoadMatrixf(proj.Ptr());
 
     // setup model-view matrix
@@ -142,14 +174,15 @@ void drawScene2D()
     glLoadIdentity();
 
     // draw wave buffer
+    const auto seekDelta = 0.05;
     double seek = (sound != nullptr ? sound->GetSeek() : 0.0);
 
     glColor4f(0.3f, 0.5f, 1.0f, 1.0f);
     Ac::Visualizer::DrawWaveBuffer(
         *renderer, waveBuffer, 0,
         { 0, 0 }, { resolution.x, resolution.y/2 }
-        #if 1
-        , seek, seek + 0.05
+        #ifdef SHOW_WAVE_SECTION
+        , seek, seek + seekDelta
         #endif
     );
     

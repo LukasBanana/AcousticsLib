@@ -39,7 +39,9 @@ AC_EXPORT SampleIterationFunction HalfCircleGenerator(double amplitude, double p
 
 AC_EXPORT SampleIterationFunction Amplifier(double multiplicator);
 
-AC_EXPORT SampleIterationFunction NoiseGenerator(double amplitude);
+AC_EXPORT SampleIterationFunction WhiteNoiseGenerator(double amplitude);
+
+AC_EXPORT SampleIterationFunction BrownNoiseGenerator(double amplitude, double& point);
 
 /* ----- Misc ----- */
 
