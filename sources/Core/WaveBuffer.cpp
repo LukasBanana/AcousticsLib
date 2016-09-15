@@ -16,6 +16,8 @@ namespace Ac
 {
 
 
+/* ----- Common ----- */
+
 WaveBuffer::WaveBuffer(const WaveBufferFormat& format) :
     format_( format )
 {

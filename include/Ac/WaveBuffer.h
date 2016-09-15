@@ -54,22 +54,22 @@ using SampleConstIterationFunction = std::function<void(double sample, unsigned 
 (8 or 16 bit, signed or unsigned) to double precision floating-points in the normalized range [-1, 1].
 Here is a usage example:
 \code
-// Create wave buffer with 44 kHz sample rate, 16-bit samples, and two channels
-Ac::WaveBuffer buffer(WaveBufferFormat(Ac::Synthesizer::sampleRate44kHz, 16, 2));
+// Create wave buffer with 44.1 kHz sample rate, 16-bit samples, and two channels.
+Ac::WaveBuffer buffer(WaveBufferFormat(Ac::sampleRate44kHz, 16, 2));
 
-// Allocate internal buffer to store samples for 4.5 seconds.
-buffer.SetTotalTime(4.5);
+// Allocate internal buffer to store samples for 5.0 seconds.
+buffer.SetTotalTime(5.0);
 
-// Generate samples for the first half of the wave buffer (here a sine wave of 350 Hz)
-buffer.ForEachSample(Ac::Synthesizer::SineGenerator(0.3, 0.0, 350.0), 0.0, 2.25);
+// Generate samples for the first half of the wave buffer (here a sine wave of 350 Hz).
+buffer.ForEachSample(Ac::Synthesizer::SineGenerator(0.3, 0.0, 350.0), 0.0, 2.5);
 
-// Generate sample for the second half of the wave buffer (here with a custom function)
+// Generate sample for the second half of the wave buffer (here with a custom function).
 buffer.ForEachSample(
     [](double& sample, unsigned short channel, std::size_t index, double timePoint)
     {
         //sample += ...
     },
-    2.25, 4.5
+    2.5, 5.0
 );
 
 // Now create sound with our buffer
@@ -81,6 +81,8 @@ class AC_EXPORT WaveBuffer
 {
 
     public:
+
+        /* ----- Common ----- */
 
         WaveBuffer() = default;
         WaveBuffer(const WaveBuffer&) = default;
