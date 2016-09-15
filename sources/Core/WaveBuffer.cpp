@@ -208,9 +208,6 @@ void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, std::siz
     indexBegin  = std::max(std::size_t(0u), std::min(indexBegin, sampleFrames - 1u));
     indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleFrames - 1u));
 
-    if (indexBegin > indexEnd)
-        std::swap(indexBegin, indexEnd);
-
     auto timePoint  = GetTimePointFromIndex(indexBegin);
     auto timeStep   = (1.0 / static_cast<double>(format_.sampleRate));
 
@@ -251,9 +248,6 @@ void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator, std
     indexBegin  = std::max(std::size_t(0u), std::min(indexBegin, sampleFrames - 1u));
     indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleFrames - 1u));
 
-    if (indexBegin > indexEnd)
-        std::swap(indexBegin, indexEnd);
-    
     auto timePoint  = GetTimePointFromIndex(indexBegin);
     auto timeStep   = (1.0 / static_cast<double>(format_.sampleRate));
     
@@ -282,6 +276,8 @@ void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator) con
         ForEachSample(iterator, 0, sampleFrames - 1);
 }
 
+/* ----- Appending ----- */
+
 void WaveBuffer::Append(const WaveBuffer& other)
 {
     if (other.GetFormat() != GetFormat())
@@ -304,6 +300,73 @@ void WaveBuffer::Append(const WaveBuffer& other)
     }
 }
 
+/* ----- Copying ----- */
+
+void WaveBuffer::CopyFrom(const WaveBuffer& source, std::size_t indexBegin, std::size_t indexEnd, std::size_t destIndexOffset)
+{
+    /* Validate parameters and clamp range to [0, bufferSize) */
+    auto srcFrames = source.GetSampleFrames();
+    auto dstFrames = GetSampleFrames();
+
+    if (srcFrames == 0 || dstFrames == 0 || destIndexOffset >= dstFrames)
+        return;
+
+    indexBegin  = std::max(std::size_t(0u), std::min(indexBegin, srcFrames - 1u));
+    indexEnd    = std::max(indexBegin, std::min(indexEnd, srcFrames - 1u));
+
+    /* Copy source part into destination */
+    if (source.GetFormat() != GetFormat())
+    {
+        auto timeBegin      = source.GetTimePointFromIndex(indexBegin);
+        auto timeEnd        = source.GetTimePointFromIndex(indexEnd);
+        auto destTimeOffset = GetTimePointFromIndex(destIndexOffset);
+
+        /* Read samples from source buffer and write them into this buffer */
+        ForEachSample(
+            [&](double& sample, unsigned short channel, std::size_t index, double timePoint)
+            {
+                sample = source.ReadSample(timeBegin + (timePoint - destTimeOffset), channel);
+            },
+            destTimeOffset,
+            destTimeOffset + (timeEnd - timeBegin)
+        );
+    }
+    else
+    {
+        /* Clamp ending index again */
+        indexEnd = std::min(indexEnd, indexBegin + (srcFrames - destIndexOffset));
+        if (indexBegin == indexEnd)
+            return;
+
+        /* Copy source buffer portion into this buffer */
+        std::copy(
+            source.GetPCMOffsetPtr(source.GetPCMBufferOffset(indexBegin, 0)),
+            source.GetPCMOffsetPtr(source.GetPCMBufferOffset(indexEnd, 0)),
+            GetPCMOffsetPtr(GetPCMBufferOffset(destIndexOffset, 0))
+        );
+    }
+}
+
+void WaveBuffer::CopyFrom(const WaveBuffer& source, double timeBegin, double timeEnd, double destTimeOffset)
+{
+    CopyFrom(
+        source,
+        source.GetIndexFromTimePoint(timeBegin),
+        source.GetIndexFromTimePoint(timeEnd),
+        GetIndexFromTimePoint(destTimeOffset)
+    );
+}
+
+void WaveBuffer::CopyFrom(const WaveBuffer& source, std::size_t destIndexOffset)
+{
+    CopyFrom(source, 0, source.GetSampleFrames(), destIndexOffset);
+}
+
+void WaveBuffer::CopyFrom(const WaveBuffer& source, double destTimeOffset)
+{
+    CopyFrom(source, GetIndexFromTimePoint(destTimeOffset));
+}
+
 
 /*
  * ======= Private: =======
@@ -316,14 +379,14 @@ std::size_t WaveBuffer::GetPCMBufferOffset(std::size_t index, unsigned short cha
     return (index * format_.BytesPerFrame() + channelOffset);
 }
 
-void* WaveBuffer::GetPCMOffsetPtr(std::size_t offset)
+char* WaveBuffer::GetPCMOffsetPtr(std::size_t offset)
 {
-    return (offset < BufferSize() ? reinterpret_cast<void*>(&buffer_[offset]) : nullptr);
+    return (offset < BufferSize() ? (&buffer_[offset]) : nullptr);
 }
 
-const void* WaveBuffer::GetPCMOffsetPtr(std::size_t offset) const
+const char* WaveBuffer::GetPCMOffsetPtr(std::size_t offset) const
 {
-    return (offset < BufferSize() ? reinterpret_cast<const void*>(&buffer_[offset]) : nullptr);
+    return (offset < BufferSize() ? (&buffer_[offset]) : nullptr);
 }
 
 

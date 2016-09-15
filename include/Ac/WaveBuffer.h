@@ -215,6 +215,8 @@ class AC_EXPORT WaveBuffer
         */
         void ForEachSample(const SampleConstIterationFunction& iterator) const;
 
+        /* ----- Appending ----- */
+
         /**
         \brief Appends the specified wave buffer to this buffer.
         \param[in] buffer Specifies the new wave buffer which is to be appended to this buffer.
@@ -223,7 +225,45 @@ class AC_EXPORT WaveBuffer
         \see SetFormat
         */
         void Append(const WaveBuffer& other);
-    
+
+        /* ----- Copying ----- */
+
+        /**
+        \brief Copyies a portion of the specified source buffer into this buffer.
+        \param[in] source Specifies the source buffer to copy from.
+        \param[in] indexBegin Specifies the first sample index of the source buffer.
+        \param[in] indexEnd Specifies the last sample index of the source buffer. The ending is exclusive, i.e. the range is [indexBegin, indexEnd).
+        \param[in] destIndexOffset Specifies the destination index offset.
+        */
+        void CopyFrom(const WaveBuffer& source, std::size_t indexBegin, std::size_t indexEnd, std::size_t destIndexOffset);
+
+        /**
+        \brief Copyies a portion of the specified source buffer into this buffer.
+        \param[in] source Specifies the source buffer to copy from.
+        \param[in] timeBegin Specifies the beginning time point (in seconds) of the source buffer. This will be clamped to [0, +inf).
+        \param[in] timeEnd Specifies the ending time point (in seconds) of the source buffer. This will be clamped to (timeBegin, +inf).
+        The ending is exclusive, i.e. the range is [timeBegin, timeEnd).
+        \param[in] destTimeOffset Specifies the destination time offset (in seconds).
+        \see CopyFrom(const WaveBuffer&, std::size_t, std::size_t, std::size_t)
+        */
+        void CopyFrom(const WaveBuffer& source, double timeBegin, double timeEnd, double destTimeOffset);
+
+        /**
+        \brief Copies the entire source buffer into this buffer.
+        \param[in] source Specifies the source buffer to copy from.
+        \param[in] destIndexOffset Specifies the destination index offset.
+        \see CopyFrom(const WaveBuffer&, std::size_t, std::size_t, std::size_t)
+        */
+        void CopyFrom(const WaveBuffer& source, std::size_t destIndexOffset);
+
+        /**
+        \brief Copies the entire source buffer into this buffer.
+        \param[in] source Specifies the source buffer to copy from.
+        \param[in] destTimeOffset Specifies the destination time offset (in seconds).
+        \see CopyFrom(const WaveBuffer&, std::size_t)
+        */
+        void CopyFrom(const WaveBuffer& source, double destTimeOffset);
+
         /* ----- Raw buffer access ----- */
 
         //! Returns the actual PCM buffer size (in bytes).
@@ -254,8 +294,8 @@ class AC_EXPORT WaveBuffer
 
         std::size_t GetPCMBufferOffset(std::size_t index, unsigned short channel) const;
 
-        void* GetPCMOffsetPtr(std::size_t offset);
-        const void* GetPCMOffsetPtr(std::size_t offset) const;
+        char* GetPCMOffsetPtr(std::size_t offset);
+        const char* GetPCMOffsetPtr(std::size_t offset) const;
 
         WaveBufferFormat    format_;
 
