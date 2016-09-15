@@ -122,11 +122,14 @@ void initAudio()
         }
     );
 
-    #elif 1
+    #elif 0
 
     waveBuffer.SetTotalTime(3.0);
 
     double state = 0.0;
+
+    auto whiteNoiseGen = Ac::Synthesizer::WhiteNoiseGenerator(0.25);
+    auto brownNoiseGen = Ac::Synthesizer::BrownNoiseGenerator(0.25, state);
 
     waveBuffer.ForEachSample(
         #if 0
@@ -140,12 +143,45 @@ void initAudio()
             sample = std::sin(timePoint*2000.0)*amplitude*height;
         }
 
+        #elif 1
+
+        [&](double& sample, unsigned short channel, std::size_t index, double timePoint)
+        {
+            double s0 = sample, s1 = sample;
+            brownNoiseGen(s0, channel, index, timePoint);
+            whiteNoiseGen(s1, channel, index, timePoint);
+            sample = Gs::Lerp(s0, s1, std::max(0.0, std::min((timePoint - 0.5)/2, 1.0)));
+        }
+
         #elif 0
-        Ac::Synthesizer::WhiteNoiseGenerator(0.25)
+        whiteNoiseGen
         #else
-        Ac::Synthesizer::BrownNoiseGenerator(0.25, state)
+        brownNoiseGen
         #endif
     );
+
+    #elif 1
+
+    waveBuffer.SetTotalTime(3.0);
+
+    double state = 0.0;
+
+    Ac::WaveBuffer srcBuffer0(waveBuffer.GetFormat());
+    Ac::WaveBuffer srcBuffer1(waveBuffer.GetFormat());
+    Ac::WaveBuffer srcBuffer2(Ac::WaveBufferFormat(Ac::sampleRate32kHz, 16, 1));
+
+    srcBuffer0.SetTotalTime(waveBuffer.GetTotalTime());
+    srcBuffer1.SetTotalTime(waveBuffer.GetTotalTime());
+    srcBuffer2.SetTotalTime(waveBuffer.GetTotalTime());
+
+    srcBuffer0.ForEachSample(Ac::Synthesizer::WhiteNoiseGenerator(0.25));
+    srcBuffer1.ForEachSample(Ac::Synthesizer::BrownNoiseGenerator(0.25, state));
+    srcBuffer2.ForEachSample(Ac::Synthesizer::SineGenerator(0.35, 0.0, 500.0));
+
+    Ac::Synthesizer::FadeWaveBuffers(waveBuffer, srcBuffer0, srcBuffer1, 0.5, 1.5, nullptr, false);
+    Ac::Synthesizer::FadeWaveBuffers(waveBuffer, srcBuffer1, srcBuffer2, 1.5, 2.5, nullptr, false);
+    waveBuffer.CopyFrom(srcBuffer0, 0.0, 0.5, 0.0);
+    waveBuffer.CopyFrom(srcBuffer2, 2.5, 3.0, 2.5);
 
     #endif
     
