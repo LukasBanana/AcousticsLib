@@ -167,6 +167,54 @@ AC_EXPORT void BlurWaveBuffer(WaveBuffer& buffer, double timeSpread, double vari
     );
 }
 
+AC_EXPORT void FadeWaveBuffers(
+    WaveBuffer& buffer, const WaveBuffer& bufferFadeFrom, const WaveBuffer& bufferFadeTo,
+    double timePointFrom, double timePointTo, const FadingFunction& fading, bool writeOutlines)
+{
+    /* Quit if operation has no effect */
+    if ((&buffer) == (&bufferFadeFrom) && (&buffer) == (&bufferFadeTo))
+        return;
+
+    /* Clamp input parameters */
+    timePointFrom = Gs::Clamp(timePointFrom, 0.0, buffer.GetTotalTime());
+    timePointTo = Gs::Clamp(timePointTo, timePointFrom, buffer.GetTotalTime());
+
+    /* Interpolate between the two fading buffers */
+    if (timePointFrom < timePointTo)
+    {
+        buffer.ForEachSample(
+            [&](double& sample, unsigned short channel, std::size_t index, double timePoint)
+            {
+                /* Compute fading interpolator */
+                double t = (timePoint - timePointFrom) / (timePointTo - timePointFrom);
+                if (fading)
+                    fading(t);
+
+                /* Fade between two buffer samples */
+                sample = Gs::Lerp(
+                    bufferFadeFrom.ReadSample(timePoint, channel),
+                    bufferFadeTo.ReadSample(timePoint, channel),
+                    t
+                );
+            },
+            timePointFrom,
+            timePointTo
+        );
+    }
+
+    /* Write outlines (if enabled) */
+    if (writeOutlines)
+    {
+        /* Write left outlines (if buffers are not identical) */
+        if ((&buffer) != (&bufferFadeFrom))
+            buffer.CopyFrom(bufferFadeFrom, 0.0, timePointFrom, 0.0);
+
+        /* Write right outlines (if buffers are not identical) */
+        if ((&buffer) != (&bufferFadeTo))
+            buffer.CopyFrom(bufferFadeTo, timePointTo, buffer.GetTotalTime(), timePointTo);
+    }
+}
+
 
 } // /namesapce Synthesizer
 

@@ -23,6 +23,14 @@ namespace Synthesizer
 {
 
 
+/**
+\brief Fading function interface.
+\param[in,out] t Specifies the interpolation value.
+Either the input and output value must always be in the range [0, 1].
+\see FadeWaveBuffers
+*/
+using FadingFunction = std::function<void(double& t)>;
+
 /* ----- Wave generators ----- */
 
 /**
@@ -65,6 +73,26 @@ AC_EXPORT double GetNoteFrequency(const MusicalNotes note, int interval);
 AC_EXPORT void ReverseWaveBuffer(WaveBuffer& buffer);
 
 AC_EXPORT void BlurWaveBuffer(WaveBuffer& buffer, double timeSpread = 0.1, double variance = 1.0, std::size_t sampleCount = 6);
+
+/**
+\brief Fades (or rather interpolates) between the two constant wave buffers.
+\param[in,out] buffer Specifies the buffer which is to be modified.
+\param[in] bufferFadeFrom Specifies the buffer from which the fading is starting. This can also be the output buffer.
+\param[in] bufferFadeTo Specifies the buffer to which the fading is ending. This can also be the output buffer.
+\param[in] timePointFrom Specifies the time point from which the fading is starting. This will be clamped to [0, buffer.GetTotalTime()].
+\param[in] timePointTo Specifies the time point to which the fading is ending. This will be clamped to [timePointFrom, buffer.GetTotalTime()].
+\param[in] fading Specifies the fading modification function. If this is null, no fading modification is applied. By default null.
+\param[in] writeOutlines Specifies wether the outline samples (i.e. outside the range [timePointForm, timePointEnd]) will also be written or not. By default true.
+*/
+AC_EXPORT void FadeWaveBuffers(
+    WaveBuffer& buffer,
+    const WaveBuffer& bufferFadeFrom,
+    const WaveBuffer& bufferFadeTo,
+    double timePointFrom,
+    double timePointTo,
+    const FadingFunction& fading = nullptr,
+    bool writeOutlines = true
+);
 
 
 } // /namesapce Synthesizer
