@@ -41,7 +41,13 @@ AC_EXPORT SampleIterationFunction Amplifier(double multiplicator);
 
 AC_EXPORT SampleIterationFunction WhiteNoiseGenerator(double amplitude);
 
-AC_EXPORT SampleIterationFunction BrownNoiseGenerator(double amplitude, double& point);
+/**
+\brief Returns a function object of a "brown-noise" wave generator.
+\param[in] amplitude Specifies the wave amplitude (maximal value in the range [-amplitude, amplitude]).
+\param[out] state Specifies the noise generation state and is only used as temporary storage.
+This can also be uninitialized since it will be set to 0.0 at start up time.
+*/
+AC_EXPORT SampleIterationFunction BrownNoiseGenerator(double amplitude, double& state);
 
 /* ----- Misc ----- */
 
@@ -59,8 +65,8 @@ AC_EXPORT double GetNoteFrequency(const MusicalNotes note, int interval);
 AC_EXPORT void ReverseWaveBuffer(WaveBuffer& buffer);
 
 AC_EXPORT void BlurWaveBuffer(WaveBuffer& buffer, double timeSpread = 0.1, double variance = 1.0, std::size_t sampleCount = 6);
-    
-    
+
+
 } // /namesapce Synthesizer
 
 } // /namespace Ac

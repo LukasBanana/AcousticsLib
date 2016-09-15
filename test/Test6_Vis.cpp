@@ -126,10 +126,10 @@ void initAudio()
 
     waveBuffer.SetTotalTime(3.0);
 
-    double point = 0.0;
+    double state = 0.0;
 
     waveBuffer.ForEachSample(
-        #if 1
+        #if 0
 
         [](double& sample, unsigned short channel, std::size_t index, double timePoint)
         {
@@ -140,11 +140,10 @@ void initAudio()
             sample = std::sin(timePoint*2000.0)*amplitude*height;
         }
 
+        #elif 0
+        Ac::Synthesizer::WhiteNoiseGenerator(0.25)
         #else
-
-        //Ac::Synthesizer::WhiteNoiseGenerator(0.25)
-        Ac::Synthesizer::BrownNoiseGenerator(0.25, point)
-
+        Ac::Synthesizer::BrownNoiseGenerator(0.25, state)
         #endif
     );
 

@@ -80,17 +80,18 @@ AC_EXPORT SampleIterationFunction WhiteNoiseGenerator(double amplitude)
     };
 }
 
-AC_EXPORT SampleIterationFunction BrownNoiseGenerator(double amplitude, double& point)
+AC_EXPORT SampleIterationFunction BrownNoiseGenerator(double amplitude, double& state)
 {
-    return [amplitude, &point](double& sample, unsigned short channel, std::size_t index, double timePoint)
+    state = 0.0;
+    return [amplitude, &state](double& sample, unsigned short channel, std::size_t index, double timePoint)
     {
-        auto noiseLerp = (point + 1.0)*0.5;
+        auto noiseLerp = (state + 1.0)*0.5;
         auto noise = Random(
             Gs::Lerp(0.0, -amplitude, noiseLerp),
             Gs::Lerp(amplitude, 0.0, noiseLerp)
         );
-        point += noise;
-        sample = point;
+        state += noise;
+        sample = state;
     };
 }
 
