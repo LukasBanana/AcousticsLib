@@ -169,7 +169,7 @@ int main()
 
 \section sec_example4 Example 4: 3D Sound
 
-This is a small example about music streaming:
+This is a small example about 3D sounds:
 \code
 #include <Ac/AcLib.h>
 #include <thread>
