@@ -89,6 +89,8 @@ void initAudio()
     
     #if 0
 
+    // READ WAVE BUFFER
+
     waveBuffer = audioSys->ReadWaveBuffer(
         //"in/thorndike.wav"
         //"in/shutter.wav"
@@ -97,6 +99,8 @@ void initAudio()
     );
 
     #elif 0
+
+    // ACCUMULATED SINE WAVES
 
     waveBuffer.SetTotalTime(3.0);
 
@@ -123,6 +127,8 @@ void initAudio()
     );
 
     #elif 0
+
+    // NOISE GENERATION
 
     waveBuffer.SetTotalTime(3.0);
 
@@ -161,6 +167,8 @@ void initAudio()
     );
 
     #elif 1
+
+    // COPY AND FADING
 
     waveBuffer.SetTotalTime(3.0);
 

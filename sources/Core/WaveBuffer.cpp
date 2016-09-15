@@ -66,7 +66,7 @@ double WaveBuffer::ReadSample(std::size_t index, unsigned short channel) const
     double sample = 0.0;
 
     PCMSampleConst pcmSample;
-    pcmSample.raw = GetPCMOffsetPtr(GetPCMBufferOffset(index, channel));
+    pcmSample.raw = Data(GetDataOffset(index, channel));
 
     if (pcmSample.raw)
     {
@@ -87,7 +87,7 @@ double WaveBuffer::ReadSample(std::size_t index, unsigned short channel) const
 void WaveBuffer::WriteSample(std::size_t index, unsigned short channel, double sample)
 {
     PCMSample pcmSample;
-    pcmSample.raw = GetPCMOffsetPtr(GetPCMBufferOffset(index, channel));
+    pcmSample.raw = Data(GetDataOffset(index, channel));
 
     if (pcmSample.raw)
     {
@@ -340,9 +340,9 @@ void WaveBuffer::CopyFrom(const WaveBuffer& source, std::size_t indexBegin, std:
 
         /* Copy source buffer portion into this buffer */
         std::copy(
-            source.GetPCMOffsetPtr(source.GetPCMBufferOffset(indexBegin, 0)),
-            source.GetPCMOffsetPtr(source.GetPCMBufferOffset(indexEnd, 0)),
-            GetPCMOffsetPtr(GetPCMBufferOffset(destIndexOffset, 0))
+            source.Data(source.GetDataOffset(indexBegin, 0)),
+            source.Data(source.GetDataOffset(indexEnd, 0)),
+            Data(GetDataOffset(destIndexOffset, 0))
         );
     }
 }
@@ -367,24 +367,21 @@ void WaveBuffer::CopyFrom(const WaveBuffer& source, double destTimeOffset)
     CopyFrom(source, GetIndexFromTimePoint(destTimeOffset));
 }
 
+/* ----- Raw buffer access ----- */
 
-/*
- * ======= Private: =======
- */
-
-std::size_t WaveBuffer::GetPCMBufferOffset(std::size_t index, unsigned short channel) const
+std::size_t WaveBuffer::GetDataOffset(std::size_t index, unsigned short channel) const
 {
     /* Scale index by sample block alignment and append channel offset */
     auto channelOffset = (channel < format_.channels ? channel * format_.bitsPerSample / 8 : 0);
     return (index * format_.BytesPerFrame() + channelOffset);
 }
 
-char* WaveBuffer::GetPCMOffsetPtr(std::size_t offset)
+char* WaveBuffer::Data(std::size_t offset)
 {
     return (offset < BufferSize() ? (&buffer_[offset]) : nullptr);
 }
 
-const char* WaveBuffer::GetPCMOffsetPtr(std::size_t offset) const
+const char* WaveBuffer::Data(std::size_t offset) const
 {
     return (offset < BufferSize() ? (&buffer_[offset]) : nullptr);
 }

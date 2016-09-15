@@ -284,6 +284,24 @@ class AC_EXPORT WaveBuffer
             return buffer_.data();
         }
 
+        /**
+        \brief Returns the byte offset for the specified sample index and channel.
+        \see Data(std::size_t)
+        */
+        std::size_t GetDataOffset(std::size_t index, unsigned short channel) const;
+
+        /**
+        \brief Returns a raw pointer to the PCM buffer data with the specified byte offset.
+        \see GetDataOffset
+        */
+        char* Data(std::size_t offset);
+
+        /**
+        \brief Returns a constant raw pointer to the PCM buffer data with the specified byte offset.
+        \see GetDataOffset
+        */
+        const char* Data(std::size_t offset) const;
+
         //! Returns the format description of this wave buffer.
         inline const WaveBufferFormat& GetFormat() const
         {
@@ -291,11 +309,6 @@ class AC_EXPORT WaveBuffer
         }
 
     private:
-
-        std::size_t GetPCMBufferOffset(std::size_t index, unsigned short channel) const;
-
-        char* GetPCMOffsetPtr(std::size_t offset);
-        const char* GetPCMOffsetPtr(std::size_t offset) const;
 
         WaveBufferFormat    format_;
 
