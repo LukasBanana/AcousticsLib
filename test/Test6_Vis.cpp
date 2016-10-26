@@ -200,7 +200,7 @@ void initAudio()
     if (sound)
     {
         sound->SetVolume(0.25f);
-        //sound->SetPitch(1.5f);
+        //sound->SetPitch(0.5f);
     }
 }
 
