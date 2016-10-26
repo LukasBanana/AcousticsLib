@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_FORMAT_AUXILIARY_H__
-#define __AC_FORMAT_AUXILIARY_H__
+#ifndef AC_FORMAT_AUXILIARY_H
+#define AC_FORMAT_AUXILIARY_H
 
 
 #include <cstdint>

@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_PCM_DATA_H__
-#define __AC_PCM_DATA_H__
+#ifndef AC_PCM_DATA_H
+#define AC_PCM_DATA_H
 
 
 #include <cstdint>

@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_SYNTHESIZER_H__
-#define __AC_SYNTHESIZER_H__
+#ifndef AC_SYNTHESIZER_H
+#define AC_SYNTHESIZER_H
 
 
 #include "Export.h"

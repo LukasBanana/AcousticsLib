@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_WIN32_MICROPHONE_CALLBACK_H__
-#define __AC_WIN32_MICROPHONE_CALLBACK_H__
+#ifndef AC_WIN32_MICROPHONE_CALLBACK_H
+#define AC_WIN32_MICROPHONE_CALLBACK_H
 
 
 #include <Windows.h>

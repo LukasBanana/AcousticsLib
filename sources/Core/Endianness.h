@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_ENDIANNESS_H__
-#define __AC_ENDIANNESS_H__
+#ifndef AC_ENDIANNESS_H
+#define AC_ENDIANNESS_H
 
 
 #include <algorithm>

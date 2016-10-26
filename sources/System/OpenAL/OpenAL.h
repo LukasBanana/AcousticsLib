@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_OPENAL_H__
-#define __AC_OPENAL_H__
+#ifndef AC_OPENAL_H
+#define AC_OPENAL_H
 
 
 #ifdef __APPLE__

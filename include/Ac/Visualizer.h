@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_VISUALIZER_H__
-#define __AC_VISUALIZER_H__
+#ifndef AC_VISUALIZER_H
+#define AC_VISUALIZER_H
 
 
 #include "Export.h"

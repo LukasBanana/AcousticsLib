@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_AUDIO_FORMATS_H__
-#define __AC_AUDIO_FORMATS_H__
+#ifndef AC_AUDIO_FORMATS_H
+#define AC_AUDIO_FORMATS_H
 
 
 namespace Ac

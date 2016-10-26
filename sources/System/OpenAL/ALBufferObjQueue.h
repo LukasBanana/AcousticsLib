@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_AL_BUFFER_OBJ_QUEUE_H__
-#define __AC_AL_BUFFER_OBJ_QUEUE_H__
+#ifndef AC_AL_BUFFER_OBJ_QUEUE_H
+#define AC_AL_BUFFER_OBJ_QUEUE_H
 
 
 #include "OpenAL.h"

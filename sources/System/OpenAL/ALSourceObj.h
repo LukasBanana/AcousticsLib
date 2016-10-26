@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_AL_SOURCE_OBJ_H__
-#define __AC_AL_SOURCE_OBJ_H__
+#ifndef AC_AL_SOURCE_OBJ_H
+#define AC_AL_SOURCE_OBJ_H
 
 
 #include "OpenAL.h"

@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_WAV_FORMAT_TAGS_H__
-#define __AC_WAV_FORMAT_TAGS_H__
+#ifndef AC_WAV_FORMAT_TAGS_H
+#define AC_WAV_FORMAT_TAGS_H
 
 
 #include <cstdint>

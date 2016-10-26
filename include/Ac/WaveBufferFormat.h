@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_WAVE_BUFFER_FORMAT_H__
-#define __AC_WAVE_BUFFER_FORMAT_H__
+#ifndef AC_WAVE_BUFFER_FORMAT_H
+#define AC_WAVE_BUFFER_FORMAT_H
 
 
 #include "Export.h"

@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_FILE_TYPE_H__
-#define __AC_FILE_TYPE_H__
+#ifndef AC_FILE_TYPE_H
+#define AC_FILE_TYPE_H
 
 
 #include <Ac/AudioFormats.h>

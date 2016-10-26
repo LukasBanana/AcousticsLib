@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_OGG_STREAM_H__
-#define __AC_OGG_STREAM_H__
+#ifndef AC_OGG_STREAM_H
+#define AC_OGG_STREAM_H
 
 #ifdef AC_PLUGIN_OGGVORBIS
 

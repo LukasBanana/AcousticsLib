@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_AUDIO_WRITER_H__
-#define __AC_AUDIO_WRITER_H__
+#ifndef AC_AUDIO_WRITER_H
+#define AC_AUDIO_WRITER_H
 
 
 #include <Ac/WaveBuffer.h>

@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_CHANNEL_TYPES_H__
-#define __AC_CHANNEL_TYPES_H__
+#ifndef AC_CHANNEL_TYPES_H
+#define AC_CHANNEL_TYPES_H
 
 
 namespace Ac

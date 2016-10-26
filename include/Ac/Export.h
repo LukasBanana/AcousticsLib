@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_EXPORT_H__
-#define __AC_EXPORT_H__
+#ifndef AC_EXPORT_H
+#define AC_EXPORT_H
 
 
 #ifdef _MSC_VER

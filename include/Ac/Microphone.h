@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_MICROPHONE_H__
-#define __AC_MICROPHONE_H__
+#ifndef AC_MICROPHONE_H
+#define AC_MICROPHONE_H
 
 
 #include "Export.h"

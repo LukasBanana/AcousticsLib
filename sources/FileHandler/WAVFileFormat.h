@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_WAV_FILE_FORMAT_H__
-#define __AC_WAV_FILE_FORMAT_H__
+#ifndef AC_WAV_FILE_FORMAT_H
+#define AC_WAV_FILE_FORMAT_H
 
 
 #include "FormatAuxiliary.h"

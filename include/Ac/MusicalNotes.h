@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_MUSICAL_NOTES_H__
-#define __AC_MUSICAL_NOTES_H__
+#ifndef AC_MUSICAL_NOTES_H
+#define AC_MUSICAL_NOTES_H
 
 
 namespace Ac

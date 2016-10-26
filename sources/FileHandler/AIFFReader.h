@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_AIFF_READER_H__
-#define __AC_AIFF_READER_H__
+#ifndef AC_AIFF_READER_H
+#define AC_AIFF_READER_H
 
 
 #include "AudioReader.h"

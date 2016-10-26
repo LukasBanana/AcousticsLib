@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_WINDOW_FUNCTIONS_H__
-#define __AC_WINDOW_FUNCTIONS_H__
+#ifndef AC_WINDOW_FUNCTIONS_H
+#define AC_WINDOW_FUNCTIONS_H
 
 
 #include <cmath>

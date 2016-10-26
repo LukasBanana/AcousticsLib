@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_MOD_STREAM_H__
-#define __AC_MOD_STREAM_H__
+#ifndef AC_MOD_STREAM_H
+#define AC_MOD_STREAM_H
 
 
 #include <Ac/AudioStream.h>

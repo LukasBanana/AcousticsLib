@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_SOUND_H__
-#define __AC_SOUND_H__
+#ifndef AC_SOUND_H
+#define AC_SOUND_H
 
 
 #include "Export.h"

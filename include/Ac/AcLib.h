@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_INCLUDE_H__
-#define __AC_INCLUDE_H__
+#ifndef AC_INCLUDE_H
+#define AC_INCLUDE_H
 
 
 #include "AudioSystem.h"
