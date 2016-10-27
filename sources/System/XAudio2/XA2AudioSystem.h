@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_XA2_AUDIO_SYSTEM_H__
-#define __AC_XA2_AUDIO_SYSTEM_H__
+#ifndef AC_XA2_AUDIO_SYSTEM_H
+#define AC_XA2_AUDIO_SYSTEM_H
 
 
 #include <Ac/AudioSystem.h>

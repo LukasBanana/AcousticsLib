@@ -5,8 +5,8 @@
  * See "LICENSE.txt" for license information.
  */
 
-#ifndef __AC_LINUX_MODULE_H__
-#define __AC_LINUX_MODULE_H__
+#ifndef AC_LINUX_MODULE_H
+#define AC_LINUX_MODULE_H
 
 
 #include "../Module.h"
