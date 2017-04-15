@@ -120,14 +120,7 @@ double ALSound::TotalTime() const
 void ALSound::AttachBuffer(const WaveBuffer& waveBuffer)
 {
     /* Reset possible buffer queue object */
-    if (bufferObjQueue_)
-    {
-        bufferObjQueue_.reset();
-
-        /* Reset OpenAL looping state (only a single buffer can make use of this state) */
-        if (looping_)
-            sourceObj_.SetInt(AL_LOOPING, AL_TRUE);
-    }
+    ResetBufferObjQueue();
 
     /* Stop palyback and detach previous buffer object */
     Stop();
@@ -143,18 +136,26 @@ void ALSound::AttachBuffer(const WaveBuffer& waveBuffer)
     sourceObj_.AttachBuffer(*bufferObj_);
 }
 
+void ALSound::AttachSharedBuffer(const Sound& sourceBufferSound)
+{
+    const auto& sourceBufferSoundAL = static_cast<const ALSound&>(sourceBufferSound);
+
+    /* Stop palyback and detach previous buffer object */
+    Stop();
+    sourceObj_.DetachBuffer();
+
+    /* Shared buffer object with the specified source buffer sound */
+    bufferObj_ = sourceBufferSoundAL.bufferObj_;
+
+    /* Attach buffer object to source */
+    if (bufferObj_)
+        sourceObj_.AttachBuffer(*bufferObj_);
+}
+
 void ALSound::QueueBuffer(const WaveBuffer& waveBuffer)
 {
     /* Reset possible single buffer object */
-    if (bufferObj_)
-    {
-        sourceObj_.DetachBuffer();
-        bufferObj_.reset();
-
-        /* Remove OpenAL looping state (only a single buffer can make use of this state) */
-        if (looping_)
-            sourceObj_.SetInt(AL_LOOPING, AL_FALSE);
-    }
+    ResetBufferObj();
 
     /* Initialize buffer object queue (if not done yet) */
     if (!bufferObjQueue_)
@@ -220,6 +221,38 @@ void ALSound::SetSpaceRelative(bool enable)
 bool ALSound::GetSpaceRelative() const
 {
     return (sourceObj_.GetInt(AL_SOURCE_RELATIVE) != AL_FALSE);
+}
+
+
+/*
+ * ======= Private: =======
+ */
+
+void ALSound::ResetBufferObj()
+{
+    if (bufferObj_)
+    {
+        /* Detach buffer object from source object */
+        sourceObj_.DetachBuffer();
+        bufferObj_.reset();
+
+        /* Remove OpenAL looping state (only a single buffer can make use of this state) */
+        if (looping_)
+            sourceObj_.SetInt(AL_LOOPING, AL_FALSE);
+    }
+}
+
+void ALSound::ResetBufferObjQueue()
+{
+    if (bufferObjQueue_)
+    {
+        /* Reset buffer object queue */
+        bufferObjQueue_.reset();
+
+        /* Reset OpenAL looping state (only a single buffer can make use of this state) */
+        if (looping_)
+            sourceObj_.SetInt(AL_LOOPING, AL_TRUE);
+    }
 }
 
 

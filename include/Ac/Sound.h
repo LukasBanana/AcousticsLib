@@ -86,6 +86,12 @@ class AC_EXPORT Sound
         virtual void AttachBuffer(const WaveBuffer& waveBuffer) = 0;
 
         /**
+        \brief Attaches the wave buffer of the specified sound object.
+        \remarks This can be used to make multiple sounds share the same wave buffer.
+        */
+        virtual void AttachSharedBuffer(const Sound& sourceBufferSound) = 0;
+
+        /**
         \brief Appends the specified buffer at the end of the buffer queue of this sound.
         \remarks If this function is used, the sound will be managed for audio streaming.
         \see AttachBuffer

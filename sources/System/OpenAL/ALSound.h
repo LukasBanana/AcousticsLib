@@ -55,6 +55,7 @@ class ALSound : public Sound
         /* ----- Buffers and streaming ----- */
 
         void AttachBuffer(const WaveBuffer& waveBuffer) override;
+        void AttachSharedBuffer(const Sound& sourceBufferSound) override;
         void QueueBuffer(const WaveBuffer& waveBuffer) override;
 
         std::size_t GetQueueSize() const override;
@@ -75,6 +76,9 @@ class ALSound : public Sound
         bool GetSpaceRelative() const override;
 
     private:
+
+        void ResetBufferObj();
+        void ResetBufferObjQueue();
 
         std::shared_ptr<ALBufferObj>        bufferObj_;
         std::unique_ptr<ALBufferObjQueue>   bufferObjQueue_;
