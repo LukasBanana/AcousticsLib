@@ -89,9 +89,6 @@ source_group("Sources\\Platform" FILES ${FilesPlatformBase} ${FilesPlatform})
 
 include_directories("${PROJECT_INCLUDE_DIR}")
 
-find_path(GaussianLib_INCLUDE_DIR NAMES Gauss/Gauss.h)
-include_directories(${GaussianLib_INCLUDE_DIR})
-
 
 # === Binaries ===
 
@@ -115,6 +112,9 @@ if(WIN32)
 elseif(UNIX)
 	target_link_libraries(AcLib dl pthread)
 endif()
+
+# Library: GaussianLib
+include(cmake/FindGaussianLib.cmake)
 
 # Library: OggVorbis
 include(cmake/FindOggVorbis.cmake)

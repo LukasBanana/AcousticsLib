@@ -24,7 +24,7 @@ int main()
                 std::cout << "  device: \"" << dev.name << '\"' << std::endl;
 
             std::cout << "start recording" << std::endl;
-            mic->Start(Ac::WaveBufferFormat(Ac::sampleRate44kHz, 16, 2), 0.1);//0.25);
+            mic->Start(Ac::WaveBufferFormat(Ac::sampleRate44kHz, 16, 2), 0.25);//0.25);
 
             auto startTime = std::chrono::system_clock::now();
 
@@ -47,7 +47,7 @@ int main()
                 SleepFor();
 
                 auto now = std::chrono::system_clock::now();
-                if (std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count() > 5000)
+                if (std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count() > 15000)
                 {
                     std::cout << "stop recording" << std::endl;
                     mic->Stop();

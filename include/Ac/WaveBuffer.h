@@ -55,7 +55,7 @@ using SampleConstIterationFunction = std::function<void(double sample, unsigned 
 Here is a usage example:
 \code
 // Create wave buffer with 44.1 kHz sample rate, 16-bit samples, and two channels.
-Ac::WaveBuffer buffer(WaveBufferFormat(Ac::sampleRate44kHz, 16, 2));
+Ac::WaveBuffer buffer(Ac::WaveBufferFormat(Ac::sampleRate44kHz, 16, 2));
 
 // Allocate internal buffer to store samples for 5.0 seconds.
 buffer.SetTotalTime(5.0);
@@ -193,7 +193,7 @@ class AC_EXPORT WaveBuffer
     
         /**
         \brief Iterates over all samples of this wave buffer within the specified range with a constant iterator.
-        \param[in] iterator Specifies the sample iteration callback function. This function will be used to modify each sample.
+        \param[in] iterator Specifies the sample iteration callback function. This function will be used to read each sample.
         \param[in] indexBegin Specifies the first sample index.
         \param[in] indexEnd Specifies the last sample index. The ending is inclusive, i.e. the iteration range is [indexBegin, indexEnd].
         \see SampleIterationFunction
@@ -202,7 +202,7 @@ class AC_EXPORT WaveBuffer
     
         /**
         \brief Iterates over all samples of this wave buffer within the specified time range with a constant iterator.
-        \param[in] iterator Specifies the sample iteration callback function. This function will be used to modify each sample.
+        \param[in] iterator Specifies the sample iteration callback function. This function will be used to read each sample.
         \param[in] timeBegin Specifies the beginning time point (in seconds). This will be clamped to [0, +inf).
         \param[in] timeEnd Specifies the ending time point (in seconds). This will be clamped to [timeBegin, +inf).
         The ending is inclusive, i.e. the iteration range is [timeBegin, timeEnd].
@@ -212,7 +212,7 @@ class AC_EXPORT WaveBuffer
     
         /**
         \brief Iterates over all samples of this wave buffer with a constant iterator.
-        \param[in] iterator Specifies the sample iteration callback function. This function will be used to modify each sample.
+        \param[in] iterator Specifies the sample iteration callback function. This function will be used to read each sample.
         \see SampleIterationFunction
         */
         void ForEachSample(const SampleConstIterationFunction& iterator) const;
