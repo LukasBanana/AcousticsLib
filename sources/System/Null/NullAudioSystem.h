@@ -49,6 +49,11 @@ class NullAudioSystem : public AudioSystem
         void RegisterSound(NullSound* sound);
         void UnregisterSound(NullSound* sound);
 
+        inline const std::shared_ptr<bool>& GetSharedLiveFlag() const
+        {
+            return sharedLiveFlag_;
+        }
+
     private:
 
         using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
@@ -61,6 +66,7 @@ class NullAudioSystem : public AudioSystem
         Gs::Vector3f            listenerVelocity_;
         ListenerOrientation     listenerOrientation_;
 
+        std::shared_ptr<bool>   sharedLiveFlag_;
         std::mutex              soundManagerMutex_;
 
         // synchronized {

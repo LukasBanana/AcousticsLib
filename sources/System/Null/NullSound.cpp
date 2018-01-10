@@ -14,7 +14,8 @@ namespace Ac
 
 
 NullSound::NullSound(NullAudioSystem* audioSystem) :
-    audioSystem_ { audioSystem }
+    audioSystem_     { audioSystem                      },
+    audioSystemLive_ { audioSystem->GetSharedLiveFlag() }
 {
 }
 
@@ -253,12 +254,14 @@ double NullSound::UnsynchTotalTime() const
 
 void NullSound::RegisterInSoundManager()
 {
-    audioSystem_->RegisterSound(this);
+    if (auto audioSystemLive = audioSystemLive_.lock())
+        audioSystem_->RegisterSound(this);
 }
 
 void NullSound::UnregisterInSoundManager()
 {
-    audioSystem_->UnregisterSound(this);
+    if (auto audioSystemLive = audioSystemLive_.lock())
+        audioSystem_->UnregisterSound(this);
 }
 
 

@@ -17,6 +17,7 @@ namespace Ac
 
 
 NullAudioSystem::NullAudioSystem() :
+    sharedLiveFlag_     { std::make_shared<bool>(true)                              },
     soundManagerThread_ { std::bind(&NullAudioSystem::SoundManagerThreadFunc, this) }
 {
 }
