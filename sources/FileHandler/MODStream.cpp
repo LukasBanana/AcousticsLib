@@ -19,7 +19,7 @@ namespace Ac
 
 
 MODStream::MODStream(std::unique_ptr<std::istream>&& stream) :
-    stream_( std::move(stream) )
+    stream_ { std::move(stream) }
 {
     if (!stream_->good())
         throw std::runtime_error("failed to start reading from MOD stream");

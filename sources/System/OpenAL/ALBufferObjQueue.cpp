@@ -14,7 +14,7 @@ namespace Ac
 
 
 ALBufferObjQueue::ALBufferObjQueue(ALuint sourceHandle) :
-    sourceHandle_( sourceHandle )
+    sourceHandle_ { sourceHandle }
 {
 }
 

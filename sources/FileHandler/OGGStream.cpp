@@ -97,7 +97,7 @@ static long OggTell(void* datasource)
 #undef OGG_DATASOURCE
 
 OGGStream::OGGStream(std::unique_ptr<std::istream>&& stream) :
-    stream_( std::move(stream) )
+    stream_ { std::move(stream) }
 {
     /* Initialize function callbacks */
     ov_callbacks callbacks;

@@ -23,7 +23,7 @@ ALBufferObj::ALBufferObj()
 }
 
 ALBufferObj::ALBufferObj(const WaveBuffer& waveBuffer) :
-    ALBufferObj()
+    ALBufferObj {  }
 {
     BufferData(waveBuffer);
 }

@@ -20,8 +20,8 @@ namespace Ac
 /* ----- Audio system ----- */
 
 ALAudioSystem::ALAudioSystem() :
-    device_ ( OpenDevice()    ),
-    context_( CreateContext() )
+    device_  { OpenDevice()    },
+    context_ { CreateContext() }
 {
 }
 

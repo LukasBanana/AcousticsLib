@@ -19,13 +19,13 @@ namespace Ac
 /* ----- Common ----- */
 
 WaveBuffer::WaveBuffer(const WaveBufferFormat& format) :
-    format_( format )
+    format_ { format }
 {
 }
 
 WaveBuffer::WaveBuffer(WaveBuffer&& other) :
-    format_( other.format_            ),
-    buffer_( std::move(other.buffer_) )
+    format_ { other.format_            },
+    buffer_ { std::move(other.buffer_) }
 {
 }
 
