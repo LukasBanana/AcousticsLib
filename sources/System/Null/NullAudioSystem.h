@@ -10,16 +10,24 @@
 
 
 #include <Ac/AudioSystem.h>
+#include <thread>
+#include <mutex>
+#include <chrono>
 
 
 namespace Ac
 {
 
 
+class NullSound;
+
 class NullAudioSystem : public AudioSystem
 {
 
     public:
+
+        NullAudioSystem();
+        ~NullAudioSystem();
 
         std::string GetVersion() const override;
 
@@ -34,11 +42,33 @@ class NullAudioSystem : public AudioSystem
         void SetListenerOrientation(const ListenerOrientation& orientation) override;
         ListenerOrientation GetListenerOrientation() const override;
 
+    protected:
+
+        friend class NullSound;
+
+        void RegisterSound(NullSound* sound);
+        void UnregisterSound(NullSound* sound);
+
     private:
 
-        Gs::Vector3f        listenerPosition_;
-        Gs::Vector3f        listenerVelocity_;
-        ListenerOrientation listenerOrientation_;
+        using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
+
+        void SoundManagerThreadFunc();
+        bool UpdateSoundState(NullSound* sound, double timeDelta);
+        void ReleaseThread();
+
+        Gs::Vector3f            listenerPosition_;
+        Gs::Vector3f            listenerVelocity_;
+        ListenerOrientation     listenerOrientation_;
+
+        std::mutex              soundManagerMutex_;
+
+        // synchronized {
+        std::vector<NullSound*> playingSounds_;
+        bool                    release_            = false;
+        // }
+
+        std::thread             soundManagerThread_;
 
 };
 

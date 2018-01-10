@@ -10,16 +10,22 @@
 
 
 #include <Ac/Sound.h>
+#include <mutex>
 
 
 namespace Ac
 {
 
 
+class NullAudioSystem;
+
 class NullSound : public Sound
 {
 
     public:
+
+        NullSound(NullAudioSystem* audioSystem);
+        ~NullSound();
 
         /* ----- Playback ----- */
 
@@ -69,15 +75,36 @@ class NullSound : public Sound
 
     private:
 
-        std::shared_ptr<WaveBuffer> waveBuffer_;
+        friend class NullAudioSystem;
 
-        float                       volume_         = 1.0f;
-        float                       pitch_          = 1.0f;
+        void SyncPlay();
+        void SyncPause();
+        void SyncStop();
+
+        void UnsynchPlay();
+        void UnsynchPause();
+        void UnsynchStop();
+
+        double UnsynchTotalTime() const;
+
+        void RegisterInSoundManager();
+        void UnregisterInSoundManager();
+
+        NullAudioSystem*            audioSystem_    = nullptr;
+
+        mutable std::mutex          mutex_;
+
+        // synchronized {
+        std::shared_ptr<WaveBuffer> waveBuffer_;
         double                      seek_           = 0.0f;
-        bool                        looping_        = false;
-        bool                        enabled3D_      = false;
         bool                        playing_        = false;
         bool                        paused_         = false;
+        bool                        looping_        = false;
+        float                       pitch_          = 1.0f;
+        // }
+
+        float                       volume_         = 1.0f;
+        bool                        enabled3D_      = false;
         bool                        spaceRelative_  = false;
         Gs::Vector3f                position_;
         Gs::Vector3f                velocity_;

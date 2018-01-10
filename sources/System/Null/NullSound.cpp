@@ -6,39 +6,63 @@
  */
 
 #include "NullSound.h"
+#include "NullAudioSystem.h"
 
 
 namespace Ac
 {
 
 
+NullSound::NullSound(NullAudioSystem* audioSystem) :
+    audioSystem_ { audioSystem }
+{
+}
+
+NullSound::~NullSound()
+{
+    UnregisterInSoundManager();
+}
+
 /* ----- Playback ----- */
 
 void NullSound::Play()
 {
-    playing_    = true;
-    paused_     = false;
+    if (TotalTime() > 0.0)
+    {
+        SyncPlay();
+        RegisterInSoundManager();
+    }
+    else
+        Stop();
 }
 
 void NullSound::Pause()
 {
-    paused_     = true;
+    if (IsPlaying())
+    {
+        SyncPause();
+        UnregisterInSoundManager();
+    }
 }
 
 void NullSound::Stop()
 {
-    playing_    = false;
-    paused_     = false;
-    seek_       = 0.0;
+    if (IsPlaying())
+    {
+        SyncStop();
+        UnregisterInSoundManager();
+    }
 }
 
 void NullSound::SetLooping(bool enable)
 {
+    std::lock_guard<std::mutex> guard { mutex_ };
     looping_ = enable;
 }
 
 bool NullSound::GetLooping() const
 {
+    std::lock_guard<std::mutex> guard { mutex_ };
     return looping_;
 }
 
@@ -54,63 +78,66 @@ float NullSound::GetVolume() const
 
 void NullSound::SetPitch(float pitch)
 {
+    std::lock_guard<std::mutex> guard { mutex_ };
     pitch_ = pitch;
 }
 
 float NullSound::GetPitch() const
 {
+    std::lock_guard<std::mutex> guard { mutex_ };
     return pitch_;
 }
 
 bool NullSound::IsPlaying() const
 {
+    std::lock_guard<std::mutex> guard { mutex_ };
     return playing_;
 }
 
 bool NullSound::IsPaused() const
 {
+    std::lock_guard<std::mutex> guard { mutex_ };
     return paused_;
 }
 
 void NullSound::SetSeek(double position)
 {
+    std::lock_guard<std::mutex> guard { mutex_ };
     seek_ = position;
 }
 
 double NullSound::GetSeek() const
 {
+    std::lock_guard<std::mutex> guard { mutex_ };
     return seek_;
 }
 
 double NullSound::TotalTime() const
 {
-    if (GetStreamSource())
-        return GetStreamSource()->TotalTime();
-    if (waveBuffer_)
-        return waveBuffer_->GetTotalTime();
-    return 0.0;
+    std::lock_guard<std::mutex> guard { mutex_ };
+    return UnsynchTotalTime();
 }
 
 /* ----- Buffers and streaming ----- */
 
 void NullSound::AttachBuffer(const WaveBuffer& waveBuffer)
 {
-    /* Create shared copy of the input buffer */
-    waveBuffer_ = std::make_shared<WaveBuffer>(waveBuffer);
+    std::lock_guard<std::mutex> guard { mutex_ };
 
-    /* Stop palyback */
-    Stop();
+    /* Create shared copy of the input buffer and stop current playback */
+    waveBuffer_ = std::make_shared<WaveBuffer>(waveBuffer);
+    UnsynchStop();
 }
 
 void NullSound::AttachSharedBuffer(const Sound& sourceBufferSound)
 {
     const auto& sourceBufferSoundNull = static_cast<const NullSound&>(sourceBufferSound);
 
-    /* Share wave buffer with input sound */
-    waveBuffer_ = sourceBufferSoundNull.waveBuffer_;
+    std::lock_guard<std::mutex> guard { mutex_ };
 
-    /* Stop palyback and detach previous buffer object */
-    Stop();
+    /* Share wave buffer with input sound and stop current playback */
+    waveBuffer_ = sourceBufferSoundNull.waveBuffer_;
+    UnsynchStop();
 }
 
 void NullSound::QueueBuffer(const WaveBuffer& waveBuffer)
@@ -171,6 +198,67 @@ void NullSound::SetSpaceRelative(bool enable)
 bool NullSound::GetSpaceRelative() const
 {
     return spaceRelative_;
+}
+
+
+/*
+ * ======= Private: =======
+ */
+
+void NullSound::SyncPlay()
+{
+    std::lock_guard<std::mutex> guard { mutex_ };
+    UnsynchPlay();
+}
+
+void NullSound::SyncPause()
+{
+    std::lock_guard<std::mutex> guard { mutex_ };
+    UnsynchPause();
+}
+
+void NullSound::SyncStop()
+{
+    std::lock_guard<std::mutex> guard { mutex_ };
+    UnsynchStop();
+}
+
+void NullSound::UnsynchPlay()
+{
+    playing_ = true;
+    paused_  = false;
+}
+
+void NullSound::UnsynchPause()
+{
+    playing_ = false;
+    paused_  = true;
+}
+
+void NullSound::UnsynchStop()
+{
+    playing_    = false;
+    paused_     = false;
+    seek_       = 0.0;
+}
+
+double NullSound::UnsynchTotalTime() const
+{
+    if (GetStreamSource())
+        return GetStreamSource()->TotalTime();
+    if (waveBuffer_)
+        return waveBuffer_->GetTotalTime();
+    return 0.0;
+}
+
+void NullSound::RegisterInSoundManager()
+{
+    audioSystem_->RegisterSound(this);
+}
+
+void NullSound::UnregisterInSoundManager()
+{
+    audioSystem_->UnregisterSound(this);
 }
 
 
