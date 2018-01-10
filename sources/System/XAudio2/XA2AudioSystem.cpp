@@ -6,16 +6,45 @@
  */
 
 #include "XA2AudioSystem.h"
+#include "XA2Sound.h"
 
 
 namespace Ac
 {
 
 
+XA2AudioSystem::XA2AudioSystem()
+{
+    #ifndef _XBOX
+    /* Initialize COM (Component Object Model) system */
+    if (CoInitializeEx(nullptr, COINIT_MULTITHREADED) != S_OK)
+        throw std::runtime_error("failed to initialize COM interface for XAudio2");
+    #endif
+
+    /* Create sound device and mastering voice */
+    if (XAudio2Create(device_.ReleaseAndGetAddressOf()) != S_OK)
+        throw std::runtime_error("failed to create XAudio2 device");
+
+    if (device_->CreateMasteringVoice(&masteringVoice_) != S_OK)
+        throw std::runtime_error("failed to create XAudio2 mastering voice");
+}
+
+XA2AudioSystem::~XA2AudioSystem()
+{
+    if (masteringVoice_)
+        masteringVoice_->DestroyVoice();
+
+    #ifndef _XBOX
+    CoUninitialize();
+    #endif
+}
+
 /* ----- Audio system ----- */
 
 std::string XA2AudioSystem::GetVersion() const
 {
+
+
     return "XAudio2";
 }
 
@@ -23,7 +52,7 @@ std::string XA2AudioSystem::GetVersion() const
 
 std::unique_ptr<Sound> XA2AudioSystem::CreateSound()
 {
-    return nullptr; // todo...
+    return std::unique_ptr<Sound>(new XA2Sound(device_.Get()));
 }
 
 /* ----- Listener ----- */

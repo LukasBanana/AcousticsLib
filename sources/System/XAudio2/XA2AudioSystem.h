@@ -10,6 +10,8 @@
 
 
 #include <Ac/AudioSystem.h>
+#include <xaudio2.h>
+#include "ComPtr.h"
 
 
 namespace Ac
@@ -20,6 +22,9 @@ class XA2AudioSystem : public AudioSystem
 {
 
     public:
+
+        XA2AudioSystem();
+        ~XA2AudioSystem();
 
         std::string GetVersion() const override;
 
@@ -33,6 +38,11 @@ class XA2AudioSystem : public AudioSystem
 
         void SetListenerOrientation(const ListenerOrientation& orientation) override;
         ListenerOrientation GetListenerOrientation() const override;
+
+    private:
+
+        ComPtr<IXAudio2>        device_;
+        IXAudio2MasteringVoice* masteringVoice_ = nullptr;
 
 };
 

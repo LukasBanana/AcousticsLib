@@ -12,6 +12,7 @@
 #include "Export.h"
 
 #include <cstdlib>
+#include <cstdint>
 
 
 namespace Ac
