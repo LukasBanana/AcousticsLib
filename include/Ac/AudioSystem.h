@@ -85,13 +85,16 @@ class AC_EXPORT AudioSystem
         Moreover, the platform dependent file extension is always added automatically
         as well as the prefix "AcLib_", i.e. a module name "OpenAL"
         will be translated to "AcLib_OpenALD.dll", if compiled on Windows in Debug mode.
-        \throws std::runtime_exception If loading the audio system from the specified module failed.
-        \throws std::runtime_exception If there is already a loaded instance of an audio system
+        \throws std::runtime_error If loading the audio system from the specified module failed.
+        \throws std::runtime_error If there is already a loaded instance of an audio system
         (make sure there are no more shared pointer references to the previous audio system!)
         */
         static std::unique_ptr<AudioSystem> Load(const std::string& moduleName);
 
-        //! Returns the first available audio system.
+        /**
+        \brief Returns the first available audio system.
+        \throws std::runtime_error If now audio system could be loaded.
+        */
         static std::unique_ptr<AudioSystem> Load();
 
         /**

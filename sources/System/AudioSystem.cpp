@@ -46,7 +46,7 @@ AudioSystem::~AudioSystem()
 std::vector<std::string> AudioSystem::FindModules()
 {
     /* Iterate over all known modules and return those that are availale on the current platform */
-    const std::array<std::string, 2> knownModules {{ "OpenAL", "XAudio2" }};
+    const std::array<std::string, 3> knownModules {{ "OpenAL", "XAudio2", "Null" }};
     
     std::vector<std::string> modules;
     
@@ -111,8 +111,26 @@ std::unique_ptr<AudioSystem> AudioSystem::Load(const std::string& moduleName)
 
 std::unique_ptr<AudioSystem> AudioSystem::Load()
 {
+    /* Get all available audio system modules */
     auto modules = FindModules();
-    return (modules.empty() ? nullptr : Load(modules.front()));
+    if (modules.empty())
+        throw std::runtime_error("no audio system module found");
+
+    /* Try to load modules until a valid audio system has been found */
+    for (const auto& moduleName : modules)
+    {
+        try
+        {
+            if (auto audioSystem = Load(moduleName))
+                return std::move(audioSystem);
+        }
+        catch (const std::runtime_error&)
+        {
+            /* Ignore exception here, and try next module */
+        }
+    }
+
+    throw std::runtime_error("failed to load any available audio system module");
 }
 
 void AudioSystem::Unload(std::unique_ptr<AudioSystem>&& audioSystem)
