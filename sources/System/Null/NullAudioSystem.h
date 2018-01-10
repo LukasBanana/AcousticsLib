@@ -1,5 +1,5 @@
 /*
- * XA2AudioSystem.h
+ * NullAudioSystem.h
  * 
  * This file is part of the "AcousticsLib" project (Copyright (c) 2016 by Lukas Hermanns)
  * See "LICENSE.txt" for license information.
@@ -16,7 +16,7 @@ namespace Ac
 {
 
 
-class XA2AudioSystem : public AudioSystem
+class NullAudioSystem : public AudioSystem
 {
 
     public:
@@ -33,6 +33,12 @@ class XA2AudioSystem : public AudioSystem
 
         void SetListenerOrientation(const ListenerOrientation& orientation) override;
         ListenerOrientation GetListenerOrientation() const override;
+
+    private:
+
+        Gs::Vector3f        listenerPosition_;
+        Gs::Vector3f        listenerVelocity_;
+        ListenerOrientation listenerOrientation_;
 
 };
 

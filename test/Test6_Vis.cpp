@@ -85,7 +85,7 @@ void initGL()
 void initAudio()
 {
     // load audio system and wave buffer
-    audioSys = Ac::AudioSystem::Load();
+    audioSys = Ac::AudioSystem::Load("Null");
     
     #if 0
 

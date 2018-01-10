@@ -45,12 +45,18 @@ else()
 endif()
 
 
+# === Options ===
+
+option(ACLIB_BUILD_NULL_AUDIO_SYSTEM "Build Null Audio System (for Debugging)" ON)
+
+
 # === Global files ===
 
 file(GLOB FilesInclude			${PROJECT_INCLUDE_DIR}/Ac/*.*)
 file(GLOB FilesCore				${PROJECT_SOURCE_DIR}/sources/Core/*.*)
 file(GLOB FilesFileHandler		${PROJECT_SOURCE_DIR}/sources/FileHandler/*.*)
 file(GLOB FilesSystem			${PROJECT_SOURCE_DIR}/sources/System/*.*)
+file(GLOB FilesSystemNull		${PROJECT_SOURCE_DIR}/sources/System/Null/*.*)
 file(GLOB FilesSystemOpenAL		${PROJECT_SOURCE_DIR}/sources/System/OpenAL/*.*)
 file(GLOB FilesSystemXAudio2	${PROJECT_SOURCE_DIR}/sources/System/XAudio2/*.*)
 file(GLOB FilesPlatformBase		${PROJECT_SOURCE_DIR}/sources/Platform/*.*)
@@ -80,6 +86,7 @@ source_group("Include" FILES ${FilesInclude})
 source_group("Sources\\Core" FILES ${FilesCore})
 source_group("Sources\\FileHandler" FILES ${FilesFileHandler})
 source_group("Sources\\System" FILES ${FilesSystem})
+source_group("Sources\\System\\Null" FILES ${FilesSystemNull})
 source_group("Sources\\System\\OpenAL" FILES ${FilesSystemOpenAL})
 source_group("Sources\\System\\XAudio2" FILES ${FilesSystemXAudio2})
 source_group("Sources\\Platform" FILES ${FilesPlatformBase} ${FilesPlatform})
@@ -113,6 +120,15 @@ elseif(UNIX)
 	target_link_libraries(AcLib dl pthread)
 endif()
 
+# Null audio system
+if(ACLIB_BUILD_NULL_AUDIO_SYSTEM)
+	message("Null Audio System -> AcLib_Null project included")
+	add_library(AcLib_Null SHARED ${FilesSystemNull})
+	set_target_properties(AcLib_Null PROPERTIES LINKER_LANGUAGE CXX DEBUG_POSTFIX "D")
+	target_link_libraries(AcLib_Null AcLib)
+	target_compile_features(AcLib_Null PRIVATE cxx_range_for)
+endif()
+
 # Library: GaussianLib
 include(cmake/FindGaussianLib.cmake)
 
@@ -143,7 +159,7 @@ if(WIN32)
 	message("Found XAudio2 -> AcLib_XAudio2 project included")
 	add_library(AcLib_XAudio2 SHARED ${FilesSystemXAudio2})
 	set_target_properties(AcLib_XAudio2 PROPERTIES LINKER_LANGUAGE CXX DEBUG_POSTFIX "D")
-	target_link_libraries(AcLib_XAudio2 AcLib)
+	target_link_libraries(AcLib_XAudio2 AcLib Xaudio2)
 	target_compile_features(AcLib_XAudio2 PRIVATE cxx_range_for)
 endif()
 

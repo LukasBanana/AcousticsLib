@@ -21,12 +21,7 @@ std::string XA2AudioSystem::GetVersion() const
 
 /* ----- Sounds ----- */
 
-std::unique_ptr<Sound> XA2AudioSystem::LoadSound(const std::string& filename)
-{
-    return nullptr; // todo...
-}
-
-std::unique_ptr<Sound3D> XA2AudioSystem::LoadSound3D(const std::string& filename)
+std::unique_ptr<Sound> XA2AudioSystem::CreateSound()
 {
     return nullptr; // todo...
 }
