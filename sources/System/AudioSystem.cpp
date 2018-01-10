@@ -19,6 +19,7 @@
 #include <fstream>
 #include <cstdint>
 #include <functional>
+#include <map>
 
 //!!!TESTING!!!
 #include <iostream>
@@ -33,8 +34,7 @@ namespace Ac
 
 /* ----- Audio system ----- */
 
-static std::weak_ptr<AudioSystem>   g_audioSystemRef;
-static std::unique_ptr<Module>      g_audioSystemModule;
+static std::map<AudioSystem*, std::unique_ptr<Module>> g_audioSystemModules;
 
 AudioSystem::~AudioSystem()
 {
@@ -58,7 +58,7 @@ std::vector<std::string> AudioSystem::FindModules()
     
     return modules;
 }
-    
+
 static AudioSystem* LoadAudioSystem(Module& module, const std::string& moduleFilename)
 {
     /* Load "Ac_AudioSystem_Alloc" procedure */
@@ -83,30 +83,46 @@ static std::string LoadAudioSystemName(Module& module)
     return "";
 }
 
-std::shared_ptr<AudioSystem> AudioSystem::Load(const std::string& moduleName)
+std::unique_ptr<AudioSystem> AudioSystem::Load(const std::string& moduleName)
 {
-    /* Check if previous module can be safely released (i.e. the previous audio system has been deleted) */
-    if (!g_audioSystemRef.expired())
-        throw std::runtime_error("failed to load audio system (only a single instance can be loaded at a time)");
-
     /* Load audio system module */
     auto moduleFilename = Module::GetModuleFilename(moduleName);
     auto module = Module::Load(moduleFilename);
-    auto audioSystem = std::shared_ptr<AudioSystem>(LoadAudioSystem(*module, moduleFilename));
-    audioSystem->name_ = LoadAudioSystemName(*module);
 
-    /* Store new module globally */
-    g_audioSystemModule = std::move(module);
-    g_audioSystemRef = audioSystem;
+    try
+    {
+        /* Allocate audio system */
+        auto audioSystem = std::unique_ptr<AudioSystem>(LoadAudioSystem(*module, moduleFilename));
+        audioSystem->name_ = LoadAudioSystemName(*module);
 
-    /* Return new audio system and unique pointer */
-    return audioSystem;
+        /* Store new module globally */
+        g_audioSystemModules[audioSystem.get()] = std::move(module);
+
+        /* Return new audio system and unique pointer */
+        return audioSystem;
+    }
+    catch (const std::exception&)
+    {
+        /* Keep module, otherwise the exception's vtable might be corrupted because it's part of the module */
+        g_audioSystemModules[nullptr] = std::move(module);
+        throw;
+    }
 }
 
-std::shared_ptr<AudioSystem> AudioSystem::Load()
+std::unique_ptr<AudioSystem> AudioSystem::Load()
 {
     auto modules = FindModules();
     return (modules.empty() ? nullptr : Load(modules.front()));
+}
+
+void AudioSystem::Unload(std::unique_ptr<AudioSystem>&& audioSystem)
+{
+    auto it = g_audioSystemModules.find(audioSystem.get());
+    if (it != g_audioSystemModules.end())
+    {
+        audioSystem.release();
+        g_audioSystemModules.erase(it);
+    }
 }
 
 /* ----- Sounds ----- */
