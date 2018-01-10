@@ -276,6 +276,11 @@ void keyboardCallback(unsigned char key, int x, int y)
             exit(0);
             break;
             
+        case ' ':
+            if (sound)
+                sound->Stop();
+            break;
+
         case '\r':
             if (sound)
             {

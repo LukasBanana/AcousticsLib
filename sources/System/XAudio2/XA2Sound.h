@@ -11,6 +11,7 @@
 
 #include <Ac/Sound.h>
 #include <xaudio2.h>
+#include <memory>
 #include "ComPtr.h"
 
 
@@ -75,10 +76,18 @@ class XA2Sound : public Sound
     private:
 
         void CreateSourceVoice(const WaveBufferFormat& format, UINT32 flags = 0);
+        void CreateSourceVoiceForBuffer(const std::shared_ptr<WaveBuffer>& waveBuffer);
+        void SubmitBuffer();
 
-        IXAudio2*               device_         = nullptr;
-        IXAudio2SourceVoice*    sourceVoice_    = nullptr;
-        UINT64                  sampleRate_     = 0u;
+        UINT64 GetSamplesPlayer() const;
+
+        IXAudio2*                   device_         = nullptr;
+        IXAudio2SourceVoice*        sourceVoice_    = nullptr;
+
+        UINT64                      sampleRate_     = 0u;
+        bool                        paused_         = false;
+
+        std::shared_ptr<WaveBuffer> waveBuffer_;
 
 };
 

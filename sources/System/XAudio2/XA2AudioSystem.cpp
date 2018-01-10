@@ -43,8 +43,6 @@ XA2AudioSystem::~XA2AudioSystem()
 
 std::string XA2AudioSystem::GetVersion() const
 {
-
-
     return "XAudio2";
 }
 
