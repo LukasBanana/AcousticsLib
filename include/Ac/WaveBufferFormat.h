@@ -20,28 +20,28 @@ namespace Ac
 
 
 //! 96 kHz sample rate.
-static const unsigned int sampleRate96kHz   = 96000;
+static const std::uint32_t sampleRate96kHz  = 96000;
 
 //! 48 kHz sample rate (used for DVDs).
-static const unsigned int sampleRate48kHz   = 48000;
+static const std::uint32_t sampleRate48kHz  = 48000;
 
 //! 44.1 kHz sample rate.
-static const unsigned int sampleRate44kHz   = 44100;
+static const std::uint32_t sampleRate44kHz  = 44100;
 
 //! 32 kHz sample rate.
-static const unsigned int sampleRate32kHz   = 32000;
+static const std::uint32_t sampleRate32kHz  = 32000;
 
 //! 22.05 kHz sample rate.
-static const unsigned int sampleRate22kHz   = 22050;
+static const std::uint32_t sampleRate22kHz  = 22050;
 
 //! 16 kHz sample rate.
-static const unsigned int sampleRate16kHz   = 16000;
+static const std::uint32_t sampleRate16kHz  = 16000;
 
 //! 11.025 kHz sample rate.
-static const unsigned int sampleRate11kHz   = 11025;
+static const std::uint32_t sampleRate11kHz  = 11025;
 
 //! 8 kHz sample rate.
-static const unsigned int sampleRate8kHz    = 8000;
+static const std::uint32_t sampleRate8kHz   = 8000;
 
 
 //! Wave buffer format descriptor structure.
@@ -51,7 +51,7 @@ struct AC_EXPORT WaveBufferFormat
     WaveBufferFormat(const WaveBufferFormat&) = default;
     WaveBufferFormat& operator = (const WaveBufferFormat&) = default;
 
-    WaveBufferFormat(unsigned int sampleRate, unsigned short bitsPerSample, unsigned short channels);
+    WaveBufferFormat(std::uint32_t sampleRate, std::uint16_t bitsPerSample, std::uint16_t channels);
 
     //! Returns the size (in bytes) for each sample frame (or rather sample block alignment) which is computed as follows: (channels * bitsPerSample) / 8.
     std::size_t BytesPerFrame() const;
@@ -69,13 +69,13 @@ struct AC_EXPORT WaveBufferFormat
     \brief Number of samples per second (in Hz). Default value is 44100.
     \remarks The commonly used sample rates are: 8 kHz, 11.025 kHz, 22.05 kHz, and 44.1 kHz.
     */
-    unsigned int    sampleRate      = 44100;
+    std::uint32_t sampleRate    = 44100;
 
     //! Number of bits per sample. Typical values are 8, 12, 16, 24, and 32. Default value is 16.
-    unsigned short  bitsPerSample   = 16;
+    std::uint16_t bitsPerSample = 16;
 
     //! Number of channels. 1 for mono and 2 for stereo. Default value is 1.
-    unsigned short  channels        = 1;
+    std::uint16_t channels      = 1;
 };
 
 

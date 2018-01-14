@@ -9,13 +9,16 @@
 #define AC_CHANNEL_TYPES_H
 
 
+#include <cstdint>
+
+
 namespace Ac
 {
 
 
 struct ChannelTypes2
 {
-    enum : unsigned short
+    enum : std::uint16_t
     {
         Left = 0,
         Right,
@@ -24,7 +27,7 @@ struct ChannelTypes2
 
 struct ChannelTypes3
 {
-    enum : unsigned short
+    enum : std::uint16_t
     {
         Left = 0,
         Center,
@@ -34,7 +37,7 @@ struct ChannelTypes3
 
 struct ChannelTypes4
 {
-    enum : unsigned short
+    enum : std::uint16_t
     {
         FrontLeft = 0,
         FrontRight,
@@ -45,7 +48,7 @@ struct ChannelTypes4
 
 struct ChannelTypes5
 {
-    enum : unsigned short
+    enum : std::uint16_t
     {
         FrontLeft = 0,
         FrontCenter,
@@ -57,7 +60,7 @@ struct ChannelTypes5
 
 struct ChannelTypes5_1
 {
-    enum : unsigned short
+    enum : std::uint16_t
     {
         FrontLeft = 0,
         FrontCenter,
@@ -70,7 +73,7 @@ struct ChannelTypes5_1
 
 struct ChannelTypes6_1
 {
-    enum : unsigned short
+    enum : std::uint16_t
     {
         FrontLeft = 0,
         FrontCenter,
@@ -84,7 +87,7 @@ struct ChannelTypes6_1
 
 struct ChannelTypes7_1
 {
-    enum : unsigned short
+    enum : std::uint16_t
     {
         FrontLeft = 0,
         FrontCenter,

@@ -24,7 +24,7 @@ namespace Synthesizer
 /* ----- Wave generators ----- */
 
 static void SineGeneratorCallback(
-    double& sample, unsigned short channel, std::size_t index, double timePoint,
+    double& sample, std::uint16_t channel, std::size_t index, double timePoint,
     double amplitude, double phase, double frequency)
 {
     sample += std::sin((timePoint + phase)*2.0*M_PI*frequency)*amplitude;
@@ -36,7 +36,7 @@ AC_EXPORT SampleIterationFunction SineGenerator(double amplitude, double phase, 
 }
 
 static void HalfCircleGeneratorCallback(
-    double& sample, unsigned short channel, std::size_t index, double timePoint,
+    double& sample, std::uint16_t channel, std::size_t index, double timePoint,
     double amplitude, double phase, double frequency)
 {
     double xInt = 0.0;
@@ -56,7 +56,7 @@ AC_EXPORT SampleIterationFunction HalfCircleGenerator(double amplitude, double p
 
 AC_EXPORT SampleIterationFunction Amplifier(double multiplicator)
 {
-    return [multiplicator](double& sample, unsigned short channel, std::size_t index, double timePoint)
+    return [multiplicator](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
     {
         sample *= multiplicator;
     };
@@ -74,7 +74,7 @@ static double Random(double a, double b)
 
 AC_EXPORT SampleIterationFunction WhiteNoiseGenerator(double amplitude)
 {
-    return [amplitude](double& sample, unsigned short channel, std::size_t index, double timePoint)
+    return [amplitude](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
     {
         sample += Random(-1.0, 1.0) * amplitude;
     };
@@ -83,7 +83,7 @@ AC_EXPORT SampleIterationFunction WhiteNoiseGenerator(double amplitude)
 AC_EXPORT SampleIterationFunction BrownNoiseGenerator(double amplitude, double& state)
 {
     state = 0.0;
-    return [amplitude, &state](double& sample, unsigned short channel, std::size_t index, double timePoint)
+    return [amplitude, &state](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
     {
         auto noiseLerp = (state + 1.0)*0.5;
         auto noise = Random(
@@ -119,7 +119,7 @@ AC_EXPORT void ReverseWaveBuffer(WaveBuffer& buffer)
     /* Read from the copy of the buffer to prevent reading and writing on the same buffer */
     auto bufferCopy = buffer;
     buffer.ForEachSample(
-        [&bufferCopy](double& sample, unsigned short channel, std::size_t index, double timePoint)
+        [&bufferCopy](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
         {
             sample = bufferCopy.ReadSample(bufferCopy.GetSampleFrames() - index - 1u, channel);
         }
@@ -154,7 +154,7 @@ AC_EXPORT void BlurWaveBuffer(WaveBuffer& buffer, double timeSpread, double vari
     /* Read from the copy of the buffer to prevent reading and writing on the same buffer */
     auto bufferCopy = buffer;
     buffer.ForEachSample(
-        [&](double& sample, unsigned short channel, std::size_t index, double timePoint)
+        [&](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
         {
             sample = 0.0;
 
@@ -183,7 +183,7 @@ AC_EXPORT void FadeWaveBuffers(
     if (timePointFrom < timePointTo)
     {
         buffer.ForEachSample(
-            [&](double& sample, unsigned short channel, std::size_t index, double timePoint)
+            [&](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
             {
                 /* Compute fading interpolator */
                 double t = (timePoint - timePointFrom) / (timePointTo - timePointFrom);

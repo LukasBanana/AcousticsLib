@@ -12,10 +12,10 @@ namespace Ac
 {
 
 
-WaveBufferFormat::WaveBufferFormat(unsigned int sampleRate, unsigned short bitsPerSample, unsigned short channels) :
-    sampleRate      ( sampleRate    ),
-    bitsPerSample   ( bitsPerSample ),
-    channels        ( channels      )
+WaveBufferFormat::WaveBufferFormat(std::uint32_t sampleRate, std::uint16_t bitsPerSample, std::uint16_t channels) :
+    sampleRate    { sampleRate    },
+    bitsPerSample { bitsPerSample },
+    channels      { channels      }
 {
 }
 

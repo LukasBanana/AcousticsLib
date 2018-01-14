@@ -39,7 +39,7 @@ struct AC_EXPORT ListenerOrientation
 //! Loading sound flags enumeration.
 struct SoundFlags
 {
-    using BitMask = unsigned int;
+    using BitMask = std::uint32_t;
     enum
     {
         //! Indicates that "LoadSound" shall always return a valid Sound object, even if the sound file could not be loaded.

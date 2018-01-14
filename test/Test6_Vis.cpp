@@ -105,7 +105,7 @@ void initAudio()
     waveBuffer.SetTotalTime(3.0);
 
     waveBuffer.ForEachSample(
-        [](double& sample, unsigned short channel, std::size_t index, double timePoint)
+        [](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
         {
             auto f = 200.0*timePoint;
             auto a1 = 0.5;
@@ -140,7 +140,7 @@ void initAudio()
     waveBuffer.ForEachSample(
         #if 0
 
-        [](double& sample, unsigned short channel, std::size_t index, double timePoint)
+        [](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
         {
             auto amplitude = 0.5;
             auto pos = std::fmod(timePoint*100.0, 10.0);
@@ -151,7 +151,7 @@ void initAudio()
 
         #elif 1
 
-        [&](double& sample, unsigned short channel, std::size_t index, double timePoint)
+        [&](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
         {
             double s0 = sample, s1 = sample;
             brownNoiseGen(s0, channel, index, timePoint);

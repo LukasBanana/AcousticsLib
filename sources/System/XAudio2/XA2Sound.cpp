@@ -27,12 +27,19 @@ XA2Sound::~XA2Sound()
 
 void XA2Sound::Play()
 {
-    if (sourceVoice_ && waveBuffer_)
+    #if 1 //TODO -> temporary solution for rewinding
+
+    if (waveBuffer_)
     {
-        if (GetSamplesPlayer() == 0)
+        if (!sourceVoice_)
+        {
+            CreateSourceVoice(waveBuffer_->GetFormat());
             SubmitBuffer();
+        }
         sourceVoice_->Start();
     }
+
+    #endif
     paused_ = false;
 }
 
@@ -49,6 +56,10 @@ void XA2Sound::Stop()
     {
         sourceVoice_->Stop();
         sourceVoice_->FlushSourceBuffers();
+        #if 1 //TODO -> temporary solution for rewinding
+        sourceVoice_->DestroyVoice();
+        sourceVoice_ = nullptr;
+        #endif
     }
     paused_ = false;
 }
@@ -232,6 +243,10 @@ void XA2Sound::CreateSourceVoiceForBuffer(const std::shared_ptr<WaveBuffer>& wav
         /* Create source voice with wave buffer format and submit buffer to queue */
         waveBuffer_ = waveBuffer;
         CreateSourceVoice(waveBuffer_->GetFormat());
+
+        #if 1 //TODO -> temporary solution for rewinding
+        SubmitBuffer();
+        #endif
     }
 }
 

@@ -40,7 +40,7 @@ void ALBufferObj::BufferData(ALenum format, const ALvoid* buffer, ALsizei size, 
     alBufferData(handle_, format, buffer, size, sampleRate);
 
     /* Compute total buffer time in seconds */
-    unsigned short channels = 0, bitsPerSample = 0;
+    std::uint16_t channels = 0, bitsPerSample = 0;
     WaveFormatFromALFormat(format, channels, bitsPerSample);
     
     totalTime_ = WaveBufferFormat(sampleRate, channels, bitsPerSample).TotalTime(size);

@@ -194,11 +194,12 @@ std::vector<std::string> OGGStream::InfoComments() const
 
 WaveBufferFormat OGGStream::GetFormat() const
 {
-    return WaveBufferFormat(
-        static_cast<unsigned int>(info_->rate),
+    return
+    {
+        static_cast<std::uint32_t>(info_->rate),
         16,
-        static_cast<unsigned short>(info_->channels)
-    );
+        static_cast<std::uint16_t>(info_->channels)
+    };
 }
 
 

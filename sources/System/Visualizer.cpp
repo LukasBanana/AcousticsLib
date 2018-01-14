@@ -17,7 +17,7 @@ namespace Visualizer
 
 
 static void GetAmplitudeRange(
-    const WaveBuffer& buffer, unsigned short channel, double timeBegin, double timeEnd, double& ampMin, double& ampMax)
+    const WaveBuffer& buffer, std::uint16_t channel, double timeBegin, double timeEnd, double& ampMin, double& ampMax)
 {
     auto indexBegin = buffer.GetIndexFromTimePoint(timeBegin);
     auto indexEnd   = buffer.GetIndexFromTimePoint(timeEnd);
@@ -37,7 +37,7 @@ static void GetAmplitudeRange(
 }
 
 AC_EXPORT void DrawWaveBuffer(
-    Renderer& renderer, const WaveBuffer& buffer, unsigned short channel,
+    Renderer& renderer, const WaveBuffer& buffer, std::uint16_t channel,
     const Gs::Vector2i& position, const Gs::Vector2i& size, double timeBegin, double timeEnd)
 {
     if (channel >= buffer.GetFormat().channels || size.x <= 0 || size.y <= 0)
@@ -78,7 +78,7 @@ AC_EXPORT void DrawWaveBuffer(
 }
 
 AC_EXPORT void DrawWaveBuffer(
-    Renderer& renderer, const WaveBuffer& buffer, unsigned short channel, const Gs::Vector2i& position, const Gs::Vector2i& size)
+    Renderer& renderer, const WaveBuffer& buffer, std::uint16_t channel, const Gs::Vector2i& position, const Gs::Vector2i& size)
 {
     DrawWaveBuffer(renderer, buffer, channel, position, size, 0.0, buffer.GetTotalTime());
 }

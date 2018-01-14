@@ -63,7 +63,7 @@ void WaveBuffer::SetTotalTime(double duration)
     SetSampleFrames(static_cast<std::size_t>(bufferSize));
 }
 
-double WaveBuffer::ReadSample(std::size_t index, unsigned short channel) const
+double WaveBuffer::ReadSample(std::size_t index, std::uint16_t channel) const
 {
     double sample = 0.0;
 
@@ -86,7 +86,7 @@ double WaveBuffer::ReadSample(std::size_t index, unsigned short channel) const
     return sample;
 }
 
-void WaveBuffer::WriteSample(std::size_t index, unsigned short channel, double sample)
+void WaveBuffer::WriteSample(std::size_t index, std::uint16_t channel, double sample)
 {
     PCMSample pcmSample;
     pcmSample.raw = Data(GetDataOffset(index, channel));
@@ -105,12 +105,12 @@ void WaveBuffer::WriteSample(std::size_t index, unsigned short channel, double s
     }
 }
 
-double WaveBuffer::ReadSample(double timePoint, unsigned short channel) const
+double WaveBuffer::ReadSample(double timePoint, std::uint16_t channel) const
 {
     return ReadSample(GetIndexFromTimePoint(timePoint), channel);
 }
 
-void WaveBuffer::WriteSample(double timePoint, unsigned short channel, double sample)
+void WaveBuffer::WriteSample(double timePoint, std::uint16_t channel, double sample)
 {
     WriteSample(GetIndexFromTimePoint(timePoint), channel, sample);
 }
@@ -152,11 +152,11 @@ void WaveBuffer::SetFormat(const WaveBufferFormat& format)
             else
                 tempBuffer.SetTotalTime(GetTotalTime());
 
-            unsigned short maxChannels = (format_.channels - 1);
+            std::uint16_t maxChannels = (format_.channels - 1);
 
             /* Copy samples from current buffer to temporary buffer */
             tempBuffer.ForEachSample(
-                [&](double& sample, unsigned short channel, std::size_t index, double timePoint)
+                [&](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
                 {
                     channel = std::min(channel, maxChannels);
                     if (format_.sampleRate == format.sampleRate)
@@ -174,7 +174,7 @@ void WaveBuffer::SetFormat(const WaveBufferFormat& format)
     }
 }
 
-void WaveBuffer::SetChannels(unsigned short channels)
+void WaveBuffer::SetChannels(std::uint16_t channels)
 {
     auto format = GetFormat();
     format.channels = channels;
@@ -215,7 +215,7 @@ void WaveBuffer::ForEachSample(const SampleIterationFunction& iterator, std::siz
 
     for (auto i = indexBegin; i <= indexEnd; ++i)
     {
-        for (unsigned short chn = 0; chn < format_.channels; ++chn)
+        for (std::uint16_t chn = 0; chn < format_.channels; ++chn)
         {
             /* Read sample, modify sample with generator callback, and write sample back to buffer */
             auto sample = ReadSample(i, chn);
@@ -255,7 +255,7 @@ void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator, std
     
     for (auto i = indexBegin; i <= indexEnd; ++i)
     {
-        for (unsigned short chn = 0; chn < format_.channels; ++chn)
+        for (std::uint16_t chn = 0; chn < format_.channels; ++chn)
         {
             /* Read sample and pass to constant iterator */
             iterator(ReadSample(i, chn), chn, i, timePoint);
@@ -325,7 +325,7 @@ void WaveBuffer::CopyFrom(const WaveBuffer& source, std::size_t indexBegin, std:
 
         /* Read samples from source buffer and write them into this buffer */
         ForEachSample(
-            [&](double& sample, unsigned short channel, std::size_t index, double timePoint)
+            [&](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
             {
                 sample = source.ReadSample(timeBegin + (timePoint - destTimeOffset), channel);
             },
@@ -371,7 +371,7 @@ void WaveBuffer::CopyFrom(const WaveBuffer& source, double destTimeOffset)
 
 /* ----- Raw buffer access ----- */
 
-std::size_t WaveBuffer::GetDataOffset(std::size_t index, unsigned short channel) const
+std::size_t WaveBuffer::GetDataOffset(std::size_t index, std::uint16_t channel) const
 {
     /* Scale index by sample block alignment and append channel offset */
     auto channelOffset = (channel < format_.channels ? channel * format_.bitsPerSample / 8 : 0);

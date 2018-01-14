@@ -34,7 +34,7 @@ using PCMBuffer = std::vector<char>;
 \remarks This function interface is used for the 'ForEachSample' function.
 \see WaveBuffer::ForEachSample
 */
-using SampleIterationFunction = std::function<void(double& sample, unsigned short channel, std::size_t index, double timePoint)>;
+using SampleIterationFunction = std::function<void(double& sample, std::uint16_t channel, std::size_t index, double timePoint)>;
 
 /**
 \brief Interface of the constant iteration callback function to iterate over wave buffer samples.
@@ -45,7 +45,7 @@ using SampleIterationFunction = std::function<void(double& sample, unsigned shor
 \remarks This function interface is used for the 'ForEachSample' function.
 \see WaveBuffer::ForEachSample
 */
-using SampleConstIterationFunction = std::function<void(double sample, unsigned short channel, std::size_t index, double timePoint)>;
+using SampleConstIterationFunction = std::function<void(double sample, std::uint16_t channel, std::size_t index, double timePoint)>;
 
 
 /**
@@ -65,7 +65,7 @@ buffer.ForEachSample(Ac::Synthesizer::SineGenerator(0.3, 0.0, 350.0), 0.0, 2.5);
 
 // Generate sample for the second half of the wave buffer (here with a custom function).
 buffer.ForEachSample(
-    [](double& sample, unsigned short channel, std::size_t index, double timePoint)
+    [](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
     {
         //sample += ...
     },
@@ -111,21 +111,21 @@ class AC_EXPORT WaveBuffer
         \return The read sample in the range [-1, 1].
         \see GetIndexFromTimePoint
         */
-        double ReadSample(std::size_t index, unsigned short channel) const;
+        double ReadSample(std::size_t index, std::uint16_t channel) const;
 
         //! Sets the sample at the specified index of the specified channel.
-        void WriteSample(std::size_t index, unsigned short channel, double sample);
+        void WriteSample(std::size_t index, std::uint16_t channel, double sample);
 
         //! Returns the sample at the specified time point of the specified channel.
-        double ReadSample(double timePoint, unsigned short channel) const;
+        double ReadSample(double timePoint, std::uint16_t channel) const;
 
         //! Sets the sample at the specified time point of the specified channel.
-        void WriteSample(double timePoint, unsigned short channel, double sample);
+        void WriteSample(double timePoint, std::uint16_t channel, double sample);
 
         /**
         \brief Determines the sample index for the specified time point (in seconds).
-        \see ReadSample(std::size_t, unsigned short) const
-        \see WriteSample(std::size_t, unsigned short, double)
+        \see ReadSample(std::size_t, std::uint16_t) const
+        \see WriteSample(std::size_t, std::uint16_t, double)
         \see GetTimePointFromIndex
         */
         std::size_t GetIndexFromTimePoint(double timePoint) const;
@@ -153,7 +153,7 @@ class AC_EXPORT WaveBuffer
         \endcode
         \see SetFormat
         */
-        void SetChannels(unsigned short channels);
+        void SetChannels(std::uint16_t channels);
 
         /**
         \brief Swaps the endianness (byte order) of each sample between little-endian and big-endian.
@@ -290,7 +290,7 @@ class AC_EXPORT WaveBuffer
         \brief Returns the byte offset for the specified sample index and channel.
         \see Data(std::size_t)
         */
-        std::size_t GetDataOffset(std::size_t index, unsigned short channel) const;
+        std::size_t GetDataOffset(std::size_t index, std::uint16_t channel) const;
 
         /**
         \brief Returns a raw pointer to the PCM buffer data with the specified byte offset.

@@ -21,7 +21,7 @@ namespace Ac
 
 bool ALFormatFromWaveFormat(ALenum& outFormat, const WaveBufferFormat& inFormat);
 
-void WaveFormatFromALFormat(ALenum format, unsigned short& channels, unsigned short& bitsPerSample);
+void WaveFormatFromALFormat(ALenum format, std::uint16_t& channels, std::uint16_t& bitsPerSample);
 
 std::string ALErrorToString(ALenum error);
 

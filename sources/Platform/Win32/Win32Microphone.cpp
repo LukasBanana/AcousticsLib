@@ -16,9 +16,9 @@ namespace Ac
 struct BufferFormatFlags
 {
     DWORD           flag;
-    unsigned int    sampleRate;
-    unsigned short  bitsPerSample;
-    unsigned short  channels;
+    std::uint32_t   sampleRate;
+    std::uint16_t   bitsPerSample;
+    std::uint16_t   channels;
 };
 
 std::vector<MicrophoneDevice> Win32Microphone::QueryDevices() const
@@ -65,7 +65,7 @@ std::vector<MicrophoneDevice> Win32Microphone::QueryDevices() const
         for (const auto& stng : settings)
         {
             if ((caps.dwFormats & stng.flag) != 0)
-                dev.formats.push_back(WaveBufferFormat(stng.sampleRate, stng.bitsPerSample, stng.channels));
+                dev.formats.push_back(WaveBufferFormat { stng.sampleRate, stng.bitsPerSample, stng.channels });
         }
 
         devices.push_back(dev);
@@ -79,7 +79,7 @@ std::unique_ptr<WaveBuffer> Win32Microphone::ReceivedInput()
     if (recording_)
     {
         /* The receiver buffer will be filled from another thread, so we need a lock guard here */
-        std::lock_guard<std::mutex> lock(recvBufferMutex_);
+        std::lock_guard<std::mutex> lock { recvBufferMutex_ };
         return std::move(recvBuffer_);
     }
     return nullptr;
@@ -130,11 +130,11 @@ bool Win32Microphone::IsRecording() const
 void Win32Microphone::OnSync(DWORD bytesRecorded)
 {
     /* This function is called from another thread, so we need to have a lock guard for the receiver buffer */
-    std::lock_guard<std::mutex> lock(recvBufferMutex_);
+    std::lock_guard<std::mutex> lock { recvBufferMutex_ };
 
     /* Create new receiver buffer (if previous buffer was moved to user) */
     if (!recvBuffer_)
-        recvBuffer_ = std::unique_ptr<WaveBuffer>(new WaveBuffer(recvBufferFormat_));
+        recvBuffer_ = std::unique_ptr<WaveBuffer>(new WaveBuffer { recvBufferFormat_ });
 
     /* Copy input buffer to receiver buffer */
     recvBuffer_->SetSampleFrames(buffer_.size() / recvBufferFormat_.BytesPerFrame());

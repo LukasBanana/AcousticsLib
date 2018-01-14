@@ -33,7 +33,7 @@ int main()
         //Ac::Synthesizer::GenerateSineWave(buffer, 1.0, 2.0, 0.2, 0.0, 1500.0);
 
         buffer.ForEachSample(
-            [](double& sample, unsigned short channel, std::size_t index, double phase)
+            [](double& sample, std::uint16_t channel, std::size_t index, double phase)
             {
                 #if 0
 
@@ -111,7 +111,7 @@ int main()
         outputBuffer = buffer;
 
         /*outputBuffer.ForEachSample(
-            [&](double& sample, unsigned short channel, std::size_t index, double phase)
+            [&](double& sample, std::uint16_t channel, std::size_t index, double phase)
             {
                 sample = buffer.ReadSample(phase, channel);
                 if (phase >= 0.2)
