@@ -31,10 +31,7 @@ class AC_EXPORT Sound
         Sound(const Sound&) = delete;
         Sound& operator = (const Sound&) = delete;
 
-        virtual ~Sound()
-        {
-            // dummy
-        }
+        virtual ~Sound();
 
         /* ----- Playback ----- */
 
@@ -88,6 +85,7 @@ class AC_EXPORT Sound
         /**
         \brief Attaches the wave buffer of the specified sound object.
         \remarks This can be used to make multiple sounds share the same wave buffer.
+        \note This does not required the 'stored buffer' (i.e. "AttachAndStoreBuffer" is not required), because this applies to an internal buffer.
         */
         virtual void AttachSharedBuffer(const Sound& sourceBufferSound) = 0;
 
@@ -145,6 +143,32 @@ class AC_EXPORT Sound
             return streamSource_;
         }
 
+        /* ----- Stored Buffer ----- */
+
+        /**
+        \brief Attaches the specifies wave buffer to this sound and stores the shared object.
+        \remarks This allows to retrieve the wave buffer after the sound has been created.
+        \see GetStoredBuffer
+        \see DropStoredBuffer
+        */
+        void AttachAndStoreBuffer(const std::shared_ptr<WaveBuffer>& waveBuffer);
+
+        /**
+        \brief Drops the buffer that has previously been stored by the "AttachAndStoreBuffer" function.
+        \see AttachAndStoreBuffer
+        \see GetStoredBuffer
+        */
+        void DropStoredBuffer();
+
+        /**
+        \brief Returns the wave buffer that can be optionally stored for the sound object.
+        \see AttachAndStoreBuffer
+        */
+        inline const std::shared_ptr<WaveBuffer>& GetStoredBuffer() const
+        {
+            return waveBuffer_;
+        }
+
         /* ----- 3D sound ----- */
 
         /**
@@ -181,7 +205,8 @@ class AC_EXPORT Sound
 
     private:
 
-        std::shared_ptr<AudioStream> streamSource_;
+        std::shared_ptr<AudioStream>    streamSource_;
+        std::shared_ptr<WaveBuffer>     waveBuffer_;
 
 };
 

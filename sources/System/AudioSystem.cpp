@@ -189,7 +189,11 @@ std::unique_ptr<Sound> AudioSystem::LoadSound(const std::string& filename, const
             if ((flags & SoundFlags::Enable3D) != 0)
                 waveBuffer.SetChannels(1);
 
-            sound->AttachBuffer(waveBuffer);
+            /* Attach wave buffer to sound object */
+            if ((flags & SoundFlags::StoreWaveBuffer) != 0)
+                sound->AttachAndStoreBuffer(std::make_shared<WaveBuffer>(std::move(waveBuffer)));
+            else
+                sound->AttachBuffer(waveBuffer);
         }
     }
     else if ((flags & SoundFlags::AlwaysCreateSound) == 0)

@@ -50,6 +50,13 @@ struct SoundFlags
         \see Sound::Enable3D
         */
         Enable3D            = (1 << 1),
+
+        /*
+        \brief Specifies whether to store a reference to the wave buffer in a Sound object.
+        \remarks This can be used for an easy association between a Sound object and its WaveBuffer.
+        \see Sound::AttachAndStoreBuffer
+        */
+        StoreWaveBuffer,
     };
 };
 
