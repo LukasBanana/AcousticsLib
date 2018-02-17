@@ -122,7 +122,7 @@ std::unique_ptr<AudioSystem> AudioSystem::Load()
         try
         {
             if (auto audioSystem = Load(moduleName))
-                return std::move(audioSystem);
+                return audioSystem;
         }
         catch (const std::runtime_error&)
         {
