@@ -83,7 +83,6 @@ void ALBufferObjQueue::QueueBufferData(const WaveBuffer& waveBuffer)
 ALuint ALBufferObjQueue::AllocBuffer()
 {
     ALuint handle = 0;
-
     alGenBuffers(1, &handle);
 
     auto err = alGetError();

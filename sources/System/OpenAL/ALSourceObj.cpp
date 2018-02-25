@@ -13,19 +13,29 @@ namespace Ac
 {
 
 
+static int g_numSources = 0;
+
+std::size_t ALSourceObj::sourceCounter_ = 0;
+
 ALSourceObj::ALSourceObj()
 {
     alGenSources(1, &handle_);
 
     auto err = alGetError();
     if (err != AL_NO_ERROR)
-        throw std::runtime_error("failed to generate OpenAL source object (" + ALErrorToString(err) + ")");
+        throw std::runtime_error("failed to generate OpenAL source object (" + ALErrorToString(err) + "), g_numSources == " + std::to_string(g_numSources));
+
+    if (handle_ != 0 && alIsSource(handle_))
+        ++ALSourceObj::sourceCounter_;
 }
 
 ALSourceObj::~ALSourceObj()
 {
     if (handle_ != 0 && alIsSource(handle_))
+    {
         alDeleteSources(1, &handle_);
+        --ALSourceObj::sourceCounter_;
+    }
 }
 
 void ALSourceObj::AttachBuffer(const ALBufferObj& bufferObj)
@@ -75,6 +85,11 @@ Gs::Vector3f ALSourceObj::GetVector3(ALenum param) const
     alGetSource3f(handle_, param, &value.x, &value.y, &value.z);
     value.z = -value.z;
     return value;
+}
+
+std::size_t ALSourceObj::GetSourceCount()
+{
+    return sourceCounter_;
 }
 
 

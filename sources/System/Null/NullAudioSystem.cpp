@@ -36,7 +36,21 @@ std::string NullAudioSystem::GetVersion() const
     return "Null";
 }
 
+AudioLimitations NullAudioSystem::GetLimits() const
+{
+    AudioLimitations limits;
+    {
+        limits.numSounds = 8096;
+    }
+    return limits;
+}
+
 /* ----- Sounds ----- */
+
+bool NullAudioSystem::CanCreateSound() const
+{
+    return true;
+}
 
 std::unique_ptr<Sound> NullAudioSystem::CreateSound()
 {

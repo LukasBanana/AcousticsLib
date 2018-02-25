@@ -23,6 +23,7 @@ ALAudioSystem::ALAudioSystem() :
     device_  { OpenDevice()    },
     context_ { CreateContext() }
 {
+    QueryAttributes();
 }
 
 ALAudioSystem::~ALAudioSystem()
@@ -52,7 +53,21 @@ std::string ALAudioSystem::GetVersion() const
     return s;
 }
 
+AudioLimitations ALAudioSystem::GetLimits() const
+{
+    AudioLimitations limits;
+    {
+        limits.numSounds = static_cast<std::size_t>(contextAttribs_.numMonoSources);
+    }
+    return limits;
+}
+
 /* ----- Sounds ----- */
+
+bool ALAudioSystem::CanCreateSound() const
+{
+    return (ALSourceObj::GetSourceCount() < contextAttribs_.numMonoSources);
+}
 
 std::unique_ptr<Sound> ALAudioSystem::CreateSound()
 {
@@ -153,6 +168,38 @@ ALCcontext* ALAudioSystem::CreateContext()
     if (!alcMakeContextCurrent(context))
         throw std::runtime_error("failed to make OpenAL context current");
     return context;
+}
+
+void ALAudioSystem::QueryAttributes()
+{
+    /* Query number of attributes */
+    ALCint size = 0;
+    alcGetIntegerv(device_, ALC_ATTRIBUTES_SIZE, 1, &size);
+
+    if (size > 0)
+    {
+        /* Load attributes into container */
+        std::vector<ALCint> attribs(static_cast<std::size_t>(size));
+        alcGetIntegerv(device_, ALC_ALL_ATTRIBUTES, size, attribs.data());
+
+        for (std::size_t i = 0, n = attribs.size(); i + 1 < n; ++i)
+        {
+            switch (attribs[i])
+            {
+                case ALC_FREQUENCY:
+                    contextAttribs_.frequency = attribs[i + 1];
+                    break;
+
+                case ALC_MONO_SOURCES:
+                    contextAttribs_.numMonoSources = attribs[i + 1];
+                    break;
+
+                case ALC_STEREO_SOURCES:
+                    contextAttribs_.numStereoSources = attribs[i + 1];
+                    break;
+            }
+        }
+    }
 }
 
 

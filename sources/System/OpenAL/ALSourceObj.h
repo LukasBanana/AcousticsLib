@@ -40,13 +40,18 @@ class ALSourceObj
         void SetVector3(ALenum param, const Gs::Vector3f value);
         Gs::Vector3f GetVector3(ALenum param) const;
 
-        //! Returns the handle of this source object.
+        // Returns the handle of this source object.
         inline ALuint Get() const
         {
             return handle_;
         }
 
+        // Returns the number of source objects.
+        static std::size_t GetSourceCount();
+
     private:
+
+        static std::size_t sourceCounter_;
 
         ALuint handle_ = 0;
 

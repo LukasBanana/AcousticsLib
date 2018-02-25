@@ -46,7 +46,21 @@ std::string XA2AudioSystem::GetVersion() const
     return "XAudio2";
 }
 
+AudioLimitations XA2AudioSystem::GetLimits() const
+{
+    AudioLimitations limits;
+    {
+        limits.numSounds = 8096;
+    }
+    return limits;
+}
+
 /* ----- Sounds ----- */
+
+bool XA2AudioSystem::CanCreateSound() const
+{
+    return true;
+}
 
 std::unique_ptr<Sound> XA2AudioSystem::CreateSound()
 {

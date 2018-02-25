@@ -36,6 +36,13 @@ struct AC_EXPORT ListenerOrientation
     Gs::Vector3f upVector;
 };
 
+//! Audio limitations descriptor structure.
+struct AC_EXPORT AudioLimitations
+{
+    //! Maximal number of concurrently played sounds.
+    std::size_t numSounds = 0;
+};
+
 //! Loading sound flags enumeration.
 struct SoundFlags
 {
@@ -119,7 +126,13 @@ class AC_EXPORT AudioSystem
         //! Returns a descriptive version string of this audio system (e.g. "OpenAL 1.1").
         virtual std::string GetVersion() const = 0;
 
+        //! Returns the audio limitations of this audio system.
+        virtual AudioLimitations GetLimits() const = 0;
+
         /* ----- Sounds ----- */
+
+        //! Returns true if the audio system can still create a new sound (otherwise the number of available sound sources may be exceeded).
+        virtual bool CanCreateSound() const = 0;
 
         //! Creates an empty sound which can later be filled with a wave buffer.
         virtual std::unique_ptr<Sound> CreateSound() = 0;

@@ -13,6 +13,8 @@
 #include "ALBufferObj.h"
 
 #include <Ac/AudioSystem.h>
+#include <vector>
+#include <memory>
 
 
 namespace Ac
@@ -28,7 +30,9 @@ class ALAudioSystem : public AudioSystem
         ~ALAudioSystem();
 
         std::string GetVersion() const override;
+        AudioLimitations GetLimits() const override;
 
+        bool CanCreateSound() const override;
         std::unique_ptr<Sound> CreateSound() override;
 
         void SetListenerPosition(const Gs::Vector3f& position) override;
@@ -47,8 +51,19 @@ class ALAudioSystem : public AudioSystem
         ALCdevice* OpenDevice();
         ALCcontext* CreateContext();
 
-        ALCdevice*  device_     = nullptr;
-        ALCcontext* context_    = nullptr;
+        void QueryAttributes();
+
+        struct ContextAttributes
+        {
+            ALCint frequency        = 0;
+            ALCint numMonoSources   = 0;
+            ALCint numStereoSources = 0;
+        };
+
+        ALCdevice*          device_         = nullptr;
+        ALCcontext*         context_        = nullptr;
+
+        ContextAttributes   contextAttribs_;
 
 };
 
