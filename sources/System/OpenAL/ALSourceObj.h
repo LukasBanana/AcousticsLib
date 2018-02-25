@@ -46,12 +46,7 @@ class ALSourceObj
             return handle_;
         }
 
-        // Returns the number of source objects.
-        static std::size_t GetSourceCount();
-
     private:
-
-        static std::size_t sourceCounter_;
 
         ALuint handle_ = 0;
 

@@ -57,17 +57,12 @@ AudioLimitations ALAudioSystem::GetLimits() const
 {
     AudioLimitations limits;
     {
-        limits.numSounds = static_cast<std::size_t>(contextAttribs_.numMonoSources);
+        limits.maxSources = static_cast<std::size_t>(contextAttribs_.numMonoSources);
     }
     return limits;
 }
 
 /* ----- Sounds ----- */
-
-bool ALAudioSystem::CanCreateSound() const
-{
-    return (ALSourceObj::GetSourceCount() < contextAttribs_.numMonoSources);
-}
 
 std::unique_ptr<Sound> ALAudioSystem::CreateSound()
 {

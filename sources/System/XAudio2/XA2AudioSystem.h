@@ -29,7 +29,6 @@ class XA2AudioSystem : public AudioSystem
         std::string GetVersion() const override;
         AudioLimitations GetLimits() const override;
 
-        bool CanCreateSound() const override;
         std::unique_ptr<Sound> CreateSound() override;
 
         void SetListenerPosition(const Gs::Vector3f& position) override;

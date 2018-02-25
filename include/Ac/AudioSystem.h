@@ -39,8 +39,8 @@ struct AC_EXPORT ListenerOrientation
 //! Audio limitations descriptor structure.
 struct AC_EXPORT AudioLimitations
 {
-    //! Maximal number of concurrently played sounds.
-    std::size_t numSounds = 0;
+    //! Maximal number of concurrently played sound sources (not the limit of sounds to be created).
+    std::size_t maxSources = 0;
 };
 
 //! Loading sound flags enumeration.
@@ -130,9 +130,6 @@ class AC_EXPORT AudioSystem
         virtual AudioLimitations GetLimits() const = 0;
 
         /* ----- Sounds ----- */
-
-        //! Returns true if the audio system can still create a new sound (otherwise the number of available sound sources may be exceeded).
-        virtual bool CanCreateSound() const = 0;
 
         //! Creates an empty sound which can later be filled with a wave buffer.
         virtual std::unique_ptr<Sound> CreateSound() = 0;
