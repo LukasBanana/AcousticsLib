@@ -26,7 +26,6 @@ class ALSound : public Sound
 
     public:
 
-        ALSound();
         ~ALSound();
 
         /* ----- Playback ----- */
@@ -75,6 +74,10 @@ class ALSound : public Sound
         void SetSpaceRelative(bool enable) override;
         bool GetSpaceRelative() const override;
 
+        /* ----- Extended functions ----- */
+
+        void DropSourceObj();
+
     private:
 
         void ResetBufferObj();
@@ -83,11 +86,19 @@ class ALSound : public Sound
         std::shared_ptr<ALBufferObj>        bufferObj_;
         std::unique_ptr<ALBufferObjQueue>   bufferObjQueue_;
 
-        // Desctructor of source object must be called before destructor of buffer object!
-        ALSourceObj                         sourceObj_;
+        ALSourceObj* AcquireSourceObj();
 
-        bool                                enabled3D_  = false;
-        bool                                looping_    = false;
+        // Desctructor of source object must be called before destructor of buffer object!
+        ALSourceObj*                        sourceObj_      = nullptr;
+
+        bool                                enabled3D_      = false;
+
+        ALint                               sourceLooping_  = AL_FALSE;
+        ALfloat                             sourceGain_     = 1.0f;
+        ALfloat                             sourcePitch_    = 1.0f;
+        ALint                               sourceRealtive_ = AL_TRUE;
+        Gs::Vector3f                        sourcePosition_;
+        Gs::Vector3f                        sourceVelocity_;
 
 };
 
