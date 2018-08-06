@@ -6,6 +6,7 @@
  */
 
 #include "ALSound.h"
+#include "ALSourceObjManager.h"
 #include "../../Core/Streaming.h"
 
 #include <cmath>
@@ -16,94 +17,119 @@ namespace Ac
 {
 
 
-ALSound::ALSound()
+static ALint ALBool(bool value)
 {
-    /* Use relative coordinates to make a appear as a 2D sound */
-    sourceObj_.SetInt(AL_SOURCE_RELATIVE, AL_TRUE);
+    return (value ? AL_TRUE : AL_FALSE);
 }
 
 ALSound::~ALSound()
 {
+    ALSourceObjManager::Instance().FreeSourceObj(sourceObj_);
 }
 
 /* ----- Playback ----- */
 
 void ALSound::Play()
 {
-    /* Initialize streaming */
-    if (GetStreamSource() && !IsPaused())
-        InitStreaming(*this);
+    /* Acquire source object if not done yet */
+    if (AcquireSourceObj())
+    {
+        /* Initialize streaming */
+        if (GetStreamSource() && !IsPaused())
+            InitStreaming(*this);
 
-    /* Play sound source */
-    alSourcePlay(sourceObj_.Get());
+        /* Play sound source */
+        alSourcePlay(sourceObj_->Get());
+    }
 }
 
 void ALSound::Pause()
 {
-    alSourcePause(sourceObj_.Get());
+    if (sourceObj_)
+        alSourcePause(sourceObj_->Get());
 }
 
 void ALSound::Stop()
 {
-    alSourceStop(sourceObj_.Get());
+    if (sourceObj_)
+        alSourceStop(sourceObj_->Get());
 }
 
 void ALSound::SetLooping(bool enable)
 {
-    if (looping_ != enable)
+    if (!GetStreamSource())
     {
-        looping_ = enable;
-        if (!GetStreamSource())
-            sourceObj_.SetInt(AL_LOOPING, (looping_ ? AL_TRUE : AL_FALSE));
+        auto looping = ALBool(enable);
+        if (sourceLooping_ != looping)
+        {
+            sourceLooping_ = looping;
+            if (sourceObj_)
+                sourceObj_->SetInt(AL_LOOPING, sourceLooping_);
+        }
     }
 }
 
 bool ALSound::GetLooping() const
 {
-    return looping_;
+    return (sourceLooping_ != AL_FALSE);
 }
 
 void ALSound::SetVolume(float volume)
 {
-    sourceObj_.SetFloat(AL_GAIN, volume);
+    sourceGain_ = volume;
+    if (sourceObj_)
+        sourceObj_->SetFloat(AL_GAIN, sourceGain_);
 }
 
 float ALSound::GetVolume() const
 {
-    return sourceObj_.GetFloat(AL_GAIN);
+    return sourceGain_;
 }
 
 void ALSound::SetPitch(float pitch)
 {
-    sourceObj_.SetFloat(AL_PITCH, pitch);
+    sourcePitch_ = pitch;
+    if (sourceObj_)
+        sourceObj_->SetFloat(AL_PITCH, sourcePitch_);
 }
 
 float ALSound::GetPitch() const
 {
-    return sourceObj_.GetFloat(AL_PITCH);
+    return sourcePitch_;
 }
 
 bool ALSound::IsPlaying() const
 {
-    return (sourceObj_.GetInt(AL_SOURCE_STATE) == AL_PLAYING);
+    if (sourceObj_)
+        return (sourceObj_->GetInt(AL_SOURCE_STATE) == AL_PLAYING);
+    else
+        return false;
 }
 
 bool ALSound::IsPaused() const
 {
-    return (sourceObj_.GetInt(AL_SOURCE_STATE) == AL_PAUSED);
+    if (sourceObj_)
+        return (sourceObj_->GetInt(AL_SOURCE_STATE) == AL_PAUSED);
+    else
+        return false;
 }
 
 void ALSound::SetSeek(double position)
 {
-    sourceObj_.SetFloat(AL_SEC_OFFSET, static_cast<float>(position));
+    if (sourceObj_)
+        sourceObj_->SetFloat(AL_SEC_OFFSET, static_cast<float>(position));
 }
 
 double ALSound::GetSeek() const
 {
-    auto seek = static_cast<double>(sourceObj_.GetFloat(AL_SEC_OFFSET));
-    if (bufferObjQueue_)
-        seek += bufferObjQueue_->ProcessedTime();
-    return seek;
+    if (sourceObj_)
+    {
+        auto seek = static_cast<double>(sourceObj_->GetFloat(AL_SEC_OFFSET));
+        if (bufferObjQueue_)
+            seek += bufferObjQueue_->ProcessedTime();
+        return seek;
+    }
+    return 0.0;
 }
 
 double ALSound::TotalTime() const
@@ -124,7 +150,9 @@ void ALSound::AttachBuffer(const WaveBuffer& waveBuffer)
 
     /* Stop palyback and detach previous buffer object */
     Stop();
-    sourceObj_.DetachBuffer();
+
+    if (sourceObj_)
+        sourceObj_->DetachBuffer();
 
     /* Create new buffer object or fill previous one */
     if (!bufferObj_)
@@ -133,7 +161,8 @@ void ALSound::AttachBuffer(const WaveBuffer& waveBuffer)
         bufferObj_->BufferData(waveBuffer);
 
     /* Attach buffer object to source */
-    sourceObj_.AttachBuffer(*bufferObj_);
+    if (sourceObj_)
+        sourceObj_->AttachBuffer(*bufferObj_);
 }
 
 void ALSound::AttachSharedBuffer(const Sound& sourceBufferSound)
@@ -142,37 +171,48 @@ void ALSound::AttachSharedBuffer(const Sound& sourceBufferSound)
 
     /* Stop palyback and detach previous buffer object */
     Stop();
-    sourceObj_.DetachBuffer();
+
+    if (sourceObj_)
+        sourceObj_->DetachBuffer();
 
     /* Shared buffer object with the specified source buffer sound */
     bufferObj_ = sourceBufferSoundAL.bufferObj_;
 
     /* Attach buffer object to source */
-    if (bufferObj_)
-        sourceObj_.AttachBuffer(*bufferObj_);
+    if (sourceObj_ && bufferObj_)
+        sourceObj_->AttachBuffer(*bufferObj_);
 }
 
 void ALSound::QueueBuffer(const WaveBuffer& waveBuffer)
 {
-    /* Reset possible single buffer object */
-    ResetBufferObj();
+    if (AcquireSourceObj())
+    {
+        /* Reset possible single buffer object */
+        ResetBufferObj();
 
-    /* Initialize buffer object queue (if not done yet) */
-    if (!bufferObjQueue_)
-        bufferObjQueue_ = std::unique_ptr<ALBufferObjQueue>(new ALBufferObjQueue(sourceObj_.Get()));
+        /* Initialize buffer object queue (if not done yet) */
+        if (!bufferObjQueue_)
+            bufferObjQueue_ = std::unique_ptr<ALBufferObjQueue>(new ALBufferObjQueue(sourceObj_->Get()));
 
-    /* Fill buffer data */
-    bufferObjQueue_->QueueBufferData(waveBuffer);
+        /* Fill buffer data */
+        bufferObjQueue_->QueueBufferData(waveBuffer);
+    }
 }
 
 std::size_t ALSound::GetQueueSize() const
 {
-    return static_cast<std::size_t>(sourceObj_.GetInt(AL_BUFFERS_QUEUED));
+    if (sourceObj_)
+        return static_cast<std::size_t>(sourceObj_->GetInt(AL_BUFFERS_QUEUED));
+    else
+        return 0;
 }
 
 std::size_t ALSound::GetProcessedQueueSize() const
 {
-    return static_cast<std::size_t>(sourceObj_.GetInt(AL_BUFFERS_PROCESSED));
+    if (sourceObj_)
+        return static_cast<std::size_t>(sourceObj_->GetInt(AL_BUFFERS_PROCESSED));
+    else
+        return 0;
 }
 
 /* ----- 3D sound ----- */
@@ -180,9 +220,9 @@ std::size_t ALSound::GetProcessedQueueSize() const
 void ALSound::Enable3D(bool enable)
 {
     enabled3D_ = enable;
-    sourceObj_.SetVector3(AL_POSITION, { 0.0f, 0.0f, 0.0f });
-    sourceObj_.SetVector3(AL_VELOCITY, { 0.0f, 0.0f, 0.0f });
-    sourceObj_.SetInt(AL_SOURCE_RELATIVE, (enable ? AL_FALSE : AL_TRUE));
+    SetPosition({ 0.0f, 0.0f, 0.0f });
+    SetVelocity({ 0.0f, 0.0f, 0.0f });
+    SetSpaceRelative(!enable);
 }
 
 bool ALSound::Is3DEnabled() const
@@ -193,34 +233,58 @@ bool ALSound::Is3DEnabled() const
 void ALSound::SetPosition(const Gs::Vector3f& position)
 {
     if (enabled3D_)
-        sourceObj_.SetVector3(AL_POSITION, position);
+    {
+        sourcePosition_ = position;
+        if (sourceObj_)
+            sourceObj_->SetVector3(AL_POSITION, sourcePosition_);
+    }
 }
 
 Gs::Vector3f ALSound::GetPosition() const
 {
-    return sourceObj_.GetVector3(AL_POSITION);
+    return sourcePosition_;
 }
 
 void ALSound::SetVelocity(const Gs::Vector3f& velocity)
 {
     if (enabled3D_)
-        sourceObj_.SetVector3(AL_VELOCITY, velocity);
+    {
+        sourceVelocity_ = velocity;
+        if (sourceObj_)
+            sourceObj_->SetVector3(AL_VELOCITY, sourceVelocity_);
+    }
 }
 
 Gs::Vector3f ALSound::GetVelocity() const
 {
-    return sourceObj_.GetVector3(AL_VELOCITY);
+    return sourceVelocity_;
 }
 
 void ALSound::SetSpaceRelative(bool enable)
 {
     if (enabled3D_)
-        sourceObj_.SetInt(AL_SOURCE_RELATIVE, (enable ? AL_TRUE : AL_FALSE));
+    {
+        sourceRealtive_ = ALBool(enable);
+        if (sourceObj_)
+            sourceObj_->SetInt(AL_SOURCE_RELATIVE, sourceRealtive_);
+    }
 }
 
 bool ALSound::GetSpaceRelative() const
 {
-    return (sourceObj_.GetInt(AL_SOURCE_RELATIVE) != AL_FALSE);
+    return (sourceRealtive_ != AL_FALSE);
+}
+
+/* ----- Extended functions ----- */
+
+void ALSound::DropSourceObj()
+{
+    if (sourceObj_)
+    {
+        alSourceStop(sourceObj_->Get());
+        sourceObj_->DetachBuffer();
+        sourceObj_ = nullptr;
+    }
 }
 
 
@@ -233,12 +297,13 @@ void ALSound::ResetBufferObj()
     if (bufferObj_)
     {
         /* Detach buffer object from source object */
-        sourceObj_.DetachBuffer();
+        if (sourceObj_)
+            sourceObj_->DetachBuffer();
+
         bufferObj_.reset();
 
         /* Remove OpenAL looping state (only a single buffer can make use of this state) */
-        if (looping_)
-            sourceObj_.SetInt(AL_LOOPING, AL_FALSE);
+        SetLooping(false);
     }
 }
 
@@ -250,9 +315,42 @@ void ALSound::ResetBufferObjQueue()
         bufferObjQueue_.reset();
 
         /* Reset OpenAL looping state (only a single buffer can make use of this state) */
-        if (looping_)
-            sourceObj_.SetInt(AL_LOOPING, AL_TRUE);
+        SetLooping(false);
     }
+}
+
+ALSourceObj* ALSound::AcquireSourceObj()
+{
+    if (!sourceObj_)
+    {
+        /* Allocate buffer object */
+        sourceObj_ = ALSourceObjManager::Instance().AllocSourceObj(*this);
+
+        if (sourceObj_ != nullptr)
+        {
+            /* Initiaize source object */
+            sourceObj_->SetInt(AL_LOOPING, sourceLooping_);
+            sourceObj_->SetFloat(AL_GAIN, sourceGain_);
+            sourceObj_->SetFloat(AL_PITCH, sourcePitch_);
+
+            if (enabled3D_)
+            {
+                sourceObj_->SetInt(AL_SOURCE_RELATIVE, sourceRealtive_);
+                sourceObj_->SetVector3(AL_POSITION, sourcePosition_);
+                sourceObj_->SetVector3(AL_VELOCITY, sourceVelocity_);
+            }
+            else
+            {
+                sourceObj_->SetInt(AL_SOURCE_RELATIVE, AL_TRUE);
+                sourceObj_->SetVector3(AL_POSITION, { 0.0f, 0.0f, 0.0f });
+                sourceObj_->SetVector3(AL_VELOCITY, { 0.0f, 0.0f, 0.0f });
+            }
+
+            if (bufferObj_)
+                sourceObj_->AttachBuffer(*bufferObj_);
+        }
+    }
+    return sourceObj_;
 }
 
 

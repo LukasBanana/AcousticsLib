@@ -26,7 +26,7 @@ int main()
             audioSystem->Play("in/lighter.wav");
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             audioSystem->Play("in/gong.ogg");
-            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(/*3000*/500));
 
             #endif
 

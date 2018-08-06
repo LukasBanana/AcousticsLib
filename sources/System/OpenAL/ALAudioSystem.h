@@ -11,6 +11,7 @@
 
 #include "OpenAL.h"
 #include "ALBufferObj.h"
+#include "ALSourceObjManager.h"
 
 #include <Ac/AudioSystem.h>
 #include <vector>
@@ -45,24 +46,24 @@ class ALAudioSystem : public AudioSystem
 
     private:
 
+        struct ContextAttributes
+        {
+            ALCint frequency;
+            ALCint numMonoSources;
+            ALCint numStereoSources;
+        };
+
         std::vector<std::string> ListDevices() const;
 
         ALCdevice* OpenDevice();
         ALCcontext* CreateContext();
 
-        void QueryAttributes();
-
-        struct ContextAttributes
-        {
-            ALCint frequency        = 0;
-            ALCint numMonoSources   = 0;
-            ALCint numStereoSources = 0;
-        };
+        ContextAttributes QueryAttributes();
 
         ALCdevice*          device_         = nullptr;
         ALCcontext*         context_        = nullptr;
-
         ContextAttributes   contextAttribs_;
+        ALSourceObjManager  sourceObjMngr_;
 
 };
 

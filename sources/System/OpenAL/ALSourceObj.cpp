@@ -17,9 +17,14 @@ ALSourceObj::ALSourceObj()
 {
     alGenSources(1, &handle_);
 
-    auto err = alGetError();
-    if (err != AL_NO_ERROR)
-        throw std::runtime_error("failed to generate OpenAL source object (" + ALErrorToString(err) + ")");
+    if (handle_ == 0)
+    {
+        auto err = alGetError();
+        if (err != AL_NO_ERROR)
+            throw std::runtime_error("failed to generate OpenAL source object (error code: " + ALErrorToString(err) + ")");
+        else
+            throw std::runtime_error("failed to generate OpenAL source object (error code: <unknown>)");
+    }
 }
 
 ALSourceObj::~ALSourceObj()

@@ -85,9 +85,14 @@ ALuint ALBufferObjQueue::AllocBuffer()
     ALuint handle = 0;
     alGenBuffers(1, &handle);
 
-    auto err = alGetError();
-    if (err != AL_NO_ERROR)
-        throw std::runtime_error("failed to generate OpenAL buffer object queue (" + ALErrorToString(err) + ")");
+    if (handle == 0)
+    {
+        auto err = alGetError();
+        if (err != AL_NO_ERROR)
+            throw std::runtime_error("failed to generate OpenAL buffer object queue (error code: " + ALErrorToString(err) + ")");
+        else
+            throw std::runtime_error("failed to generate OpenAL buffer object queue (error code: <unknown>)");
+    }
 
     handles_.push_back(handle);
     return handle;

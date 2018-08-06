@@ -20,10 +20,11 @@ namespace Ac
 /* ----- Audio system ----- */
 
 ALAudioSystem::ALAudioSystem() :
-    device_  { OpenDevice()    },
-    context_ { CreateContext() }
+    device_         { OpenDevice()                   },
+    context_        { CreateContext()                },
+    contextAttribs_ { QueryAttributes()              },
+    sourceObjMngr_  { contextAttribs_.numMonoSources }
 {
-    QueryAttributes();
 }
 
 ALAudioSystem::~ALAudioSystem()
@@ -165,8 +166,10 @@ ALCcontext* ALAudioSystem::CreateContext()
     return context;
 }
 
-void ALAudioSystem::QueryAttributes()
+ALAudioSystem::ContextAttributes ALAudioSystem::QueryAttributes()
 {
+    ContextAttributes contextAttribs;
+
     /* Query number of attributes */
     ALCint size = 0;
     alcGetIntegerv(device_, ALC_ATTRIBUTES_SIZE, 1, &size);
@@ -182,19 +185,21 @@ void ALAudioSystem::QueryAttributes()
             switch (attribs[i])
             {
                 case ALC_FREQUENCY:
-                    contextAttribs_.frequency = attribs[i + 1];
+                    contextAttribs.frequency = attribs[i + 1];
                     break;
 
                 case ALC_MONO_SOURCES:
-                    contextAttribs_.numMonoSources = attribs[i + 1];
+                    contextAttribs.numMonoSources = attribs[i + 1];
                     break;
 
                 case ALC_STEREO_SOURCES:
-                    contextAttribs_.numStereoSources = attribs[i + 1];
+                    contextAttribs.numStereoSources = attribs[i + 1];
                     break;
             }
         }
     }
+
+    return contextAttribs;
 }
 
 
