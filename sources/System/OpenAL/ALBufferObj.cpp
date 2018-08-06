@@ -23,7 +23,7 @@ ALBufferObj::ALBufferObj()
 }
 
 ALBufferObj::ALBufferObj(const WaveBuffer& waveBuffer) :
-    ALBufferObj {  }
+    ALBufferObj {}
 {
     BufferData(waveBuffer);
 }
@@ -42,7 +42,7 @@ void ALBufferObj::BufferData(ALenum format, const ALvoid* buffer, ALsizei size, 
     /* Compute total buffer time in seconds */
     std::uint16_t channels = 0, bitsPerSample = 0;
     WaveFormatFromALFormat(format, channels, bitsPerSample);
-    
+
     totalTime_ = WaveBufferFormat(sampleRate, channels, bitsPerSample).TotalTime(size);
 }
 

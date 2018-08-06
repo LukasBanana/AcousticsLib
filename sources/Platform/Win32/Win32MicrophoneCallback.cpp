@@ -59,7 +59,7 @@ MMSYSERR_LASTERROR    (MMSYSERR_BASE + 21) /* last error in range */
     }
     return "";
 }
-    
+
 void CALLBACK Win32MicrophoneCallback(HWAVEIN waveIn, UINT msg, DWORD instance, DWORD wParam, DWORD lParam)
 {
     /* Get microphone object from user data field 'instance' */

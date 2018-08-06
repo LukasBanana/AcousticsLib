@@ -14,15 +14,15 @@
 
 namespace Ac
 {
-    
-    
+
+
 // Version 1 of AIFF-C
 #define AC_AIFC_VERSION_1 0xA2805140
-    
-    
+
+
 using Extended80Bit = std::int8_t[10];
 
-    
+
 #include <Ac/PackPush.h>
 
 struct AIFFHeader

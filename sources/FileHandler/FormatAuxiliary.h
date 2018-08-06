@@ -23,7 +23,7 @@ namespace Ac
 
 
 #define UINT32_FROM_STRING(s) (*reinterpret_cast<const std::uint32_t*>(s))
-    
+
 
 std::string GetStrinFromUINT32(std::uint32_t i);
 

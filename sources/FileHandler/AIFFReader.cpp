@@ -13,17 +13,17 @@
 namespace Ac
 {
 
-    
+
 static void AIFFReadHeader(std::istream& stream, AIFFHeader& header)
 {
     Read(stream, header);
-    
+
     if (header.id != UINT32_FROM_STRING("FORM"))
         throw std::runtime_error("invalid magic number in AIFF/AIFF-C stream");
-    
+
     if (header.formType != UINT32_FROM_STRING("AIFF") && header.formType != UINT32_FROM_STRING("AIFC"))
         throw std::runtime_error("invalid form type in AIFF/AIFF-C stream (must be either 'AIFF' or 'AIFC')");
-    
+
     header.size = SwapEndian(header.size);
 }
 
@@ -55,7 +55,7 @@ static void AIFFReadChunk(std::istream& stream, AIFFChunk& chunk, const char* ch
 static void AIFFReadCommonChunk(std::istream& stream, AIFFCommonChunk& chunk)
 {
     Read(stream, chunk);
-    
+
     chunk.channels      = SwapEndian(chunk.channels);
     chunk.sampleFrames  = SwapEndian(chunk.sampleFrames);
     chunk.bitsPerSample = SwapEndian(chunk.bitsPerSample);
@@ -112,14 +112,14 @@ void AIFFReader::ReadWaveBuffer(std::istream& stream, WaveBuffer& buffer)
     /* Read AIFF header */
     AIFFHeader header;
     AIFFReadHeader(stream, header);
-    
+
     /* Read COMM chunk */
     AIFFChunk commChunkHdr;
     AIFFReadChunk(stream, commChunkHdr, "COMM");
-    
+
     AIFFCommonChunk commChunk;
     AIFFReadCommonChunk(stream, commChunk);
-    
+
     AIFCCommonChunk commChunkEx;
     if (header.formType == UINT32_FROM_STRING("AIFC"))
         AIFCReadCommonChunk(stream, commChunkEx);

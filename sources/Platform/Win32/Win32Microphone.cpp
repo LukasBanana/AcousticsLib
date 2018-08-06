@@ -172,7 +172,7 @@ void Win32Microphone::OpenWaveInput(std::size_t sampleFrames, UINT deviceID)
     waveFormat.nBlockAlign     = static_cast<WORD>(recvBufferFormat_.BytesPerFrame());
     waveFormat.wBitsPerSample  = recvBufferFormat_.bitsPerSample;
     waveFormat.cbSize          = 0; // must be 0 due to WAVE_FORMAT_PCM tag
-    
+
     auto result = waveInOpen(
         &waveIn_,
         deviceID,

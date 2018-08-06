@@ -39,35 +39,35 @@ Ac::WaveBuffer                      waveBuffer;
 class Renderer : public Ac::Renderer
 {
 public:
-    
+
     void BeginDrawing(const Gs::Vector2i& size) override
     {
     }
-    
+
     void EndDrawing() override
     {
     }
-    
+
     void DrawLineList(const std::vector<Gs::Vector2i>& vertices) override
     {
         glBegin(GL_LINES);
-        
+
         for (const auto& v : vertices)
             glVertex2i(v.x, v.y + resolution.y/4);
-        
+
         glEnd();
     }
-    
+
     void DrawLineStrip(const std::vector<Gs::Vector2i>& vertices) override
     {
         glBegin(GL_LINE_STRIP);
-        
+
         for (const auto& v : vertices)
             glVertex2i(v.x, v.y);
-        
+
         glEnd();
     }
-    
+
 };
 
 
@@ -86,7 +86,7 @@ void initAudio()
 {
     // load audio system and wave buffer
     audioSys = Ac::AudioSystem::Load("XAudio2");
-    
+
     #if 0
 
     // READ WAVE BUFFER
@@ -192,11 +192,11 @@ void initAudio()
     waveBuffer.CopyFrom(srcBuffer2, 2.5, 3.0, 2.5);
 
     #endif
-    
+
     renderer = std::unique_ptr<Renderer>(new Renderer());
-    
+
     sound = audioSys->CreateSound(waveBuffer);
-    
+
     if (sound)
     {
         sound->SetVolume(0.25f);
@@ -228,7 +228,7 @@ void drawScene2D()
         , seek, seek + seekDelta
         #endif
     );
-    
+
     // draw playback line
     if (sound)
     {
@@ -247,9 +247,9 @@ void displayCallback()
 {
     // draw frame
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
     drawScene2D();
-    
+
     glutSwapBuffers();
 }
 
@@ -275,7 +275,7 @@ void keyboardCallback(unsigned char key, int x, int y)
         case 27: // ESC
             exit(0);
             break;
-            
+
         case ' ':
             if (sound)
                 sound->Stop();

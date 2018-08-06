@@ -33,28 +33,28 @@ This must be an instance of a class which implements the "Renderer" interface.
 \see Renderer
 */
 AC_EXPORT void DrawWaveBuffer(
-    Renderer& renderer,
-    const WaveBuffer& buffer,
-    std::uint16_t channel,
+    Renderer&           renderer,
+    const WaveBuffer&   buffer,
+    std::uint16_t       channel,
     const Gs::Vector2i& position,
     const Gs::Vector2i& size,
-    double timeBegin,
-    double timeEnd
+    double              timeBegin,
+    double              timeEnd
 );
-    
+
 /**
 \brief Draws the specified wave buffer entirely.
 \see DrawWaveBuffer(Renderer&, const WaveBuffer&, std::uint16_t, const Gs::Vector2i&, const Gs::Vector2i&, double, double)
 */
 AC_EXPORT void DrawWaveBuffer(
-    Renderer& renderer,
-    const WaveBuffer& buffer,
-    std::uint16_t channel,
+    Renderer&           renderer,
+    const WaveBuffer&   buffer,
+    std::uint16_t       channel,
     const Gs::Vector2i& position,
     const Gs::Vector2i& size
 );
 
-    
+
 } // /namesapce Visualizer
 
 } // /namespace Ac

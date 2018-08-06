@@ -24,8 +24,13 @@ namespace Synthesizer
 /* ----- Wave generators ----- */
 
 static void SineGeneratorCallback(
-    double& sample, std::uint16_t channel, std::size_t index, double timePoint,
-    double amplitude, double phase, double frequency)
+    double&         sample,
+    std::uint16_t   channel,
+    std::size_t     index,
+    double          timePoint,
+    double          amplitude,
+    double          phase,
+    double          frequency)
 {
     sample += std::sin((timePoint + phase)*2.0*M_PI*frequency)*amplitude;
 }
@@ -36,8 +41,13 @@ AC_EXPORT SampleIterationFunction SineGenerator(double amplitude, double phase, 
 }
 
 static void HalfCircleGeneratorCallback(
-    double& sample, std::uint16_t channel, std::size_t index, double timePoint,
-    double amplitude, double phase, double frequency)
+    double&         sample,
+    std::uint16_t   channel,
+    std::size_t     index,
+    double          timePoint,
+    double          amplitude,
+    double          phase,
+    double          frequency)
 {
     double xInt = 0.0;
     double x    = std::modf((timePoint + phase)*2.0*frequency, &xInt)*2.0 - 1.0;
@@ -168,8 +178,13 @@ AC_EXPORT void BlurWaveBuffer(WaveBuffer& buffer, double timeSpread, double vari
 }
 
 AC_EXPORT void FadeWaveBuffers(
-    WaveBuffer& buffer, const WaveBuffer& bufferFadeFrom, const WaveBuffer& bufferFadeTo,
-    double timePointFrom, double timePointTo, const FadingFunction& fading, bool writeOutlines)
+    WaveBuffer&             buffer,
+    const WaveBuffer&       bufferFadeFrom,
+    const WaveBuffer&       bufferFadeTo,
+    double                  timePointFrom,
+    double                  timePointTo,
+    const FadingFunction&   fading,
+    bool                    writeOutlines)
 {
     /* Quit if operation has no effect */
     if ((&buffer) == (&bufferFadeFrom) && (&buffer) == (&bufferFadeTo))

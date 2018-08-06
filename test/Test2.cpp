@@ -21,7 +21,7 @@ int main()
     try
     {
         auto audioSystem = Ac::AudioSystem::Load();
-        
+
         #if 1
 
         Ac::WaveBuffer buffer(Ac::WaveBufferFormat(Ac::sampleRate44kHz, 16, 1)), outputBuffer;
@@ -39,7 +39,7 @@ int main()
 
                 using N = Ac::MusicalNotes;
                 std::array<N, 7> notes { N::C, N::D, N::E, N::F, N::G, N::A, N::B };
-                
+
                 auto phaseIdx = static_cast<size_t>(phase*5.0);
                 auto interval = 4 + phaseIdx / notes.size();
                 auto noteIdx = phaseIdx % notes.size();
@@ -69,7 +69,7 @@ int main()
                     Note{ N::C, 4 },
                     Note{ N::A, 3 }
                 };
-                
+
                 auto phaseIdx = static_cast<size_t>(phase*4.0);
                 auto noteIdx = phaseIdx % notes.size();
 
@@ -104,7 +104,7 @@ int main()
 
         std::string inputFilename = "in/thorndike.wav";
         std::cout << "read sound file: \"" << inputFilename << '\"' << std::endl;
-        
+
         std::ifstream inputFile(inputFilename, std::ios_base::binary);
         buffer = audioSystem->ReadWaveBuffer(inputFile);
 
@@ -131,17 +131,17 @@ int main()
         #endif
 
         #if TEST_WRITE_OUTPUT != 0
-        
+
         std::string outputFilename = "out/synthesized_sound.wav";
         std::cout << "write sound file: \"" << outputFilename << '\"' << std::endl;
-        
+
         std::ofstream outputFile(outputFilename, std::ios_base::binary);
         audioSystem->WriteAudioBuffer(Ac::AudioFormats::WAVE, outputFile, outputBuffer);
 
         #endif
 
         auto sound = audioSystem->CreateSound(outputBuffer);
-    
+
         if (sound)
         {
             sound->SetVolume(0.25f);
@@ -152,31 +152,31 @@ int main()
                 PrintTimeline(*sound);
                 SleepFor();
             }
-            
+
             std::cout << std::endl;
         }
-    
+
         #else
-    
+
         audioSystem->PlaySound(
             "in/shutter.wav", 1.0f, 0,
             [](Ac::Sound& s)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(25));
-            
+
                 #if 1
-            
+
                 s.SetVolume(s.GetVolume() - 0.01f);
                 std::cout << "playing: " << s.GetSeek() << " / " << s.TotalTime() << std::endl;
-                
+
                 #else
 
                 static float a;
                 a += 0.05f;
                 auto balance = std::sin(a);
-            
+
                 s.SetPosition({ balance, 0.0f, -std::sqrt(1.0f - balance*balance) });
-            
+
                 std::cout << "balance: " << balance;
                 if (balance < -0.5f)
                     std::cout << ", left";
@@ -185,9 +185,9 @@ int main()
                 else
                     std::cout << ", center";
                 std::cout << std::endl;
-            
+
                 #endif
-            
+
                 return s.GetVolume() > 0.05f;
             }
         );

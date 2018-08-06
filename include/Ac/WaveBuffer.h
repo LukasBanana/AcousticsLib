@@ -164,7 +164,7 @@ class AC_EXPORT WaveBuffer
         void SwapEndianness();
 
         /* ----- Sample iteration ----- */
-        
+
         /**
         \brief Iterates over all samples of this wave buffer within the specified range.
         \param[in] iterator Specifies the sample iteration callback function. This function will be used to modify each sample.
@@ -190,7 +190,7 @@ class AC_EXPORT WaveBuffer
         \see SampleIterationFunction
         */
         void ForEachSample(const SampleIterationFunction& iterator);
-    
+
         /**
         \brief Iterates over all samples of this wave buffer within the specified range with a constant iterator.
         \param[in] iterator Specifies the sample iteration callback function. This function will be used to read each sample.
@@ -199,7 +199,7 @@ class AC_EXPORT WaveBuffer
         \see SampleIterationFunction
         */
         void ForEachSample(const SampleConstIterationFunction& iterator, std::size_t indexBegin, std::size_t indexEnd) const;
-    
+
         /**
         \brief Iterates over all samples of this wave buffer within the specified time range with a constant iterator.
         \param[in] iterator Specifies the sample iteration callback function. This function will be used to read each sample.
@@ -209,7 +209,7 @@ class AC_EXPORT WaveBuffer
         \see SampleIterationFunction
         */
         void ForEachSample(const SampleConstIterationFunction& iterator, double timeBegin, double timeEnd) const;
-    
+
         /**
         \brief Iterates over all samples of this wave buffer with a constant iterator.
         \param[in] iterator Specifies the sample iteration callback function. This function will be used to read each sample.

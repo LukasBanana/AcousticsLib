@@ -44,7 +44,7 @@ void ALBufferObjQueue::QueueBufferData(const WaveBuffer& waveBuffer)
     ALenum format = 0;
     if (!ALFormatFromWaveFormat(format, waveBuffer.GetFormat()))
         return;
-    
+
     /* Select buffer handle */
     ALuint bufferHandle = 0;
 

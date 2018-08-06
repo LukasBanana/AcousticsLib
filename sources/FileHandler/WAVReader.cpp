@@ -54,15 +54,15 @@ static RIFFWAVEChunk WAVFindChunk(std::istream& stream, std::streamoff streamSiz
     {
         /* Read next chunk header (workaround with tmpID and tmpSize necessary due to packed fields) */
         stream.seekg(offset, std::ios::beg);
-        
+
         std::uint32_t tmpID = 0;
         Read(stream, tmpID);
         chunk.id = tmpID;
-        
+
         std::uint32_t tmpSize = 0;
         Read(stream, tmpSize);
         chunk.size = tmpSize;
-        
+
         if (chunk.id == UINT32_FROM_STRING(chunkID))
             return chunk;
 
@@ -93,7 +93,7 @@ static void WAVReadChunks(std::istream& stream, std::streamoff streamSize, WaveB
 
     RIFFWAVEFormat format;
     Read(stream, format);
-    
+
     /* Validate format chunk */
     if (chunkFMT.size < 16)
         throw std::runtime_error("invalid length in RIFF WAVE format chunk");

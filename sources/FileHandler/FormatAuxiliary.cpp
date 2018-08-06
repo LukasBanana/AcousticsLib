@@ -33,7 +33,7 @@ double ReadFloat80(const std::int8_t (&value)[10])
         ((std::uint64_t)value[7] << 56) |
         ((std::uint64_t)value[6] << 48) |
         ((std::uint64_t)value[5] << 40) |
-        ((std::uint64_t)value[4] << 32) | 
+        ((std::uint64_t)value[4] << 32) |
         ((std::uint64_t)value[3] << 24) |
         ((std::uint64_t)value[2] << 16) |
         ((std::uint64_t)value[1] <<  8) |
@@ -94,7 +94,7 @@ double ReadFloat80(const std::int8_t (&value)[10])
             d[6] |= (exponent & 0x000F) << 4;
         }
     }
-    
+
     /* Translate mantissa */
     mantissa >>= 11;
 

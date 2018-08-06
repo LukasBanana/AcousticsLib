@@ -63,7 +63,7 @@ AudioFormats DetermineAudioFormat(std::istream& stream)
         {
             Ignore(stream, sizeof(MODHeader) - 8);
             Read(stream, magicNumber);
-            
+
             for (const auto& s : std::vector<std::string>{ "M.K.", "4CHN", "6CHN", "8CHN", "4FLT", "8FLT" })
             {
                 if (magicNumber == UINT32_FROM_STRING(s.c_str()))

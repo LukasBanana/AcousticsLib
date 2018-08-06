@@ -28,16 +28,14 @@ class AC_EXPORT Renderer
 
     public:
 
-        virtual ~Renderer()
-        {
-        }
-    
+        virtual ~Renderer() = default;
+
         virtual void BeginDrawing(const Gs::Vector2i& size) = 0;
         virtual void EndDrawing() = 0;
-    
+
         virtual void DrawLineList(const std::vector<Gs::Vector2i>& vertices) = 0;
         virtual void DrawLineStrip(const std::vector<Gs::Vector2i>& vertices) = 0;
-    
+
 };
 
 

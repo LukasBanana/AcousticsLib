@@ -101,7 +101,7 @@ OGGStream::OGGStream(std::unique_ptr<std::istream>&& stream) :
 {
     /* Initialize function callbacks */
     ov_callbacks callbacks;
-    
+
     callbacks.read_func     = OggRead;
     callbacks.seek_func     = OggSeek;
     callbacks.close_func    = OggClose;
@@ -116,7 +116,7 @@ OGGStream::OGGStream(std::unique_ptr<std::istream>&& stream) :
     info_ = ov_info(&file_, -1);
     if (!info_)
         throw std::runtime_error("failed to retrieve information from ogg vorbis stream");
-    
+
     /* Extract file comments */
     auto comment = ov_comment(&file_, -1);
     if (comment)

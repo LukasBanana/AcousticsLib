@@ -47,7 +47,7 @@ PCMLimits GetPCMLimits()
 
     limits.lowerEnd     = static_cast<double>(std::numeric_limits<T>::lowest());
     limits.upperEnd     = static_cast<double>(std::numeric_limits<T>::max());
-    
+
     limits.range        = limits.upperEnd - limits.lowerEnd;
     limits.nullPoint    = 0.5*(limits.lowerEnd + limits.upperEnd);
 
@@ -72,7 +72,7 @@ void SampleToPCMData(T& data, double sample)
 
     sample = sample * (limits.range*0.5) + limits.nullPoint;
     sample = std::max(limits.lowerEnd, std::min(sample, limits.upperEnd));
-    
+
     data = static_cast<T>(sample);
 }
 

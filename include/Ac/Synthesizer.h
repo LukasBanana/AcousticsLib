@@ -85,13 +85,13 @@ AC_EXPORT void BlurWaveBuffer(WaveBuffer& buffer, double timeSpread = 0.1, doubl
 \param[in] writeOutlines Specifies wether the outline samples (i.e. outside the range [timePointForm, timePointEnd]) will also be written or not. By default true.
 */
 AC_EXPORT void FadeWaveBuffers(
-    WaveBuffer& buffer,
-    const WaveBuffer& bufferFadeFrom,
-    const WaveBuffer& bufferFadeTo,
-    double timePointFrom,
-    double timePointTo,
-    const FadingFunction& fading = nullptr,
-    bool writeOutlines = true
+    WaveBuffer&             buffer,
+    const WaveBuffer&       bufferFadeFrom,
+    const WaveBuffer&       bufferFadeTo,
+    double                  timePointFrom,
+    double                  timePointTo,
+    const FadingFunction&   fading = nullptr,
+    bool                    writeOutlines = true
 );
 
 

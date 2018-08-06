@@ -84,7 +84,7 @@ class AC_EXPORT AudioSystem
         AudioSystem& operator = (const AudioSystem&) = delete;
 
         virtual ~AudioSystem();
-    
+
         /**
         \brief Returns the list of all available audio system modules for the current platform
         (e.g. on Windows this might be { "OpenAL", "XAudio2" }, but on MacOS it might be only { "OpenAL" }).
@@ -179,13 +179,13 @@ class AC_EXPORT AudioSystem
 
         //! Sets the listener world velocity. This is used for the "Doppler"-effect. By default (0, 0, 0).
         virtual void SetListenerVelocity(const Gs::Vector3f& velocity) = 0;
-        
+
         //! Returns the listener world velocity.
         virtual Gs::Vector3f GetListenerVelocity() const = 0;
 
         //! Sets the listener world orientation. By default { (0, 0, 0), (0, 0, 0) }.
         virtual void SetListenerOrientation(const ListenerOrientation& orientation) = 0;
-        
+
         //! Returns the listener world position.
         virtual ListenerOrientation GetListenerOrientation() const = 0;
 

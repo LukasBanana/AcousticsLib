@@ -71,7 +71,7 @@ static void WAVWriteChunks(std::ostream& stream, const WaveBuffer& waveBuffer)
     WAVWriteChunk(stream, "fmt ", chunkSizeFMT);
 
     Write(stream, format);
-    
+
     /* Write "data" chunk and PCM data */
     std::uint32_t chunkSizeDATA = waveBuffer.BufferSize();
     WAVWriteChunk(stream, "data", chunkSizeDATA);

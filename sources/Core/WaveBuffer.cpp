@@ -246,13 +246,13 @@ void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator, std
     auto sampleFrames = GetSampleFrames();
     if (sampleFrames == 0 || !iterator)
         return;
-    
+
     indexBegin  = std::max(std::size_t(0u), std::min(indexBegin, sampleFrames - 1u));
     indexEnd    = std::max(indexBegin, std::min(indexEnd, sampleFrames - 1u));
 
     auto timePoint  = GetTimePointFromIndex(indexBegin);
     auto timeStep   = (1.0 / static_cast<double>(format_.sampleRate));
-    
+
     for (auto i = indexBegin; i <= indexEnd; ++i)
     {
         for (std::uint16_t chn = 0; chn < format_.channels; ++chn)
@@ -260,7 +260,7 @@ void WaveBuffer::ForEachSample(const SampleConstIterationFunction& iterator, std
             /* Read sample and pass to constant iterator */
             iterator(ReadSample(i, chn), chn, i, timePoint);
         }
-        
+
         /* Increase time point */
         timePoint += timeStep;
     }

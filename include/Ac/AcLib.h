@@ -242,7 +242,7 @@ int main()
                         << "Received Buffer: Sample Frames = " << buffer->GetSampleFrames() << ", "
                         << "Duration = " << buffer->GetTotalTime() << "s, "
                         << "Queue Size = " << sound->GetQueueSize() << std::endl;
-                    
+
                     // Modify the input buffer before adding it to the soud queue.
                     Ac::Synthesizer::BlurWaveBuffer(*buffer, 0.1, 1.0, 15);
 

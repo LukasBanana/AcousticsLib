@@ -26,7 +26,7 @@ enum class AudioFormats
     \see http://soundfile.sapp.org/doc/WaveFormat/
     */
     WAVE,
-    
+
     /**
     \brief Audio Interface File Format (AIFF) (.aiff, .aif, .aifc).
     \see http://www-mmsp.ece.mcgill.ca/documents/audioformats/aiff/aiff.html

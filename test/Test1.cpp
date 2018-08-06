@@ -80,7 +80,7 @@ int main()
                 std::cerr << "failed to load sound: \"" << soundFile << '\"' << std::endl;
 
             //to be continued ...
-            
+
             // Break out from loop, we only need one single audio system
             break;
         }

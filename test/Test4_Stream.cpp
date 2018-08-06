@@ -70,9 +70,9 @@ int main()
                         else
                             break;
                     }
-                    
+
                     SleepFor();
-                    
+
                     if (sound->IsPlaying())
                     {
                         std::cout << "\r  " << GetTimeline(*sound, 30) << "  " << blocks << " blocks and " << bytesRead << " bytes read";
@@ -83,9 +83,9 @@ int main()
 
                     // Process audio streaming
                     audioSystem->Streaming(*sound);
-                    
+
                     SleepFor();
-                    
+
                     if (sound->IsPlaying())
                         PrintTimeline(*sound);
 
@@ -94,7 +94,7 @@ int main()
 
                 std::cout << std::endl;
             }
-        
+
             std::cout << "finished" << std::endl;
         }
         else

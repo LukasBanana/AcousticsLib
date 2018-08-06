@@ -47,15 +47,15 @@ std::vector<std::string> AudioSystem::FindModules()
 {
     /* Iterate over all known modules and return those that are availale on the current platform */
     const std::array<std::string, 3> knownModules {{ "OpenAL", "XAudio2", "Null" }};
-    
+
     std::vector<std::string> modules;
-    
+
     for (const auto& m : knownModules)
     {
         if (Module::IsAvailable(Module::GetModuleFilename(m)))
             modules.push_back(m);
     }
-    
+
     return modules;
 }
 
@@ -256,7 +256,7 @@ static std::unique_ptr<AudioReader> QueryReader(const AudioFormats format)
         case AudioFormats::AmigaModule:
             throw std::runtime_error("can not read entire wave buffer from audio stream");
             break;
-            
+
         default:
             break;
     }
@@ -266,7 +266,7 @@ static std::unique_ptr<AudioReader> QueryReader(const AudioFormats format)
 WaveBuffer AudioSystem::ReadWaveBuffer(std::istream& stream)
 {
     WaveBuffer waveBuffer;
-    
+
     auto reader = QueryReader(Ac::DetermineAudioFormat(stream));
     if (reader)
         reader->ReadWaveBuffer(stream, waveBuffer);
@@ -294,7 +294,7 @@ std::unique_ptr<AudioStream> AudioSystem::OpenAudioStream(std::unique_ptr<std::i
 
             case AudioFormats::AmigaModule:
                 return std::unique_ptr<AudioStream>(new MODStream(std::move(stream)));
-                
+
             default:
                 break;
         }
