@@ -20,7 +20,7 @@ static void GetRIFFWAVEFormat(RIFFWAVEFormat& format, const WaveBufferFormat& fm
     format.formatTag        = RIFFWAVEFormatTags::PCM;
     format.channels         = fmt.channels;
     format.sampleRate       = fmt.sampleRate;
-    format.bytesPerSecond   = fmt.BytesPerSecond();
+    format.bytesPerSecond   = static_cast<std::uint32_t>(fmt.BytesPerSecond());
     format.blockAlign       = static_cast<std::uint16_t>(fmt.BytesPerFrame());
     format.bitsPerSample    = fmt.bitsPerSample;
 }
@@ -73,7 +73,7 @@ static void WAVWriteChunks(std::ostream& stream, const WaveBuffer& waveBuffer)
     Write(stream, format);
 
     /* Write "data" chunk and PCM data */
-    std::uint32_t chunkSizeDATA = waveBuffer.BufferSize();
+    std::uint32_t chunkSizeDATA = static_cast<std::uint32_t>(waveBuffer.BufferSize());
     WAVWriteChunk(stream, "data", chunkSizeDATA);
 
     stream.write(waveBuffer.Data(), waveBuffer.BufferSize());
@@ -85,7 +85,7 @@ void WAVWriter::WriteWaveBuffer(std::ostream& stream, const WaveBuffer& buffer)
         throw std::runtime_error("invalid output stream for WAV file");
 
     /* Write RIFF WAVE header */
-    std::uint32_t streamSize = 4u + 2u*sizeof(RIFFWAVEChunk) + sizeof(RIFFWAVEFormat) + buffer.BufferSize();
+    std::uint32_t streamSize = static_cast<std::uint32_t>(4u + 2u*sizeof(RIFFWAVEChunk) + sizeof(RIFFWAVEFormat) + buffer.BufferSize());
     WAVWriteRIFFWAVEHeader(stream, streamSize);
 
     /* Fill wave buffer by reading chunks "fmt " and "data" */
