@@ -23,17 +23,21 @@ Building this library requires the [OpenAL SDK](http://openal.org/), and optiona
 Supported Platforms
 -------------------
 
-- **Windows Vista/ 7/ 8/ 10**
-- **Mac OS X**
-- **Linux**
+| Platform | OpenAL | XAudio2 |
+|----------|:------:|:-------:|
+| **Windows Vista/ 7/ 8/ 10** | :heavy_check_mark: | :heavy_check_mark: |
+| **Mac OS X** | :heavy_check_mark: | N/A |
+| **Linux** | :heavy_check_mark: | N/A |
 
 
 Supported File Formats
 ----------------------
 
-- **WAV** *(Waveform Audio File Format)* Read/Write
-- **AIFF** *(Audio Interchange File Format)* Read
-- **OGG** *(Ogg-Vorbis)* Read
+| Format | File Extensions | Read Support | Write Support |
+|--------|---------|:------------:|:-------------:|
+| Waveform Audio File Format | **WAV** | :heavy_check_mark: | :heavy_check_mark: |
+| Audio Interchange File Format | **AIFF**, **AIFC** | :heavy_check_mark: | :heavy_multiplication_x: |
+| Ogg-Vorbis | **OGG** | :heavy_check_mark: | :heavy_multiplication_x: |
 
 
 Audio Engines
@@ -87,11 +91,11 @@ int main()
             auto audioSystem = Ac::AudioSystem::Load(module);
 
             std::cout
-            << "Audio System: \" << audioSystem->GetName() << "\""
-            << ", Version: " << audioSystem->GetVersion() << std::endl;
+                << "Audio System: \" << audioSystem->GetName() << "\""
+                << ", Version: " << audioSystem->GetVersion() <<
+            std::endl;
 
-            auto sound = audioSystem->LoadSound("mySound.wav");
-            if (sound)
+            if (auto sound = audioSystem->LoadSound("mySound.wav"))
             {
                 sound->SetVolume(0.5f); // set volume to 50%
                 sound->SetPitch(1.5f);  // play with 1.5x frequency (or speed)
@@ -99,7 +103,7 @@ int main()
 
                 while (sound->IsPlaying())
                 {
-                    // Wait while sound is playing and show current seek position
+                    // Wait while sound is playing and show current seek position (in seconds)
                     std::cout << "Playing: " << sound->GetSeek() << std::end;
 
                     // Wait a moment
