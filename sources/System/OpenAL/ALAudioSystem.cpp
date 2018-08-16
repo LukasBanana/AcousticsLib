@@ -20,10 +20,10 @@ namespace Ac
 /* ----- Audio system ----- */
 
 ALAudioSystem::ALAudioSystem() :
-    device_         { OpenDevice()                   },
-    context_        { CreateContext()                },
-    contextAttribs_ { QueryAttributes()              },
-    sourceObjMngr_  { contextAttribs_.numMonoSources }
+    device_         { OpenDevice()                                             },
+    context_        { CreateContext()                                          },
+    contextAttribs_ { QueryAttributes()                                        },
+    sourceObjMngr_  { static_cast<std::size_t>(contextAttribs_.numMonoSources) }
 {
 }
 
