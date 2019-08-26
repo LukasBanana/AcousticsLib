@@ -12,7 +12,7 @@
 #include "Export.h"
 #include "WaveBuffer.h"
 #include "MusicalNotes.h"
-
+#include "PerlinNoise.h"
 #include <functional>
 
 
@@ -56,6 +56,8 @@ AC_EXPORT SampleIterationFunction WhiteNoiseGenerator(double amplitude);
 This can also be uninitialized since it will be set to 0.0 at start up time.
 */
 AC_EXPORT SampleIterationFunction BrownNoiseGenerator(double amplitude, double& state);
+
+AC_EXPORT SampleIterationFunction PerlinNoiseGenerator(double amplitude, PerlinNoise& noiseFunction, std::uint32_t frequency = 4, std::uint32_t octaves = 5, double persitence = 0.5);
 
 /* ----- Misc ----- */
 

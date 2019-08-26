@@ -6,7 +6,6 @@
  */
 
 #include "../Core/PCMData.h"
-
 #include <Ac/Synthesizer.h>
 #include <Gauss/Algebra.h>
 #include <cmath>
@@ -102,6 +101,14 @@ AC_EXPORT SampleIterationFunction BrownNoiseGenerator(double amplitude, double& 
         );
         state += noise;
         sample = state;
+    };
+}
+
+AC_EXPORT SampleIterationFunction PerlinNoiseGenerator(double amplitude, PerlinNoise& noiseFunction, std::uint32_t frequency, std::uint32_t octaves, double persitence)
+{
+    return [amplitude, &noiseFunction, frequency, octaves, persitence](double& sample, std::uint16_t /*channel*/, std::size_t /*index*/, double timePoint)
+    {
+        sample = noiseFunction.Noise(timePoint*300.0, frequency, octaves, persitence);
     };
 }
 

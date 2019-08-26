@@ -173,6 +173,7 @@ void initAudio()
     waveBuffer.SetTotalTime(3.0);
 
     double state = 0.0;
+    Ac::PerlinNoise perlin;
 
     Ac::WaveBuffer srcBuffer0(waveBuffer.GetFormat());
     Ac::WaveBuffer srcBuffer1(waveBuffer.GetFormat());
@@ -182,9 +183,20 @@ void initAudio()
     srcBuffer1.SetTotalTime(waveBuffer.GetTotalTime());
     srcBuffer2.SetTotalTime(waveBuffer.GetTotalTime());
 
+    #if 0
+    perlin.Seed(0);
+    srcBuffer0.ForEachSample(Ac::Synthesizer::PerlinNoiseGenerator(0.25, perlin));
+
+    perlin.Seed(75);
+    srcBuffer1.ForEachSample(Ac::Synthesizer::PerlinNoiseGenerator(0.25, perlin));
+
+    perlin.Seed(150);
+    srcBuffer2.ForEachSample(Ac::Synthesizer::PerlinNoiseGenerator(0.25, perlin));
+    #else
     srcBuffer0.ForEachSample(Ac::Synthesizer::WhiteNoiseGenerator(0.25));
     srcBuffer1.ForEachSample(Ac::Synthesizer::BrownNoiseGenerator(0.25, state));
     srcBuffer2.ForEachSample(Ac::Synthesizer::SineGenerator(0.35, 0.0, 500.0));
+    #endif
 
     Ac::Synthesizer::FadeWaveBuffers(waveBuffer, srcBuffer0, srcBuffer1, 0.5, 1.5, nullptr, false);
     Ac::Synthesizer::FadeWaveBuffers(waveBuffer, srcBuffer1, srcBuffer2, 1.5, 2.5, nullptr, false);
