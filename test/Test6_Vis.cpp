@@ -85,7 +85,8 @@ void initGL()
 void initAudio()
 {
     // load audio system and wave buffer
-    audioSys = Ac::AudioSystem::Load("XAudio2");
+    //audioSys = Ac::AudioSystem::Load("XAudio2");
+    audioSys = Ac::AudioSystem::Load("OpenAL");
 
     #if 0
 
@@ -184,6 +185,7 @@ void initAudio()
     srcBuffer2.SetTotalTime(waveBuffer.GetTotalTime());
 
     #if 0
+
     perlin.Seed(0);
     srcBuffer0.ForEachSample(Ac::Synthesizer::PerlinNoiseGenerator(0.25, perlin));
 
@@ -192,16 +194,43 @@ void initAudio()
 
     perlin.Seed(150);
     srcBuffer2.ForEachSample(Ac::Synthesizer::PerlinNoiseGenerator(0.25, perlin));
+
+    #elif 1
+
+    using namespace Ac::Synthesizer;
+
+    srcBuffer0.ForEachSample(
+        //SquareGenerator({ GetNoteFrequency(Ac::MusicalNotes::C, 2), 0.25 })
+        SawGenerator({ GetNoteFrequency(Ac::MusicalNotes::C, 2), 0.25 })
+        //+SineGenerator({ GetNoteFrequency(Ac::MusicalNotes::C, 3), 0.1 })
+        //+SineGenerator({ GetNoteFrequency(Ac::MusicalNotes::C, 4), 0.07 })
+    );
+    srcBuffer1.ForEachSample(
+        SquareGenerator({ GetNoteFrequency(Ac::MusicalNotes::C, 2), 0.25 }) -
+        SquareGenerator({ GetNoteFrequency(Ac::MusicalNotes::C, 3), 0.1 })
+    );
+    srcBuffer2.ForEachSample(
+        SquareGenerator({ GetNoteFrequency(Ac::MusicalNotes::E, 2), 0.25 })
+    );
+
+    waveBuffer.CopyFrom(srcBuffer0, 0.0, 3.0, 0.0);
+    //waveBuffer.CopyFrom(srcBuffer1, 0.0, 0.5, 0.5);
+    //waveBuffer.CopyFrom(srcBuffer2, 0.0, 0.5, 1.0);
+    //waveBuffer.CopyFrom(srcBuffer1, 0.0, 0.5, 1.5);
+    //waveBuffer.CopyFrom(srcBuffer0, 0.0, 0.5, 2.0);
+
     #else
+
     srcBuffer0.ForEachSample(Ac::Synthesizer::WhiteNoiseGenerator(0.25));
     srcBuffer1.ForEachSample(Ac::Synthesizer::BrownNoiseGenerator(0.25, state));
     srcBuffer2.ForEachSample(Ac::Synthesizer::SineGenerator(0.35, 0.0, 500.0));
-    #endif
 
     Ac::Synthesizer::FadeWaveBuffers(waveBuffer, srcBuffer0, srcBuffer1, 0.5, 1.5, nullptr, false);
     Ac::Synthesizer::FadeWaveBuffers(waveBuffer, srcBuffer1, srcBuffer2, 1.5, 2.5, nullptr, false);
     waveBuffer.CopyFrom(srcBuffer0, 0.0, 0.5, 0.0);
     waveBuffer.CopyFrom(srcBuffer2, 2.5, 3.0, 2.5);
+
+    #endif
 
     #endif
 

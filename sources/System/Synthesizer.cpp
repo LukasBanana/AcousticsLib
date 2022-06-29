@@ -20,23 +20,143 @@ namespace Synthesizer
 {
 
 
+WaveFormGenerator::WaveFormGenerator(const SampleIterationFunction& initialFunction) :
+    functions_ { { initialFunction, GeneratorOp::Add } }
+{
+}
+
+WaveFormGenerator& WaveFormGenerator::operator += (const WaveFormGenerator& rhs)
+{
+    if (rhs.functions_.size() == 1)
+        functions_.push_back({ rhs.functions_.front().fn, GeneratorOp::Add });
+    return *this;
+}
+
+WaveFormGenerator& WaveFormGenerator::operator -= (const WaveFormGenerator& rhs)
+{
+    if (rhs.functions_.size() == 1)
+        functions_.push_back({ rhs.functions_.front().fn, GeneratorOp::Sub });
+    return *this;
+}
+
+WaveFormGenerator::operator SampleIterationFunction() const
+{
+    return std::bind(WaveFormGenerator::Combine, this, _1, _2, _3, _4);
+}
+
+void WaveFormGenerator::Combine(
+    const WaveFormGenerator*    generator,
+    double&                     sample,
+    std::uint16_t               channel,
+    std::size_t                 index,
+    double                      timePoint)
+{
+    for (const auto& func : generator->functions_)
+    {
+        double value = 0.0;
+        func.fn(value, channel, index, timePoint);
+        switch (func.op)
+        {
+            case GeneratorOp::Add:
+                sample += value;
+                break;
+            case GeneratorOp::Sub:
+                sample -= value;
+                break;
+        }
+    }
+}
+
+AC_EXPORT WaveFormGenerator operator + (const WaveFormGenerator& lhs, const WaveFormGenerator& rhs)
+{
+    auto result = lhs;
+    result += rhs;
+    return result;
+}
+
+AC_EXPORT WaveFormGenerator operator - (const WaveFormGenerator& lhs, const WaveFormGenerator& rhs)
+{
+    auto result = lhs;
+    result -= rhs;
+    return result;
+}
+
 /* ----- Wave generators ----- */
 
 static void SineGeneratorCallback(
     double&         sample,
-    std::uint16_t   channel,
-    std::size_t     index,
+    std::uint16_t   /*channel*/,
+    std::size_t     /*index*/,
     double          timePoint,
+    double          frequency,
     double          amplitude,
-    double          phase,
-    double          frequency)
+    double          phase)
 {
     sample += std::sin((timePoint + phase)*2.0*M_PI*frequency)*amplitude;
 }
 
-AC_EXPORT SampleIterationFunction SineGenerator(double amplitude, double phase, double frequency)
+AC_EXPORT WaveFormGenerator SineGenerator(const WaveForm& wave)
 {
-    return std::bind(SineGeneratorCallback, _1, _2, _3, _4, amplitude, phase, frequency);
+    return std::bind(SineGeneratorCallback, _1, _2, _3, _4, wave.frequency, wave.amplitude, wave.phase);
+}
+
+static void SquareGeneratorCallback(
+    double&         sample,
+    std::uint16_t   /*channel*/,
+    std::size_t     /*index*/,
+    double          timePoint,
+    double          frequency,
+    double          amplitude,
+    double          phase,
+    double          bias)
+{
+    double i = 0.0;
+    double t = std::modf((timePoint + phase) * frequency, &i);
+    sample += (std::ceil(t - bias)*2.0 - 1.0) * amplitude;
+}
+
+AC_EXPORT WaveFormGenerator SquareGenerator(const WaveForm& wave, double bias)
+{
+    return std::bind(SquareGeneratorCallback, _1, _2, _3, _4, wave.frequency, wave.amplitude, wave.phase, (std::max)(0.0, (std::min)(bias + 0.5, 1.0)));
+}
+
+static void TriangleGeneratorCallback(
+    double&         sample,
+    std::uint16_t   /*channel*/,
+    std::size_t     /*index*/,
+    double          timePoint,
+    double          frequency,
+    double          amplitude,
+    double          phase)
+{
+    //TODO
+    double i = 0.0;
+    double t = std::modf((timePoint + phase) * frequency, &i);
+    sample += (t*2.0 - 1.0)*amplitude;
+}
+
+AC_EXPORT WaveFormGenerator TriangleGenerator(const WaveForm& wave)
+{
+    return std::bind(TriangleGeneratorCallback, _1, _2, _3, _4, wave.frequency, wave.amplitude, wave.phase);
+}
+
+static void SawGeneratorCallback(
+    double&         sample,
+    std::uint16_t   /*channel*/,
+    std::size_t     /*index*/,
+    double          timePoint,
+    double          frequency,
+    double          amplitude,
+    double          phase)
+{
+    double i = 0.0;
+    double t = std::modf((timePoint + phase) * frequency, &i);
+    sample += (t*2.0 - 1.0)*amplitude;
+}
+
+AC_EXPORT WaveFormGenerator SawGenerator(const WaveForm& wave)
+{
+    return std::bind(SawGeneratorCallback, _1, _2, _3, _4, wave.frequency, wave.amplitude, wave.phase);
 }
 
 static void HalfCircleGeneratorCallback(
@@ -44,9 +164,9 @@ static void HalfCircleGeneratorCallback(
     std::uint16_t   channel,
     std::size_t     index,
     double          timePoint,
+    double          frequency,
     double          amplitude,
-    double          phase,
-    double          frequency)
+    double          phase)
 {
     double xInt = 0.0;
     double x    = std::modf((timePoint + phase)*2.0*frequency, &xInt)*2.0 - 1.0;
@@ -58,9 +178,9 @@ static void HalfCircleGeneratorCallback(
     sample += y*amplitude;
 }
 
-AC_EXPORT SampleIterationFunction HalfCircleGenerator(double amplitude, double phase, double frequency)
+AC_EXPORT WaveFormGenerator HalfCircleGenerator(const WaveForm& wave)
 {
-    return std::bind(HalfCircleGeneratorCallback, _1, _2, _3, _4, amplitude, phase, frequency);
+    return std::bind(HalfCircleGeneratorCallback, _1, _2, _3, _4, wave.frequency, wave.amplitude, wave.phase);
 }
 
 AC_EXPORT SampleIterationFunction Amplifier(double multiplicator)
@@ -81,7 +201,7 @@ static double Random(double a, double b)
     return (a + (b - a) * Random());
 }
 
-AC_EXPORT SampleIterationFunction WhiteNoiseGenerator(double amplitude)
+AC_EXPORT WaveFormGenerator WhiteNoiseGenerator(double amplitude)
 {
     return [amplitude](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
     {
@@ -89,7 +209,7 @@ AC_EXPORT SampleIterationFunction WhiteNoiseGenerator(double amplitude)
     };
 }
 
-AC_EXPORT SampleIterationFunction BrownNoiseGenerator(double amplitude, double& state)
+AC_EXPORT WaveFormGenerator BrownNoiseGenerator(double amplitude, double& state)
 {
     state = 0.0;
     return [amplitude, &state](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
@@ -104,7 +224,7 @@ AC_EXPORT SampleIterationFunction BrownNoiseGenerator(double amplitude, double& 
     };
 }
 
-AC_EXPORT SampleIterationFunction PerlinNoiseGenerator(double amplitude, PerlinNoise& noiseFunction, std::uint32_t frequency, std::uint32_t octaves, double persitence)
+AC_EXPORT WaveFormGenerator PerlinNoiseGenerator(double amplitude, PerlinNoise& noiseFunction, std::uint32_t frequency, std::uint32_t octaves, double persitence)
 {
     return [amplitude, &noiseFunction, frequency, octaves, persitence](double& sample, std::uint16_t /*channel*/, std::size_t /*index*/, double timePoint)
     {
