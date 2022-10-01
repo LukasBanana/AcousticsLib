@@ -97,7 +97,12 @@ static void SineGeneratorCallback(
 
 AC_EXPORT WaveFormGenerator SineGenerator(const WaveForm& wave)
 {
-    return std::bind(SineGeneratorCallback, _1, _2, _3, _4, wave.frequency, wave.amplitude, wave.phase);
+    return SampleIterationFunction(
+        std::bind(
+            SineGeneratorCallback, _1, _2, _3, _4,
+            wave.frequency, wave.amplitude, wave.phase
+        )
+    );
 }
 
 static void SquareGeneratorCallback(
@@ -117,7 +122,12 @@ static void SquareGeneratorCallback(
 
 AC_EXPORT WaveFormGenerator SquareGenerator(const WaveForm& wave, double bias)
 {
-    return std::bind(SquareGeneratorCallback, _1, _2, _3, _4, wave.frequency, wave.amplitude, wave.phase, (std::max)(0.0, (std::min)(bias + 0.5, 1.0)));
+    return SampleIterationFunction(
+        std::bind(
+            SquareGeneratorCallback, _1, _2, _3, _4,
+            wave.frequency, wave.amplitude, wave.phase, (std::max)(0.0, (std::min)(bias + 0.5, 1.0))
+        )
+    );
 }
 
 static void TriangleGeneratorCallback(
@@ -137,7 +147,12 @@ static void TriangleGeneratorCallback(
 
 AC_EXPORT WaveFormGenerator TriangleGenerator(const WaveForm& wave)
 {
-    return std::bind(TriangleGeneratorCallback, _1, _2, _3, _4, wave.frequency, wave.amplitude, wave.phase);
+    return SampleIterationFunction(
+        std::bind(
+            TriangleGeneratorCallback, _1, _2, _3, _4,
+            wave.frequency, wave.amplitude, wave.phase
+        )
+    );
 }
 
 static void SawGeneratorCallback(
@@ -156,7 +171,12 @@ static void SawGeneratorCallback(
 
 AC_EXPORT WaveFormGenerator SawGenerator(const WaveForm& wave)
 {
-    return std::bind(SawGeneratorCallback, _1, _2, _3, _4, wave.frequency, wave.amplitude, wave.phase);
+    return SampleIterationFunction(
+        std::bind(
+            SawGeneratorCallback, _1, _2, _3, _4,
+            wave.frequency, wave.amplitude, wave.phase
+        )
+    );
 }
 
 static void HalfCircleGeneratorCallback(
@@ -180,7 +200,12 @@ static void HalfCircleGeneratorCallback(
 
 AC_EXPORT WaveFormGenerator HalfCircleGenerator(const WaveForm& wave)
 {
-    return std::bind(HalfCircleGeneratorCallback, _1, _2, _3, _4, wave.frequency, wave.amplitude, wave.phase);
+    return SampleIterationFunction(
+        std::bind(
+            HalfCircleGeneratorCallback, _1, _2, _3, _4,
+            wave.frequency, wave.amplitude, wave.phase
+        )
+    );
 }
 
 AC_EXPORT SampleIterationFunction Amplifier(double multiplicator)
@@ -203,33 +228,39 @@ static double Random(double a, double b)
 
 AC_EXPORT WaveFormGenerator WhiteNoiseGenerator(double amplitude)
 {
-    return [amplitude](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
-    {
-        sample += Random(-1.0, 1.0) * amplitude;
-    };
+    return SampleIterationFunction(
+        [amplitude](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
+        {
+            sample += Random(-1.0, 1.0) * amplitude;
+        }
+    );
 }
 
 AC_EXPORT WaveFormGenerator BrownNoiseGenerator(double amplitude, double& state)
 {
     state = 0.0;
-    return [amplitude, &state](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
-    {
-        auto noiseLerp = (state + 1.0)*0.5;
-        auto noise = Random(
-            Gs::Lerp(0.0, -amplitude, noiseLerp),
-            Gs::Lerp(amplitude, 0.0, noiseLerp)
-        );
-        state += noise;
-        sample = state;
-    };
+    return SampleIterationFunction(
+        [amplitude, &state](double& sample, std::uint16_t channel, std::size_t index, double timePoint)
+        {
+            auto noiseLerp = (state + 1.0)*0.5;
+            auto noise = Random(
+                Gs::Lerp(0.0, -amplitude, noiseLerp),
+                Gs::Lerp(amplitude, 0.0, noiseLerp)
+            );
+            state += noise;
+            sample = state;
+        }
+    );
 }
 
 AC_EXPORT WaveFormGenerator PerlinNoiseGenerator(double amplitude, PerlinNoise& noiseFunction, std::uint32_t frequency, std::uint32_t octaves, double persitence)
 {
-    return [amplitude, &noiseFunction, frequency, octaves, persitence](double& sample, std::uint16_t /*channel*/, std::size_t /*index*/, double timePoint)
-    {
-        sample = noiseFunction.Noise(timePoint*300.0, frequency, octaves, persitence);
-    };
+    return SampleIterationFunction(
+        [&noiseFunction, frequency, octaves, persitence](double& sample, std::uint16_t /*channel*/, std::size_t /*index*/, double timePoint)
+        {
+            sample = noiseFunction.Noise(timePoint*300.0, frequency, octaves, persitence);
+        }
+    );
 }
 
 /* ----- Misc ----- */
