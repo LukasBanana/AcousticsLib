@@ -48,9 +48,9 @@ class ALAudioSystem : public AudioSystem
 
         struct ContextAttributes
         {
-            ALCint frequency;
-            ALCint numMonoSources;
-            ALCint numStereoSources;
+            ALCint frequency        = 25;
+            ALCint numMonoSources   = 16;
+            ALCint numStereoSources = 16;
         };
 
         std::vector<std::string> ListDevices() const;
